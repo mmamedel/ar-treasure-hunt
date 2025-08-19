@@ -16,7 +16,7 @@
 		// iOS Safari requires HTTPS for these APIs
 		const isSecureContext = window.isSecureContext || location.protocol === 'https:';
 		const hasGeolocation = 'geolocation' in navigator;
-		const hasMediaDevices = 'mediaDevices' in navigator && navigator.mediaDevices?.getUserMedia;
+		const hasMediaDevices = 'mediaDevices' in navigator && typeof navigator.mediaDevices?.getUserMedia === 'function';
 		
 		// Create debug info
 		debugInfo = `Debug: Protocol: ${location.protocol}, Secure: ${isSecureContext}, Geolocation: ${hasGeolocation}, MediaDevices: ${hasMediaDevices}, UserAgent: ${navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Other'}`;
