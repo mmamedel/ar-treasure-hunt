@@ -55,29 +55,6 @@
 		<div class="progress-text">{Math.round(gameState.progress)}% Complete</div>
 	</div>
 	
-	<!-- Radar/Compass -->
-	<div class="radar-container">
-		<div class="radar">
-			<div class="radar-sweep"></div>
-			{#each gameState.nearbyTreasures as treasure, i}
-				<div 
-					class="radar-dot"
-					style="
-						top: {50 - (treasure.distance / 5)}%;
-						left: {50 + (i * 20 - 40)}%;
-						animation-delay: {i * 0.2}s;
-					"
-				></div>
-			{/each}
-		</div>
-		<div class="distance-indicator">
-			{#if gameState.nearbyTreasures.length > 0}
-				<span>Nearest: {Math.round(gameState.nearbyTreasures[0]?.distance || 0)}m</span>
-			{:else}
-				<span>Scanning...</span>
-			{/if}
-		</div>
-	</div>
 	
 	<!-- Bottom Controls -->
 	<div class="bottom-controls">
@@ -240,60 +217,6 @@
 		text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 	}
 	
-	.radar-container {
-		position: absolute;
-		bottom: 140px;
-		right: 20px;
-		pointer-events: all;
-	}
-	
-	.radar {
-		width: 120px;
-		height: 120px;
-		background: radial-gradient(circle, rgba(76,175,80,0.2), rgba(76,175,80,0.05));
-		border: 2px solid rgba(76,175,80,0.5);
-		border-radius: 50%;
-		position: relative;
-		overflow: hidden;
-	}
-	
-	.radar-sweep {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 50%;
-		height: 2px;
-		background: linear-gradient(90deg, transparent, rgba(76,175,80,0.8));
-		transform-origin: left center;
-		animation: sweep 3s infinite linear;
-	}
-	
-	@keyframes sweep {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-	
-	.radar-dot {
-		position: absolute;
-		width: 8px;
-		height: 8px;
-		background: #FFD700;
-		border-radius: 50%;
-		animation: pulse 2s infinite ease-in-out;
-	}
-	
-	@keyframes pulse {
-		0%, 100% { transform: scale(1); opacity: 1; }
-		50% { transform: scale(1.5); opacity: 0.5; }
-	}
-	
-	.distance-indicator {
-		text-align: center;
-		color: white;
-		font-size: 0.9rem;
-		margin-top: 0.5rem;
-		text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-	}
 	
 	.bottom-controls {
 		position: absolute;

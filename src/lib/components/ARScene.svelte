@@ -5,10 +5,13 @@
 	let arContainer = $state<HTMLDivElement>();
 	let scene = $state<any>(null);
 	let watchId = $state<number | null>(null);
+	let fixedTreasures: Treasure[] = [];
+	let visibleTreasures = $state<Treasure[]>([]);
 	
 	onMount(() => {
 		initCamera();
 		initAR();
+		initializeFixedTreasures();
 		startLocationTracking();
 		
 		return () => {
@@ -76,6 +79,50 @@
 		document.body.appendChild(script);
 	}
 	
+	function initializeFixedTreasures() {
+		// Get current location first to generate treasures around it
+		navigator.geolocation.getCurrentPosition((position) => {
+			const currentLat = position.coords.latitude;
+			const currentLng = position.coords.longitude;
+			
+			// Generate fixed treasures within 20 meters of starting position
+			fixedTreasures = [
+				{
+					id: 'treasure_1',
+					lat: currentLat + 0.00002, // ~2.2 meters north
+					lng: currentLng,
+					type: 'gem',
+					value: 100,
+					distance: 0
+				},
+				{
+					id: 'treasure_2',
+					lat: currentLat,
+					lng: currentLng + 0.00003, // ~3.3 meters east
+					type: 'coin',
+					value: 50,
+					distance: 0
+				},
+				{
+					id: 'treasure_3',
+					lat: currentLat - 0.00005, // ~5.5 meters south
+					lng: currentLng - 0.00002,
+					type: 'chest',
+					value: 200,
+					distance: 0
+				},
+				{
+					id: 'treasure_4',
+					lat: currentLat + 0.00008, // ~8.8 meters north
+					lng: currentLng + 0.00005,
+					type: 'gem',
+					value: 150,
+					distance: 0
+				}
+			];
+		});
+	}
+	
 	function startLocationTracking() {
 		if ('geolocation' in navigator) {
 			watchId = navigator.geolocation.watchPosition(
@@ -85,7 +132,7 @@
 						lng: position.coords.longitude
 					};
 					gameState.updateLocation(location);
-					updateARObjects(location);
+					updateVisibleTreasures(location);
 				},
 				(error) => {
 					console.error('Location error:', error);
@@ -99,38 +146,47 @@
 		}
 	}
 	
-	function updateARObjects(location: PlayerLocation) {
-		// Generate nearby treasures based on current location
-		const treasures = generateNearbyTreasures(location);
-		gameState.updateNearbyTreasures(treasures);
+	function updateVisibleTreasures(location: PlayerLocation) {
+		// Only show treasures within 2 meters
+		const VISIBILITY_DISTANCE = 2; // meters
+		
+		visibleTreasures = fixedTreasures.filter(treasure => {
+			const distance = calculateDistance(location, { lat: treasure.lat, lng: treasure.lng });
+			treasure.distance = distance;
+			return distance <= VISIBILITY_DISTANCE;
+		});
+		
+		// Update game state with visible treasures
+		gameState.updateNearbyTreasures(visibleTreasures);
+		
+		// Update AR display
+		updateARDisplay();
 	}
 	
-	function generateNearbyTreasures(location: PlayerLocation): Treasure[] {
-		// Generate random treasures within 500 meters
-		const treasures: Treasure[] = [];
-		const numTreasures = 5;
+	function updateARDisplay() {
+		// Clear existing AR objects
+		const arScene = document.getElementById('arjs-scene');
+		if (!arScene) return;
 		
-		for (let i = 0; i < numTreasures; i++) {
-			const angle = (Math.PI * 2 * i) / numTreasures;
-			const distance = Math.random() * 200 + 50; // 50-250 meters
-			
-			const lat = location.lat + (distance * Math.cos(angle)) / 111111;
-			const lng = location.lng + (distance * Math.sin(angle)) / (111111 * Math.cos(location.lat * Math.PI / 180));
-			
-			treasures.push({
-				id: `treasure_${i}_${Date.now()}`,
-				lat: lat,
-				lng: lng,
-				type: (['gem', 'coin', 'chest'] as const)[Math.floor(Math.random() * 3)],
-				value: Math.floor(Math.random() * 100) + 10,
-				distance: distance
-			});
-		}
+		// Remove old treasure elements
+		const oldTreasures = arScene.querySelectorAll('.ar-treasure');
+		oldTreasures.forEach(el => el.remove());
 		
-		return treasures;
+		// Add visible treasures to AR scene
+		visibleTreasures.forEach(treasure => {
+			const treasureEl = document.createElement('div');
+			treasureEl.className = 'ar-treasure';
+			treasureEl.dataset.id = treasure.id;
+			treasureEl.innerHTML = `
+				<div class="treasure-icon">${treasure.type === 'gem' ? '💎' : treasure.type === 'coin' ? '🪙' : '📦'}</div>
+				<div class="treasure-value">${treasure.value}</div>
+			`;
+			arScene.appendChild(treasureEl);
+		});
 	}
 	
-	function calculateDistance(from: PlayerLocation, to: PlayerLocation) {
+	function calculateDistance(from: PlayerLocation, to: PlayerLocation): number {
+		const R = 6371000; // Earth's radius in meters
 		const lat1 = from.lat * Math.PI / 180;
 		const lon1 = from.lng * Math.PI / 180;
 		const lat2 = to.lat * Math.PI / 180;
@@ -139,13 +195,12 @@
 		const dLat = lat2 - lat1;
 		const dLon = lon2 - lon1;
 		
-		const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(lat1) * Math.cos(lat2) *
-			Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		const distance = 6371 * c * 1000; // in meters
+		const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+				  Math.cos(lat1) * Math.cos(lat2) *
+				  Math.sin(dLon/2) * Math.sin(dLon/2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 		
-		return distance;
+		return R * c; // Distance in meters
 	}
 	
 	function cleanup() {
@@ -200,5 +255,40 @@
 		height: 100%;
 		object-fit: cover;
 		z-index: -1;
+	}
+	
+	:global(.ar-treasure) {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		text-align: center;
+		animation: float 2s ease-in-out infinite;
+		z-index: 100;
+	}
+	
+	:global(.treasure-icon) {
+		font-size: 3rem;
+		filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+		animation: pulse 1.5s ease-in-out infinite;
+	}
+	
+	:global(.treasure-value) {
+		color: white;
+		font-weight: bold;
+		font-size: 1.2rem;
+		text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+		margin-top: 0.5rem;
+		background: rgba(0,0,0,0.5);
+		padding: 0.25rem 0.5rem;
+		border-radius: 10px;
+	}
+	
+	@keyframes float {
+		0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+		50% { transform: translate(-50%, -50%) translateY(-10px); }
+	}
+	
+	@keyframes pulse {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.1); }
 	}
 </style>
