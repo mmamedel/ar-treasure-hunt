@@ -21,13 +21,15 @@
 		// Create debug info
 		debugInfo = `Debug: Protocol: ${location.protocol}, Secure: ${isSecureContext}, Geolocation: ${hasGeolocation}, MediaDevices: ${hasMediaDevices}, UserAgent: ${navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Other'}`;
 		
-		if (!hasGeolocation || !hasMediaDevices) {
-			console.error('Missing features:', { hasGeolocation, hasMediaDevices, isSecureContext });
-			permissionsDenied = true;
-		} else if (!isSecureContext && location.hostname !== 'localhost') {
+		// Only block if we're actually missing required features
+		if (!isSecureContext && location.hostname !== 'localhost') {
 			console.error('HTTPS required for camera/location access');
 			permissionsDenied = true;
+		} else if (!hasGeolocation || !hasMediaDevices) {
+			console.error('Missing features:', { hasGeolocation, hasMediaDevices, isSecureContext });
+			permissionsDenied = true;
 		}
+		// If everything is available, don't set permissionsDenied
 	});
 
 	async function startGame() {
