@@ -35,18 +35,47 @@
 	async function startGame() {
 		isLoading = true;
 		try {
-			// Request camera and location permissions
-			await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+			// Request camera permission first
+			const stream = await navigator.mediaDevices.getUserMedia({ 
+				video: { facingMode: 'environment' } 
+			});
+			
+			// Stop the stream immediately (we'll restart it in ARScene)
+			stream.getTracks().forEach(track => track.stop());
+			
+			// Request location permission with timeout
 			await new Promise((resolve, reject) => {
-				navigator.geolocation.getCurrentPosition(resolve, reject);
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						console.log('Location granted:', position.coords);
+						resolve(position);
+					},
+					(error) => {
+						console.error('Location error:', error);
+						reject(error);
+					},
+					{
+						enableHighAccuracy: true,
+						timeout: 10000,
+						maximumAge: 0
+					}
+				);
 			});
 			
 			hasPermissions = true;
 			showIntro = false;
 			gameState.startGame();
-		} catch (error) {
-			alert('Please grant camera and location permissions to play the game.');
+		} catch (error: any) {
 			console.error('Permission error:', error);
+			if (error?.code === 1) {
+				alert('Location permission denied. Please enable location access in Settings > Safari > Location.');
+			} else if (error?.code === 2) {
+				alert('Location unavailable. Please ensure Location Services are enabled.');
+			} else if (error?.code === 3) {
+				alert('Location request timed out. Please try again.');
+			} else {
+				alert('Please grant camera and location permissions to play the game.');
+			}
 			permissionsDenied = true;
 		} finally {
 			isLoading = false;
