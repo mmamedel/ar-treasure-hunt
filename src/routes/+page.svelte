@@ -12,7 +12,16 @@
 
 	onMount(() => {
 		// Check if the browser supports required features
-		if (!('geolocation' in navigator && 'mediaDevices' in navigator)) {
+		// iOS Safari requires HTTPS for these APIs
+		const isSecureContext = window.isSecureContext || location.protocol === 'https:';
+		const hasGeolocation = 'geolocation' in navigator;
+		const hasMediaDevices = 'mediaDevices' in navigator && navigator.mediaDevices?.getUserMedia;
+		
+		if (!hasGeolocation || !hasMediaDevices) {
+			console.error('Missing features:', { hasGeolocation, hasMediaDevices, isSecureContext });
+			permissionsDenied = true;
+		} else if (!isSecureContext && location.hostname !== 'localhost') {
+			console.error('HTTPS required for camera/location access');
 			permissionsDenied = true;
 		}
 	});
@@ -71,7 +80,13 @@
 						Start Adventure
 					</button>
 				{:else}
-					<p class="warning">Your browser doesn't support the required features.</p>
+					<p class="warning">
+						{#if location.protocol !== 'https:' && location.hostname !== 'localhost'}
+							Please access this app via HTTPS for camera/location access.
+						{:else}
+							Your browser doesn't support the required features. Please use Safari or Chrome on iOS.
+						{/if}
+					</p>
 				{/if}
 			</div>
 		</div>
