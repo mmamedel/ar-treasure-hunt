@@ -1,0 +1,12 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": "build",
+  "framework": "svelte-kit",
+  "installCommand": "pnpm install",
+  "regions": ["iad1"],
+  "functions": {
+    "src/hooks.server.ts": {
+      "maxDuration": 10
+    }
+  }
+}
