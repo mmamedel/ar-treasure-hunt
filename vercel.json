@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm build",
   "outputDirectory": "build",
-  "framework": "svelte-kit",
+  "framework": "sveltekit",
   "installCommand": "pnpm install",
   "regions": ["iad1"],
   "functions": {
