@@ -7,6 +7,7 @@
 	let watchId = $state<number | null>(null);
 	let fixedTreasures: Treasure[] = [];
 	let visibleTreasures = $state<Treasure[]>([]);
+	let devMode = $state(false);
 	
 	onMount(() => {
 		initCamera();
@@ -147,14 +148,23 @@
 	}
 	
 	function updateVisibleTreasures(location: PlayerLocation) {
-		// Only show treasures within 2 meters
+		// Only show treasures within 2 meters (unless in dev mode)
 		const VISIBILITY_DISTANCE = 2; // meters
 		
-		visibleTreasures = fixedTreasures.filter(treasure => {
-			const distance = calculateDistance(location, { lat: treasure.lat, lng: treasure.lng });
-			treasure.distance = distance;
-			return distance <= VISIBILITY_DISTANCE;
-		});
+		if (devMode) {
+			// In dev mode, show all treasures with distance info
+			visibleTreasures = fixedTreasures.map(treasure => {
+				const distance = calculateDistance(location, { lat: treasure.lat, lng: treasure.lng });
+				return { ...treasure, distance };
+			});
+		} else {
+			// Normal mode: only show treasures within visibility distance
+			visibleTreasures = fixedTreasures.filter(treasure => {
+				const distance = calculateDistance(location, { lat: treasure.lat, lng: treasure.lng });
+				treasure.distance = distance;
+				return distance <= VISIBILITY_DISTANCE;
+			});
+		}
 		
 		// Update game state with visible treasures
 		gameState.updateNearbyTreasures(visibleTreasures);
@@ -174,12 +184,14 @@
 		
 		// Add visible treasures to AR scene
 		visibleTreasures.forEach(treasure => {
+			const isInRange = treasure.distance <= 2;
 			const treasureEl = document.createElement('div');
-			treasureEl.className = 'ar-treasure';
+			treasureEl.className = `ar-treasure ${!isInRange && devMode ? 'out-of-range' : ''}`;
 			treasureEl.dataset.id = treasure.id;
 			treasureEl.innerHTML = `
 				<div class="treasure-icon">${treasure.type === 'gem' ? '💎' : treasure.type === 'coin' ? '🪙' : '📦'}</div>
 				<div class="treasure-value">${treasure.value}</div>
+				${devMode ? `<div class="treasure-distance">${treasure.distance.toFixed(1)}m</div>` : ''}
 			`;
 			arScene.appendChild(treasureEl);
 		});
@@ -223,10 +235,19 @@
 </script>
 
 <div class="ar-container" bind:this={arContainer}>
-	<div id="arjs-scene" class="ar-scene"></div>
 	<video id="arjs-video" autoplay playsinline muted>
-		<track kind="captions" src="" default />
+		<track kind="captions" />
 	</video>
+	<div id="arjs-scene"></div>
+	
+	<!-- Dev Mode Toggle -->
+	<button 
+		class="dev-mode-toggle"
+		onclick={() => devMode = !devMode}
+		type="button"
+	>
+		🛠️ Dev: {devMode ? 'ON' : 'OFF'}
+	</button>
 </div>
 
 <style>
@@ -280,6 +301,38 @@
 		background: rgba(0,0,0,0.5);
 		padding: 0.25rem 0.5rem;
 		border-radius: 10px;
+	}
+	
+	:global(.treasure-distance) {
+		color: #FFD700;
+		font-size: 1rem;
+		margin-top: 0.25rem;
+		text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+	}
+	
+	:global(.out-of-range) {
+		opacity: 0.5;
+		filter: grayscale(50%);
+	}
+	
+	.dev-mode-toggle {
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		padding: 0.5rem 1rem;
+		background: rgba(0, 0, 0, 0.7);
+		color: white;
+		border: 2px solid #FFD700;
+		border-radius: 10px;
+		font-weight: bold;
+		cursor: pointer;
+		z-index: 1000;
+		transition: all 0.3s ease;
+	}
+	
+	.dev-mode-toggle:hover {
+		background: rgba(255, 215, 0, 0.2);
+		transform: scale(1.05);
 	}
 	
 	@keyframes float {
