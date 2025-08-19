@@ -44,35 +44,39 @@
 	}
 	
 	function initAR() {
-		// Create AR.js scene with location-based AR
+		// Initialize AR.js scene
 		const script = document.createElement('script');
-		script.innerHTML = `
-			// Initialize AR.js scene
+		script.textContent = `
 			if (typeof THREEx !== 'undefined' && THREEx.LocationBased) {
-				window.arScene = new THREEx.LocationBased(document.getElementById('arjs-scene'), {
-					simulateLatitude: 0,
-					simulateLongitude: 0
+				const scene = new THREE.Scene();
+				const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1000);
+				const renderer = new THREE.WebGLRenderer({ 
+					alpha: true,
+					antialias: true
 				});
 				
-				// Add camera
-				const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-				
-				// Add renderer
-				const renderer = new THREE.WebGLRenderer({
-					antialias: true,
-					alpha: true
-				});
 				renderer.setSize(window.innerWidth, window.innerHeight);
 				document.getElementById('arjs-scene').appendChild(renderer.domElement);
 				
-				// Add device orientation controls
+				const arjs = new THREEx.LocationBased(scene, camera);
+				const cam = new THREEx.WebcamRenderer(renderer);
+				
+				// Store scene and AR.js instance globally for access
+				window.arScene = {
+					scene: scene,
+					camera: camera,
+					renderer: renderer,
+					arjs: arjs
+				};
+				
+				// Enable device orientation controls
 				const controls = new THREEx.DeviceOrientationControls(camera);
 				
 				// Animation loop
 				function animate() {
 					requestAnimationFrame(animate);
 					controls.update();
-					renderer.render(window.arScene.scene, camera);
+					renderer.render(scene, camera);
 				}
 				animate();
 			}
@@ -174,27 +178,95 @@
 	}
 	
 	function updateARDisplay() {
-		// Clear existing AR objects
-		const arScene = document.getElementById('arjs-scene');
-		if (!arScene) return;
+		// Wait for AR.js to be ready
+		if (!window.arScene?.arjs) {
+			setTimeout(() => updateARDisplay(), 100);
+			return;
+		}
 		
-		// Remove old treasure elements
-		const oldTreasures = arScene.querySelectorAll('.ar-treasure');
-		oldTreasures.forEach(el => el.remove());
+		// Clear existing treasure meshes
+		if (window.arTreasures) {
+			window.arTreasures.forEach(mesh => {
+				window.arScene.scene.remove(mesh);
+			});
+		}
+		window.arTreasures = [];
 		
-		// Add visible treasures to AR scene
+		// Add visible treasures as 3D objects in AR scene
 		visibleTreasures.forEach(treasure => {
 			const isInRange = treasure.distance <= 2;
-			const treasureEl = document.createElement('div');
-			treasureEl.className = `ar-treasure ${!isInRange && devMode ? 'out-of-range' : ''}`;
-			treasureEl.dataset.id = treasure.id;
-			treasureEl.innerHTML = `
-				<div class="treasure-icon">${treasure.type === 'gem' ? '💎' : treasure.type === 'coin' ? '🪙' : '📦'}</div>
-				<div class="treasure-value">${treasure.value}</div>
-				${devMode ? `<div class="treasure-distance">${treasure.distance.toFixed(1)}m</div>` : ''}
-			`;
-			arScene.appendChild(treasureEl);
+			
+			// Create 3D object for treasure
+			let geometry, material;
+			
+			if (treasure.type === 'gem') {
+				// Diamond shape
+				geometry = new THREE.OctahedronGeometry(1, 0);
+				material = new THREE.MeshBasicMaterial({ 
+					color: 0x00ffff,
+					opacity: isInRange || devMode ? 1 : 0.5,
+					transparent: true
+				});
+			} else if (treasure.type === 'coin') {
+				// Coin shape
+				geometry = new THREE.CylinderGeometry(1, 1, 0.2, 16);
+				material = new THREE.MeshBasicMaterial({ 
+					color: 0xffd700,
+					opacity: isInRange || devMode ? 1 : 0.5,
+					transparent: true
+				});
+			} else {
+				// Chest shape
+				geometry = new THREE.BoxGeometry(1.5, 1, 1);
+				material = new THREE.MeshBasicMaterial({ 
+					color: 0x8b4513,
+					opacity: isInRange || devMode ? 1 : 0.5,
+					transparent: true
+				});
+			}
+			
+			const mesh = new THREE.Mesh(geometry, material);
+			mesh.userData = { treasureId: treasure.id, value: treasure.value };
+			
+			// Add treasure to AR scene at GPS location
+			window.arScene.arjs.add(mesh, treasure.lng, treasure.lat);
+			window.arTreasures.push(mesh);
+			
+			// Add floating animation
+			const animateTreasure = () => {
+				if (mesh.parent) {
+					mesh.rotation.y += 0.02;
+					mesh.position.y = Math.sin(Date.now() * 0.001) * 0.2;
+					requestAnimationFrame(animateTreasure);
+				}
+			};
+			animateTreasure();
 		});
+		
+		// Update HUD with treasure info if in dev mode
+		if (devMode) {
+			updateDevHUD();
+		}
+	}
+	
+	function updateDevHUD() {
+		let hudEl = document.getElementById('dev-hud');
+		if (!hudEl) {
+			hudEl = document.createElement('div');
+			hudEl.id = 'dev-hud';
+			hudEl.className = 'dev-hud';
+			document.body.appendChild(hudEl);
+		}
+		
+		hudEl.innerHTML = `
+			<div class="hud-title">📍 Treasures</div>
+			${visibleTreasures.map(t => `
+				<div class="hud-item">
+					${t.type === 'gem' ? '💎' : t.type === 'coin' ? '🪙' : '📦'} 
+					${t.distance.toFixed(1)}m - ${t.value}pts
+				</div>
+			`).join('')}
+		`;
 	}
 	
 	function calculateDistance(from: PlayerLocation, to: PlayerLocation): number {
@@ -286,33 +358,28 @@
 		z-index: 100;
 	}
 	
-	:global(.treasure-icon) {
-		font-size: 3rem;
-		filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-		animation: pulse 1.5s ease-in-out infinite;
-	}
-	
-	:global(.treasure-value) {
+	:global(.dev-hud) {
+		position: absolute;
+		top: 70px;
+		right: 20px;
+		background: rgba(0, 0, 0, 0.8);
 		color: white;
-		font-weight: bold;
-		font-size: 1.2rem;
-		text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-		margin-top: 0.5rem;
-		background: rgba(0,0,0,0.5);
-		padding: 0.25rem 0.5rem;
+		padding: 1rem;
 		border-radius: 10px;
+		font-size: 0.9rem;
+		max-width: 200px;
+		z-index: 999;
 	}
 	
-	:global(.treasure-distance) {
-		color: #FFD700;
-		font-size: 1rem;
-		margin-top: 0.25rem;
-		text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+	:global(.hud-title) {
+		font-weight: bold;
+		margin-bottom: 0.5rem;
+		border-bottom: 1px solid #FFD700;
+		padding-bottom: 0.25rem;
 	}
 	
-	:global(.out-of-range) {
-		opacity: 0.5;
-		filter: grayscale(50%);
+	:global(.hud-item) {
+		margin: 0.25rem 0;
 	}
 	
 	.dev-mode-toggle {
