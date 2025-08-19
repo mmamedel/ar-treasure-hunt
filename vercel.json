@@ -3,10 +3,5 @@
   "outputDirectory": "build",
   "framework": "sveltekit",
   "installCommand": "pnpm install",
-  "regions": ["iad1"],
-  "functions": {
-    "src/hooks.server.ts": {
-      "maxDuration": 10
-    }
-  }
+  "regions": ["iad1"]
 }
