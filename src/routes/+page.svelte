@@ -43,20 +43,36 @@
 			// Stop the stream immediately (we'll restart it in ARScene)
 			stream.getTracks().forEach(track => track.stop());
 			
-			// Request location permission with timeout
+			// For iOS, we need to handle location differently
+			// Sometimes iOS doesn't show the prompt with getCurrentPosition
+			// Try watchPosition first to trigger the prompt
+			let locationGranted = false;
+			
 			await new Promise((resolve, reject) => {
-				navigator.geolocation.getCurrentPosition(
+				const timeoutId = setTimeout(() => {
+					if (!locationGranted) {
+						reject(new Error('Location timeout'));
+					}
+				}, 10000);
+				
+				// First try watchPosition to trigger prompt on iOS
+				const watchId = navigator.geolocation.watchPosition(
 					(position) => {
-						console.log('Location granted:', position.coords);
+						console.log('Location granted via watch:', position.coords);
+						locationGranted = true;
+						clearTimeout(timeoutId);
+						navigator.geolocation.clearWatch(watchId);
 						resolve(position);
 					},
 					(error) => {
 						console.error('Location error:', error);
+						clearTimeout(timeoutId);
+						navigator.geolocation.clearWatch(watchId);
 						reject(error);
 					},
 					{
-						enableHighAccuracy: true,
-						timeout: 10000,
+						enableHighAccuracy: false, // Start with low accuracy
+						timeout: 5000,
 						maximumAge: 0
 					}
 				);
@@ -68,15 +84,16 @@
 		} catch (error: any) {
 			console.error('Permission error:', error);
 			if (error?.code === 1) {
-				alert('Location permission denied. Please enable location access in Settings > Safari > Location.');
+				alert('Location permission issue. Try: 1) Close this tab, 2) Clear Safari website data for this site in Settings, 3) Reload and try again. Make sure Location Services are ON in Settings > Privacy.');
 			} else if (error?.code === 2) {
-				alert('Location unavailable. Please ensure Location Services are enabled.');
-			} else if (error?.code === 3) {
-				alert('Location request timed out. Please try again.');
+				alert('Location unavailable. Please ensure Location Services are enabled in Settings > Privacy > Location Services.');
+			} else if (error?.code === 3 || error?.message === 'Location timeout') {
+				alert('Location request timed out. The location prompt may not have appeared. Please reload the page and try again.');
 			} else {
 				alert('Please grant camera and location permissions to play the game.');
 			}
-			permissionsDenied = true;
+			// Don't set permissionsDenied permanently, allow retry
+			isLoading = false;
 		} finally {
 			isLoading = false;
 		}
