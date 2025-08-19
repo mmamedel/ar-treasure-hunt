@@ -9,6 +9,7 @@
 	let permissionsDenied = $state(false);
 	let isLoading = $state(false);
 	let showIntro = $state(true);
+	let debugInfo = $state('');
 
 	onMount(() => {
 		// Check if the browser supports required features
@@ -16,6 +17,9 @@
 		const isSecureContext = window.isSecureContext || location.protocol === 'https:';
 		const hasGeolocation = 'geolocation' in navigator;
 		const hasMediaDevices = 'mediaDevices' in navigator && navigator.mediaDevices?.getUserMedia;
+		
+		// Create debug info
+		debugInfo = `Debug: Protocol: ${location.protocol}, Secure: ${isSecureContext}, Geolocation: ${hasGeolocation}, MediaDevices: ${hasMediaDevices}, UserAgent: ${navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Other'}`;
 		
 		if (!hasGeolocation || !hasMediaDevices) {
 			console.error('Missing features:', { hasGeolocation, hasMediaDevices, isSecureContext });
@@ -86,6 +90,9 @@
 						{:else}
 							Your browser doesn't support the required features. Please use Safari or Chrome on iOS.
 						{/if}
+					</p>
+					<p class="debug-info" style="font-size: 0.8em; color: #666; margin-top: 10px;">
+						{debugInfo}
 					</p>
 				{/if}
 			</div>
