@@ -7,6 +7,7 @@
 	let watchId = $state<number | null>(null);
 	
 	onMount(() => {
+		initCamera();
 		initAR();
 		startLocationTracking();
 		
@@ -14,6 +15,29 @@
 			cleanup();
 		};
 	});
+	
+	async function initCamera() {
+		try {
+			// Get the camera stream
+			const stream = await navigator.mediaDevices.getUserMedia({ 
+				video: { 
+					facingMode: 'environment',
+					width: { ideal: 1920 },
+					height: { ideal: 1080 }
+				},
+				audio: false
+			});
+			
+			// Connect stream to video element
+			const video = document.getElementById('arjs-video') as HTMLVideoElement;
+			if (video) {
+				video.srcObject = stream;
+				video.play();
+			}
+		} catch (error) {
+			console.error('Camera initialization error:', error);
+		}
+	}
 	
 	function initAR() {
 		// Create AR.js scene with location-based AR
@@ -128,6 +152,14 @@
 		if (watchId) {
 			navigator.geolocation.clearWatch(watchId);
 		}
+		
+		// Stop camera stream
+		const video = document.getElementById('arjs-video') as HTMLVideoElement;
+		if (video && video.srcObject) {
+			const stream = video.srcObject as MediaStream;
+			stream.getTracks().forEach(track => track.stop());
+			video.srcObject = null;
+		}
 	}
 	
 	onDestroy(() => {
@@ -137,7 +169,9 @@
 
 <div class="ar-container" bind:this={arContainer}>
 	<div id="arjs-scene" class="ar-scene"></div>
-	<video id="arjs-video" autoplay playsinline></video>
+	<video id="arjs-video" autoplay playsinline muted>
+		<track kind="captions" src="" default />
+	</video>
 </div>
 
 <style>
