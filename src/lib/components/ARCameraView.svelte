@@ -76,6 +76,26 @@
 				// Wait a bit for scripts to fully initialize
 				await new Promise((resolve) => setTimeout(resolve, 500));
 
+				// Register A-Frame component for treasure interaction
+				if ((window as any).AFRAME) {
+					// Store the capture handler globally so A-Frame component can access it
+					(window as any).treasureCaptureHandler = () => {
+						if (markerVisible && !isCapturing) {
+							handleCapture();
+						}
+					};
+					
+					(window as any).AFRAME.registerComponent('treasure-handler', {
+						init: function() {
+							this.el.addEventListener('click', () => {
+								if ((window as any).treasureCaptureHandler) {
+									(window as any).treasureCaptureHandler();
+								}
+							});
+						}
+					});
+				}
+
 				scriptsLoaded = true;
 				
 				// Attach event listeners after scene is created
@@ -83,13 +103,6 @@
 					if (markerElement) {
 						markerElement.addEventListener('markerFound', handleMarkerFound);
 						markerElement.addEventListener('markerLost', handleMarkerLost);
-					}
-
-					// Add click event listener to treasure box using A-Frame's cursor system
-					const treasureBox = document.getElementById('treasure-box');
-					if (treasureBox) {
-						// Use cursor click event for A-Frame entities
-						treasureBox.addEventListener('click', handleCapture);
 					}
 					
 					// Add touch/click listener to the entire scene for mobile AR
@@ -122,14 +135,14 @@
 				markerElement.removeEventListener('markerFound', handleMarkerFound);
 				markerElement.removeEventListener('markerLost', handleMarkerLost);
 			}
-			const treasureBox = document.getElementById('treasure-box');
-			if (treasureBox) {
-				treasureBox.removeEventListener('click', handleCapture);
-			}
 			const scene = document.querySelector('a-scene');
 			if (scene && handleSceneClick) {
 				scene.removeEventListener('click', handleSceneClick);
 				scene.removeEventListener('touchend', handleSceneClick);
+			}
+			// Clean up global handler
+			if ((window as any).treasureCaptureHandler) {
+				delete (window as any).treasureCaptureHandler;
 			}
 		};
 	});
@@ -208,6 +221,7 @@
 					<!-- Clickable treasure model -->
 					<a-box
 						id="treasure-box"
+						treasure-handler
 						class="clickable"
 						position="0 0.5 0"
 						material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
