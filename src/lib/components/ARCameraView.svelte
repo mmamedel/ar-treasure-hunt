@@ -76,58 +76,30 @@
 	function createARScene() {
 		if (!arContainer) return;
 		
-		// Create A-Frame scene
+		// Create A-Frame scene with simpler configuration
 		const scene = document.createElement('a-scene');
 		scene.setAttribute('embedded', '');
-		scene.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;');
+		scene.setAttribute('arjs', 'trackingMethod: best; sourceType: webcam; debugUIEnabled: false;');
 		scene.setAttribute('vr-mode-ui', 'enabled: false');
-		scene.setAttribute('renderer', 'antialias: true; alpha: true');
+		scene.setAttribute('renderer', 'logarithmicDepthBuffer: true;');
 		scene.style.width = '100%';
 		scene.style.height = '100%';
-		scene.style.position = 'absolute';
-		scene.style.top = '0';
-		scene.style.left = '0';
-		scene.style.zIndex = '1';
 		
 		// Add camera
-		const camera = document.createElement('a-entity');
-		camera.setAttribute('camera', '');
+		const camera = document.createElement('a-camera-static');
 		scene.appendChild(camera);
 		
 		// Add marker with kanji pattern
 		const marker = document.createElement('a-marker');
 		marker.setAttribute('preset', 'kanji');
-		marker.setAttribute('smooth', 'true');
-		marker.setAttribute('smoothCount', '10');
-		marker.setAttribute('smoothTolerance', '.01');
-		marker.setAttribute('smoothThreshold', '5');
 		
-		// Add treasure model to marker - use primitive shapes that work better
+		// Add a simple box as treasure
 		const treasureModel = document.createElement('a-box');
-		treasureModel.setAttribute('position', '0 0 0');
-		treasureModel.setAttribute('scale', '0.5 0.5 0.5');
-		treasureModel.setAttribute('material', 'color: #FFD700; metalness: 0.7; roughness: 0.3');
-		treasureModel.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 3000; loop: true; easing: linear');
+		treasureModel.setAttribute('position', '0 0.5 0');
+		treasureModel.setAttribute('material', 'color: yellow');
+		treasureModel.setAttribute('animation', 'property: rotation; to: 360 360 0; dur: 3000; loop: true');
 		
-		// Add treasure emoji text above the box
-		const treasureText = document.createElement('a-text');
-		treasureText.setAttribute('value', currentTreasure.emoji);
-		treasureText.setAttribute('position', '0 1 0');
-		treasureText.setAttribute('align', 'center');
-		treasureText.setAttribute('color', '#FFFFFF');
-		treasureText.setAttribute('width', '6');
-		
-		// Add a simple sphere for glow effect
-		const glowSphere = document.createElement('a-sphere');
-		glowSphere.setAttribute('position', '0 0 0');
-		glowSphere.setAttribute('radius', '0.6');
-		glowSphere.setAttribute('material', 'color: #FFD700; opacity: 0.3; shader: flat');
-		glowSphere.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 1000; loop: true; dir: alternate; easing: easeInOutQuad');
-		
-		// Add all elements to marker
-		marker.appendChild(glowSphere);
 		marker.appendChild(treasureModel);
-		marker.appendChild(treasureText);
 		
 		// Use a debounced approach for marker detection to prevent flickering
 		let markerTimeout: NodeJS.Timeout;
@@ -145,7 +117,7 @@
 			clearTimeout(markerTimeout);
 			markerTimeout = setTimeout(() => {
 				markerVisible = false;
-			}, 500);
+			}, 300);
 		});
 		
 		scene.appendChild(marker);
