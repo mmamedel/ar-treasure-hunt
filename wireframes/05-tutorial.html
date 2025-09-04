@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - Caça ao Tesouro AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .carousel {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            position: relative;
+        }
+        .step {
+            text-align: center;
+        }
+        .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: 600;
+        }
+        .step-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .step-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .step-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dot.active {
+            background: #667eea;
+            width: 30px;
+            border-radius: 5px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .nav-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .start-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        .start-button:hover {
+            transform: scale(1.05);
+        }
+        .skip-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Como Jogar</h1>
+            <p class="subtitle">Aprenda a encontrar tesouros com AR</p>
+        </div>
+
+        <div class="carousel">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-icon">🗺️</div>
+                <h2 class="step-title">Receba uma Pista</h2>
+                <p class="step-description">
+                    Cada pista te levará a um local específico no evento. Leia com atenção e procure pelo lugar descrito!
+                </p>
+            </div>
+
+            <div class="dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button" disabled>← Anterior</button>
+            <button class="nav-button">Próximo →</button>
+        </div>
+
+        <button class="start-button">Começar Aventura!</button>
+        
+        <p class="skip-link">Pular tutorial</p>
+    </div>
+
+    <script>
+        // Simulated carousel steps
+        const steps = [
+            {
+                icon: '🗺️',
+                title: 'Receba uma Pista',
+                description: 'Cada pista te levará a um local específico no evento. Leia com atenção e procure pelo lugar descrito!'
+            },
+            {
+                icon: '🔍',
+                title: 'Encontre o Marcador',
+                description: 'No local indicado, procure pelo marcador AR. Ele pode estar em uma parede, mesa ou placa.'
+            },
+            {
+                icon: '📷',
+                title: 'Escaneie com a Câmera',
+                description: 'Abra a câmera e aponte para o marcador. Um objeto 3D aparecerá na sua tela!'
+            },
+            {
+                icon: '🎯',
+                title: 'Capture o Tesouro',
+                description: 'Toque no botão de captura para coletar o tesouro e avançar para a próxima pista.'
+            }
+        ];
+    </script>
+</body>
+</html>

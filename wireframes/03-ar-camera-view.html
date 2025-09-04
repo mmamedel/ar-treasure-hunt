@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câmera AR - Caça ao Tesouro AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .camera-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333),
+                        linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%, #333);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.3;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .clue-number {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .viewfinder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+        .viewfinder-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #4CAF50;
+        }
+        .viewfinder-corner.tl {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 20px;
+        }
+        .viewfinder-corner.tr {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+            border-top-right-radius: 20px;
+        }
+        .viewfinder-corner.bl {
+            bottom: -3px;
+            left: -3px;
+            border-right: none;
+            border-top: none;
+            border-bottom-left-radius: 20px;
+        }
+        .viewfinder-corner.br {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 20px;
+        }
+        .ar-object {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            filter: drop-shadow(0 0 30px rgba(76, 175, 80, 0.8));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-20px); }
+        }
+        .bottom-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 30px 20px;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .status-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .status-icon {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .capture-button {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 36px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        .capture-button:hover {
+            transform: scale(1.1);
+        }
+        .capture-button:active {
+            transform: scale(0.95);
+        }
+        .hint-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .searching-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            display: none;
+        }
+        .searching-message.active {
+            display: block;
+        }
+        .searching-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: rotate 2s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="camera-view"></div>
+    
+    <div class="overlay">
+        <div class="header">
+            <div class="header-content">
+                <button class="back-button">
+                    <span>←</span>
+                    <span>Voltar</span>
+                </button>
+                <div class="clue-number">Pista 3 de 10</div>
+            </div>
+        </div>
+
+        <div class="viewfinder">
+            <div class="viewfinder-corner tl"></div>
+            <div class="viewfinder-corner tr"></div>
+            <div class="viewfinder-corner bl"></div>
+            <div class="viewfinder-corner br"></div>
+        </div>
+
+        <!-- AR Object visible when marker detected -->
+        <div class="ar-object">📚</div>
+
+        <!-- Searching message when no marker detected -->
+        <div class="searching-message">
+            <div class="searching-icon">🔍</div>
+            <div>Procurando marcador AR...</div>
+            <div style="font-size: 14px; opacity: 0.7; margin-top: 10px;">
+                Aponte para o local indicado pela pista
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <div class="status-message">
+                <span class="status-icon"></span>
+                <span>Marcador detectado! Toque para capturar</span>
+            </div>
+            <button class="capture-button">📸</button>
+            <div class="hint-text">Toque no botão para capturar o tesouro</div>
+        </div>
+    </div>
+</body>
+</html>

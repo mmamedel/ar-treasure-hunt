@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura Bem-Sucedida - Caça ao Tesouro AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .success-animation {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: celebrate 0.5s ease-out;
+        }
+        @keyframes celebrate {
+            0% { transform: scale(0) rotate(0); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .treasure-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .treasure-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        .treasure-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #4CAF50;
+            height: 100%;
+            width: 30%;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .button-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        .button-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .bonus-indicator {
+            background: #FFD700;
+            color: #333;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+            animation: shine 2s infinite;
+        }
+        @keyframes shine {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-animation">🎉</div>
+        <div class="checkmark">✓</div>
+        
+        <h1>Parabéns!</h1>
+        <p class="subtitle">Você encontrou um tesouro!</p>
+        
+        <div class="treasure-info">
+            <div class="treasure-icon">📚</div>
+            <div class="treasure-name">Livro do Conhecimento</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">3 de 10 tesouros encontrados</div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-value">05:42</div>
+                <div class="stat-label">Tempo</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">3/10</div>
+                <div class="stat-label">Tesouros</div>
+            </div>
+        </div>
+        
+        <div class="bonus-indicator">
+            ⚡ Bônus de Velocidade!
+        </div>
+        
+        <div class="button-group">
+            <button class="button button-secondary">Ver Placar</button>
+            <button class="button button-primary">Próxima Pista →</button>
+        </div>
+    </div>
+</body>
+</html>

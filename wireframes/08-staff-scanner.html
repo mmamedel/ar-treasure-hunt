@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Staff - Caça ao Tesouro AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .staff-badge {
+            background: #e74c3c;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .scanner-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .scanner-area {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+                        linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanner-frame {
+            width: 80%;
+            height: 80%;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            position: relative;
+        }
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3498db, transparent);
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: calc(100% - 3px); }
+        }
+        .scanner-icon {
+            font-size: 80px;
+            opacity: 0.3;
+            position: absolute;
+        }
+        .scanner-instructions {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .manual-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .input-field {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+        .verify-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .verify-button:hover {
+            background: #2980b9;
+        }
+        .recent-verifications {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .verification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .verification-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .verification-info {
+            flex: 1;
+        }
+        .player-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .verification-details {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .verification-status {
+            background: #27ae60;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(39, 174, 96, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .success-content {
+            text-align: center;
+            padding: 40px;
+        }
+        .success-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <span>🎮</span>
+                <span>Validação Staff</span>
+                <span class="staff-badge">STAFF</span>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">127</div>
+                <div class="stat-label">Verificados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Últimos 30min</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">89%</div>
+                <div class="stat-label">Taxa Conclusão</div>
+            </div>
+        </div>
+
+        <div class="scanner-container">
+            <div class="scanner-area">
+                <div class="scanner-frame">
+                    <div class="scanner-line"></div>
+                </div>
+                <div class="scanner-icon">📷</div>
+            </div>
+            <p class="scanner-instructions">
+                Aponte a câmera para o QR Code do jogador
+            </p>
+            
+            <div class="manual-input">
+                <input type="text" 
+                       class="input-field" 
+                       placeholder="Ou digite o ID do jogador"
+                       maxlength="14">
+                <button class="verify-button">Verificar</button>
+            </div>
+        </div>
+
+        <div class="recent-verifications">
+            <div class="section-title">
+                <span>✅</span>
+                <span>Verificações Recentes</span>
+            </div>
+            <div class="verification-list">
+                <div class="verification-item">
+                    <div class="verification-info">
+                        <div class="player-name">João Silva</div>
+                        <div class="verification-details">
+                            10 tesouros • 12:35 • 3 bônus
+                        </div>
+                    </div>
+                    <div class="verification-status">Verificado</div>
+                </div>
+                
+                <div class="verification-item">
+                    <div class="verification-info">
+                        <div class="player-name">Maria Costa</div>
+                        <div class="verification-details">
+                            10 tesouros • 11:23 • 2 bônus
+                        </div>
+                    </div>
+                    <div class="verification-status">Verificado</div>
+                </div>
+                
+                <div class="verification-item">
+                    <div class="verification-info">
+                        <div class="player-name">Pedro Santos</div>
+                        <div class="verification-details">
+                            9 tesouros • 15:45 • 1 bônus
+                        </div>
+                    </div>
+                    <div class="verification-status">Verificado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-overlay">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <div class="success-message">Jogador Verificado!</div>
+            <div>João Silva - 10 tesouros</div>
+        </div>
+    </div>
+</body>
+</html>

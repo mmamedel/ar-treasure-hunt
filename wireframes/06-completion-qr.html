@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR de Conclusão - Caça ao Tesouro AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: fall 3s linear infinite;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .trophy {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        .completion-time {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .qr-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .qr-code {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 15px;
+            background: repeating-linear-gradient(
+                45deg,
+                #333,
+                #333 10px,
+                #fff 10px,
+                #fff 20px
+            );
+            border-radius: 10px;
+        }
+        .qr-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .player-id {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: monospace;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .bonus-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .badge {
+            background: #FFD700;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .instructions-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .instructions-text {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="confetti">
+        <div class="confetti-piece" style="left: 10%; animation-delay: 0s; background: #FF6B6B;"></div>
+        <div class="confetti-piece" style="left: 30%; animation-delay: 0.5s; background: #4CAF50;"></div>
+        <div class="confetti-piece" style="left: 50%; animation-delay: 1s; background: #FFD700;"></div>
+        <div class="confetti-piece" style="left: 70%; animation-delay: 1.5s; background: #667eea;"></div>
+        <div class="confetti-piece" style="left: 90%; animation-delay: 2s; background: #FF6B6B;"></div>
+    </div>
+
+    <div class="container">
+        <div class="trophy">🏆</div>
+        <h1>Parabéns!</h1>
+        <p class="completion-time">Você completou a caça ao tesouro!</p>
+
+        <div class="qr-container">
+            <div class="qr-code"></div>
+            <p class="qr-label">Mostre este QR no balcão do jogo</p>
+            <p class="player-id">ID: PLAYER-AB3F9K</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">10/10</div>
+                <div class="stat-label">Tesouros</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12:35</div>
+                <div class="stat-label">Tempo Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3º</div>
+                <div class="stat-label">Posição</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Bônus</div>
+            </div>
+        </div>
+
+        <div class="bonus-badges">
+            <div class="badge">
+                <span>⚡</span>
+                <span>Velocidade</span>
+            </div>
+            <div class="badge">
+                <span>🎯</span>
+                <span>Precisão</span>
+            </div>
+            <div class="badge">
+                <span>🌟</span>
+                <span>Explorador</span>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p class="instructions-title">📍 Próximos Passos:</p>
+            <p class="instructions-text">
+                1. Tire um print ou foto desta tela<br>
+                2. Vá até o balcão do jogo<br>
+                3. Mostre o QR Code para validação<br>
+                4. Receba sua recompensa!
+            </p>
+        </div>
+
+        <button class="button">Ver Placar Final</button>
+    </div>
+</body>
+</html>
