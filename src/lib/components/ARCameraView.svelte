@@ -57,6 +57,9 @@
 
 	// Initialize AR.js when component mounts
 	onMount(() => {
+		// Store event handler for cleanup
+		let handleSceneClick: ((e: Event) => void) | null = null;
+		
 		const initAR = async () => {
 			try {
 				// Request camera permissions
@@ -74,7 +77,7 @@
 				await new Promise((resolve) => setTimeout(resolve, 500));
 
 				scriptsLoaded = true;
-
+				
 				// Attach event listeners after scene is created
 				setTimeout(() => {
 					if (markerElement) {
@@ -82,10 +85,24 @@
 						markerElement.addEventListener('markerLost', handleMarkerLost);
 					}
 
-					// Add click event listener to treasure box
+					// Add click event listener to treasure box using A-Frame's cursor system
 					const treasureBox = document.getElementById('treasure-box');
 					if (treasureBox) {
+						// Use cursor click event for A-Frame entities
 						treasureBox.addEventListener('click', handleCapture);
+					}
+					
+					// Add touch/click listener to the entire scene for mobile AR
+					const scene = document.querySelector('a-scene');
+					if (scene) {
+						handleSceneClick = (e: Event) => {
+							// Only capture if marker is visible
+							if (markerVisible) {
+								handleCapture();
+							}
+						};
+						scene.addEventListener('click', handleSceneClick);
+						scene.addEventListener('touchend', handleSceneClick);
 					}
 				}, 100);
 
@@ -98,7 +115,7 @@
 		};
 
 		initAR();
-
+		
 		// Return cleanup function
 		return () => {
 			if (markerElement) {
@@ -108,6 +125,11 @@
 			const treasureBox = document.getElementById('treasure-box');
 			if (treasureBox) {
 				treasureBox.removeEventListener('click', handleCapture);
+			}
+			const scene = document.querySelector('a-scene');
+			if (scene && handleSceneClick) {
+				scene.removeEventListener('click', handleSceneClick);
+				scene.removeEventListener('touchend', handleSceneClick);
 			}
 		};
 	});
@@ -166,7 +188,16 @@
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
 			>
-				<a-camera-static> </a-camera-static>
+				<a-camera-static>
+					<!-- Cursor for click detection only - no fuse/gaze triggering -->
+					<a-cursor 
+						visible="false"
+						fuse="false" 
+						fuseTimeout="0"
+						raycaster="objects: .clickable; far: 100"
+						geometry="radiusInner: 0; radiusOuter: 0"
+					></a-cursor>
+				</a-camera-static>
 
 				<a-marker
 					preset="kanji"
