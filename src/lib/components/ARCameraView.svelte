@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { gameState } from '$lib/stores/gameState';
-	
+
 	// Type for AFRAME on window
 	const win = window as any;
-	
+
 	let isCapturing = false;
 	let markerElement: HTMLElement;
 	let arContainer: HTMLDivElement;
@@ -14,32 +14,38 @@
 	let markerVisible = false;
 	let scriptsLoaded = false;
 	let markerTimeout: NodeJS.Timeout;
-	
+
 	$: currentTreasure = $gameState.treasures[$gameState.currentTreasureIndex];
 	$: treasureNumber = $gameState.currentTreasureIndex + 1;
-	
+
 	function handleBack() {
 		gameState.navigateToScreen('clue');
 	}
-	
-	function handleCapture() {
+
+	function handleCapture(event?: Event) {
+		// Only capture if marker is visible and not already capturing
+		if (!markerVisible || isCapturing) return;
+		
 		isCapturing = true;
 		hasDetectedMarker = true;
+		
+		// Visual feedback
+		console.log('Capturing treasure:', currentTreasure.name);
 		
 		// Simulate capture animation
 		setTimeout(() => {
 			gameState.captureTreasure();
 			isCapturing = false;
-		}, 500);
+		}, 800);
 	}
-	
+
 	function handleMarkerFound() {
 		console.log('Marker detected!');
 		clearTimeout(markerTimeout);
 		markerVisible = true;
 		hasDetectedMarker = true;
 	}
-	
+
 	function handleMarkerLost() {
 		console.log('Marker lost!');
 		// Add delay before hiding to prevent flickering
@@ -48,27 +54,27 @@
 			markerVisible = false;
 		}, 300);
 	}
-	
+
 	// Initialize AR.js when component mounts
 	onMount(async () => {
 		try {
 			// Request camera permissions
 			await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-			
+
 			// Load AR.js and A-Frame scripts
 			if (!win.AFRAME) {
 				await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
 			}
-			
+
 			// Load AR.js
 			await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
-			
+
 			// Wait for libraries to initialize
-			await new Promise(resolve => setTimeout(resolve, 500));
-			
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
 			scriptsLoaded = true;
 			isLoading = false;
-			
+
 			// Wait a bit for A-Frame to initialize the marker element
 			setTimeout(() => {
 				if (markerElement) {
@@ -82,27 +88,28 @@
 			isLoading = false;
 		}
 	});
-	
+
 	onDestroy(() => {
 		// Clean up event listeners
 		if (markerElement) {
 			markerElement.removeEventListener('markerFound', handleMarkerFound);
 			markerElement.removeEventListener('markerLost', handleMarkerLost);
 		}
-		
+
 		// Clear timeout
 		clearTimeout(markerTimeout);
-		
+
 		// Stop any active media streams
 		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-			navigator.mediaDevices.getUserMedia({ video: true })
-				.then(stream => {
-					stream.getTracks().forEach(track => track.stop());
+			navigator.mediaDevices
+				.getUserMedia({ video: true })
+				.then((stream) => {
+					stream.getTracks().forEach((track) => track.stop());
 				})
 				.catch(() => {});
 		}
 	});
-	
+
 	function loadScript(src: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const script = document.createElement('script');
@@ -116,14 +123,12 @@
 
 <div class="ar-container">
 	<div class="header">
-		<button class="back-button" on:click={handleBack}>
-			← Voltar
-		</button>
+		<button class="back-button" on:click={handleBack}> ← Voltar </button>
 		<div class="treasure-info">
 			Procurando: {currentTreasure.emoji} #{treasureNumber}
 		</div>
 	</div>
-	
+
 	<div class="ar-scene" bind:this={arContainer}>
 		{#if isLoading}
 			<div class="camera-placeholder">
@@ -143,56 +148,65 @@
 				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
+				cursor="rayOrigin: mouse"
 			>
-				<a-camera-static></a-camera-static>
-				
-				<a-marker 
+				<a-camera-static>
+					<a-cursor></a-cursor>
+				</a-camera-static>
+
+				<a-marker
 					preset="kanji"
 					bind:this={markerElement}
 					on:markerFound={handleMarkerFound}
 					on:markerLost={handleMarkerLost}
 				>
-					<a-box
-						position="0 0.5 0"
-						material="color: yellow"
-						animation="property: rotation; to: 360 360 0; dur: 3000; loop: true"
-					></a-box>
-					<a-text
-						value={currentTreasure.emoji}
-						position="0 1.5 0"
-						align="center"
-						color="#FFFFFF"
-						width="4"
-					></a-text>
+					<!-- Clickable treasure model -->
+					<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+					<a-entity
+						class="clickable"
+						on:click={handleCapture}
+					>
+						<a-box
+							position="0 0.5 0"
+							material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
+							animation="property: rotation; to: 360 360 0; dur: 3000; loop: true"
+							animation__mouseenter="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+							animation__mouseleave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+						></a-box>
+						<a-text
+							value={currentTreasure.emoji}
+							position="0 1.5 0"
+							align="center"
+							color="#FFFFFF"
+							width="4"
+						></a-text>
+						<!-- Add a glow effect when hovering -->
+						<a-sphere
+							position="0 0.5 0"
+							radius="0.7"
+							material="color: #FFD700; opacity: 0.2; shader: flat"
+							animation="property: scale; to: 1.3 1.3 1.3; dur: 1000; loop: true; dir: alternate; easing: easeInOutQuad"
+							visible={markerVisible && !isCapturing}
+						></a-sphere>
+					</a-entity>
 				</a-marker>
 			</a-scene>
 		{/if}
 	</div>
-	
+
 	<div class="bottom-controls">
-		{#if hasDetectedMarker}
-			<div class="detection-alert">
-				✨ Tesouro detectado!
+		{#if isCapturing}
+			<div class="capture-feedback">
+				📸 Capturando tesouro...
 			</div>
-			
-			<button 
-				class="capture-button"
-				class:active={markerVisible}
-				class:capturing={isCapturing}
-				on:click={handleCapture}
-				disabled={!markerVisible || isCapturing}
-			>
-				{#if isCapturing}
-					<span class="capture-animation">📸</span>
-					<span>Capturando...</span>
-				{:else if markerVisible}
-					<span>🎯</span>
-					<span>Capturar Tesouro</span>
-				{:else}
-					<span>🔍</span>
-					<span>Procurando Marcador...</span>
-				{/if}
-			</button>	
+		{:else if markerVisible}
+			<div class="detection-alert">
+				✨ Clique no tesouro para capturá-lo!
+			</div>
+		{:else if hasDetectedMarker}
+			<div class="hint-text">
+				🔍 Procurando marcador...
+			</div>
 		{:else}
 			<div class="hint-text">
 				📷 Aponte para o marcador Kanji
@@ -200,7 +214,7 @@
 		{/if}
 		
 		<div class="ar-instructions">
-			<p>💡 Mantenha o marcador visível e centralizado</p>
+			<p>💡 {markerVisible ? 'Toque no tesouro dourado para capturá-lo' : 'Mantenha o marcador visível e centralizado'}</p>
 		</div>
 	</div>
 </div>
@@ -216,14 +230,14 @@
 		display: flex;
 		flex-direction: column;
 	}
-	
+
 	.ar-scene {
 		position: relative;
 		flex: 1;
 		background: transparent;
 		overflow: hidden;
 	}
-	
+
 	.header {
 		position: absolute;
 		top: 0;
@@ -233,10 +247,10 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
 		z-index: 10;
 	}
-	
+
 	.back-button {
 		background: rgba(255, 255, 255, 0.2);
 		color: white;
@@ -247,7 +261,7 @@
 		cursor: pointer;
 		backdrop-filter: blur(10px);
 	}
-	
+
 	.treasure-info {
 		color: white;
 		font-size: 16px;
@@ -256,32 +270,41 @@
 		padding: 10px 20px;
 		border-radius: 20px;
 	}
-	
-	
+
 	@keyframes pulse {
-		0%, 100% { opacity: 0.5; }
-		50% { opacity: 1; }
+		0%,
+		100% {
+			opacity: 0.5;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
-	
+
 	@keyframes float {
-		0%, 100% { transform: translateY(0px); }
-		50% { transform: translateY(-20px); }
+		0%,
+		100% {
+			transform: translateY(0px);
+		}
+		50% {
+			transform: translateY(-20px);
+		}
 	}
-	
+
 	.bottom-controls {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		right: 0;
 		padding: 30px 20px;
-		background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 15px;
 		z-index: 10;
 	}
-	
+
 	.camera-placeholder {
 		position: absolute;
 		top: 0;
@@ -296,7 +319,7 @@
 		color: #fff;
 		z-index: 1000;
 	}
-	
+
 	.detection-alert {
 		background: rgba(76, 175, 80, 0.9);
 		color: white;
@@ -305,7 +328,7 @@
 		font-weight: 600;
 		animation: slideUp 0.5s ease;
 	}
-	
+
 	@keyframes slideUp {
 		from {
 			transform: translateY(20px);
@@ -316,36 +339,33 @@
 			opacity: 1;
 		}
 	}
-	
-	.capture-button {
-		background: #FF5722;
+
+	.capture-feedback {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		color: white;
-		border: none;
-		padding: 15px 40px;
-		border-radius: 30px;
+		padding: 15px 30px;
+		border-radius: 25px;
 		font-size: 18px;
 		font-weight: 600;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		transition: all 0.3s;
+		animation: pulse 1s infinite;
+		box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 	}
-	
-	.capture-button:hover:not(:disabled) {
-		transform: scale(1.05);
-		box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+
+	@keyframes pulse {
+		0% {
+			transform: scale(1);
+			box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+		}
+		50% {
+			transform: scale(1.05);
+			box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+		}
+		100% {
+			transform: scale(1);
+			box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+		}
 	}
-	
-	.capture-button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-	
-	.capture-button.capturing {
-		animation: capture 1s ease;
-	}
-	
+
 	.hint-text {
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 10px;
@@ -354,7 +374,7 @@
 		text-align: center;
 		padding: 1rem;
 	}
-	
+
 	.ar-instructions {
 		color: rgba(255, 255, 255, 0.7);
 		font-size: 14px;
