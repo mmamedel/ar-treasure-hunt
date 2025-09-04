@@ -25,13 +25,13 @@
 	function handleCapture(event?: Event) {
 		// Only capture if marker is visible and not already capturing
 		if (!markerVisible || isCapturing) return;
-		
+
 		isCapturing = true;
 		hasDetectedMarker = true;
-		
+
 		// Visual feedback
 		console.log('Capturing treasure:', currentTreasure.name);
-		
+
 		// Simulate capture animation
 		setTimeout(() => {
 			gameState.captureTreasure();
@@ -61,32 +61,34 @@
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-				
+
 				// Load A-Frame and AR.js
 				if (!(window as any).AFRAME) {
 					await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
 				}
-				await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
-				
+				await loadScript(
+					'https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js'
+				);
+
 				// Wait a bit for scripts to fully initialize
-				await new Promise(resolve => setTimeout(resolve, 500));
-				
+				await new Promise((resolve) => setTimeout(resolve, 500));
+
 				scriptsLoaded = true;
-				
+
 				// Attach event listeners after scene is created
 				setTimeout(() => {
 					if (markerElement) {
 						markerElement.addEventListener('markerFound', handleMarkerFound);
 						markerElement.addEventListener('markerLost', handleMarkerLost);
 					}
-					
+
 					// Add click event listener to treasure box
 					const treasureBox = document.getElementById('treasure-box');
 					if (treasureBox) {
 						treasureBox.addEventListener('click', handleCapture);
 					}
 				}, 100);
-				
+
 				isLoading = false;
 			} catch (error) {
 				console.error('Error initializing AR:', error);
@@ -94,9 +96,9 @@
 				isLoading = false;
 			}
 		};
-		
+
 		initAR();
-		
+
 		// Return cleanup function
 		return () => {
 			if (markerElement) {
@@ -163,15 +165,8 @@
 				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
-				cursor="rayOrigin: mouse"
 			>
-				<a-camera-static>
-					<!-- Invisible cursor for click detection -->
-					<a-cursor 
-						opacity="0" 
-						raycaster="objects: .clickable"
-					></a-cursor>
-				</a-camera-static>
+				<a-camera-static> </a-camera-static>
 
 				<a-marker
 					preset="kanji"
@@ -200,25 +195,21 @@
 
 	<div class="bottom-controls">
 		{#if isCapturing}
-			<div class="capture-feedback">
-				📸 Capturando tesouro...
-			</div>
+			<div class="capture-feedback">📸 Capturando tesouro...</div>
 		{:else if markerVisible}
-			<div class="detection-alert">
-				✨ Clique no tesouro para capturá-lo!
-			</div>
+			<div class="detection-alert">✨ Clique no tesouro para capturá-lo!</div>
 		{:else if hasDetectedMarker}
-			<div class="hint-text">
-				🔍 Procurando marcador...
-			</div>
+			<div class="hint-text">🔍 Procurando marcador...</div>
 		{:else}
-			<div class="hint-text">
-				📷 Aponte para o marcador Kanji
-			</div>
+			<div class="hint-text">📷 Aponte para o marcador Kanji</div>
 		{/if}
-		
+
 		<div class="ar-instructions">
-			<p>💡 {markerVisible ? 'Toque no tesouro dourado para capturá-lo' : 'Mantenha o marcador visível e centralizado'}</p>
+			<p>
+				💡 {markerVisible
+					? 'Toque no tesouro dourado para capturá-lo'
+					: 'Mantenha o marcador visível e centralizado'}
+			</p>
 		</div>
 	</div>
 </div>
