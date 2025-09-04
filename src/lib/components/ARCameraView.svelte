@@ -22,20 +22,30 @@
 		gameState.navigateToScreen('clue');
 	}
 
-	function handleCapture(event?: Event) {
-		// Only capture if marker is visible and not already capturing
-		if (!markerVisible || isCapturing) return;
+	function handleCapture() {
+		// Check marker is visible AND not already capturing
+		if (!markerVisible || isCapturing || !hasDetectedMarker) return;
 
 		isCapturing = true;
 		hasDetectedMarker = true;
 
 		// Visual feedback
 		console.log('Capturing treasure:', currentTreasure.name);
+		
+		// Change box color to green when capturing
+		const treasureBox = document.getElementById('treasure-box');
+		if (treasureBox) {
+			treasureBox.setAttribute('material', 'color: #4CAF50');
+		}
 
 		// Simulate capture animation
 		setTimeout(() => {
 			gameState.captureTreasure();
 			isCapturing = false;
+			// Reset box color to gold
+			if (treasureBox) {
+				treasureBox.setAttribute('material', 'color: #FFD700');
+			}
 		}, 800);
 	}
 
@@ -76,26 +86,6 @@
 				// Wait a bit for scripts to fully initialize
 				await new Promise((resolve) => setTimeout(resolve, 500));
 
-				// Register A-Frame component for treasure interaction
-				if ((window as any).AFRAME) {
-					// Store the capture handler globally so A-Frame component can access it
-					(window as any).treasureCaptureHandler = () => {
-						if (markerVisible && !isCapturing) {
-							handleCapture();
-						}
-					};
-					
-					(window as any).AFRAME.registerComponent('treasure-handler', {
-						init: function() {
-							this.el.addEventListener('click', () => {
-								if ((window as any).treasureCaptureHandler) {
-									(window as any).treasureCaptureHandler();
-								}
-							});
-						}
-					});
-				}
-
 				scriptsLoaded = true;
 				
 				// Attach event listeners after scene is created
@@ -104,8 +94,16 @@
 						markerElement.addEventListener('markerFound', handleMarkerFound);
 						markerElement.addEventListener('markerLost', handleMarkerLost);
 					}
+
+					// Add click event listener to treasure box
+					const treasureBox = document.getElementById('treasure-box');
+					if (treasureBox) {
+						treasureBox.addEventListener('click', handleCapture);
+						// Add touch events for mobile
+						treasureBox.addEventListener('touchstart', handleCapture);
+					}
 					
-					// Add touch/click listener to the entire scene for mobile AR
+					// Add touch/click listener to the entire scene for mobile AR fallback
 					const scene = document.querySelector('a-scene');
 					if (scene) {
 						handleSceneClick = (e: Event) => {
@@ -135,14 +133,15 @@
 				markerElement.removeEventListener('markerFound', handleMarkerFound);
 				markerElement.removeEventListener('markerLost', handleMarkerLost);
 			}
+			const treasureBox = document.getElementById('treasure-box');
+			if (treasureBox) {
+				treasureBox.removeEventListener('click', handleCapture);
+				treasureBox.removeEventListener('touchstart', handleCapture);
+			}
 			const scene = document.querySelector('a-scene');
 			if (scene && handleSceneClick) {
 				scene.removeEventListener('click', handleSceneClick);
 				scene.removeEventListener('touchend', handleSceneClick);
-			}
-			// Clean up global handler
-			if ((window as any).treasureCaptureHandler) {
-				delete (window as any).treasureCaptureHandler;
 			}
 		};
 	});
@@ -221,10 +220,9 @@
 					<!-- Clickable treasure model -->
 					<a-box
 						id="treasure-box"
-						treasure-handler
 						class="clickable"
 						position="0 0.5 0"
-						material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
+						material="color: #FFD700"
 					></a-box>
 					<a-text
 						value={currentTreasure.emoji}
