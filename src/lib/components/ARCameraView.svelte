@@ -56,46 +56,61 @@
 	}
 
 	// Initialize AR.js when component mounts
-	onMount(async () => {
-		try {
-			// Request camera permissions
-			await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-			// Load AR.js and A-Frame scripts
-			if (!win.AFRAME) {
-				await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
-			}
-
-			// Load AR.js
-			await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
-
-			// Wait for libraries to initialize
-			await new Promise((resolve) => setTimeout(resolve, 500));
-
-			scriptsLoaded = true;
-			isLoading = false;
-
-			// Wait a bit for A-Frame to initialize the marker element
-			setTimeout(() => {
-				if (markerElement) {
-					markerElement.addEventListener('markerFound', handleMarkerFound);
-					markerElement.addEventListener('markerLost', handleMarkerLost);
+	onMount(() => {
+		const initAR = async () => {
+			try {
+				// Request camera permissions
+				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+				
+				// Load A-Frame and AR.js
+				if (!(window as any).AFRAME) {
+					await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
 				}
-			}, 100);
-		} catch (error) {
-			console.error('Error initializing AR:', error);
-			cameraError = 'Erro ao acessar câmera. Por favor, permita o acesso à câmera.';
-			isLoading = false;
-		}
+				await loadScript('https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js');
+				
+				// Wait a bit for scripts to fully initialize
+				await new Promise(resolve => setTimeout(resolve, 500));
+				
+				scriptsLoaded = true;
+				
+				// Attach event listeners after scene is created
+				setTimeout(() => {
+					if (markerElement) {
+						markerElement.addEventListener('markerFound', handleMarkerFound);
+						markerElement.addEventListener('markerLost', handleMarkerLost);
+					}
+					
+					// Add click event listener to treasure box
+					const treasureBox = document.getElementById('treasure-box');
+					if (treasureBox) {
+						treasureBox.addEventListener('click', handleCapture);
+					}
+				}, 100);
+				
+				isLoading = false;
+			} catch (error) {
+				console.error('Error initializing AR:', error);
+				cameraError = 'Erro ao acessar câmera. Por favor, permita o acesso à câmera.';
+				isLoading = false;
+			}
+		};
+		
+		initAR();
+		
+		// Return cleanup function
+		return () => {
+			if (markerElement) {
+				markerElement.removeEventListener('markerFound', handleMarkerFound);
+				markerElement.removeEventListener('markerLost', handleMarkerLost);
+			}
+			const treasureBox = document.getElementById('treasure-box');
+			if (treasureBox) {
+				treasureBox.removeEventListener('click', handleCapture);
+			}
+		};
 	});
 
 	onDestroy(() => {
-		// Clean up event listeners
-		if (markerElement) {
-			markerElement.removeEventListener('markerFound', handleMarkerFound);
-			markerElement.removeEventListener('markerLost', handleMarkerLost);
-		}
-
 		// Clear timeout
 		clearTimeout(markerTimeout);
 
@@ -148,8 +163,15 @@
 				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
+				cursor="rayOrigin: mouse"
 			>
-				<a-camera-static></a-camera-static>
+				<a-camera-static>
+					<!-- Invisible cursor for click detection -->
+					<a-cursor 
+						opacity="0" 
+						raycaster="objects: .clickable"
+					></a-cursor>
+				</a-camera-static>
 
 				<a-marker
 					preset="kanji"
@@ -158,23 +180,19 @@
 					on:markerLost={handleMarkerLost}
 				>
 					<!-- Clickable treasure model -->
-					<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-					<a-entity
+					<a-box
+						id="treasure-box"
 						class="clickable"
-						on:click={handleCapture}
-					>
-						<a-box
-							position="0 0.5 0"
-							material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
-						></a-box>
-						<a-text
-							value={currentTreasure.emoji}
-							position="0 1.5 0"
-							align="center"
-							color="#FFFFFF"
-							width="4"
-						></a-text>
-					</a-entity>
+						position="0 0.5 0"
+						material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
+					></a-box>
+					<a-text
+						value={currentTreasure.emoji}
+						position="0 1.5 0"
+						align="center"
+						color="#FFFFFF"
+						width="4"
+					></a-text>
 				</a-marker>
 			</a-scene>
 		{/if}
