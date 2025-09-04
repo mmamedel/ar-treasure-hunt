@@ -76,74 +76,79 @@
 	function createARScene() {
 		if (!arContainer) return;
 		
-		// Create A-Frame scene with AR.js
+		// Create A-Frame scene
 		const scene = document.createElement('a-scene');
 		scene.setAttribute('embedded', '');
 		scene.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;');
 		scene.setAttribute('vr-mode-ui', 'enabled: false');
-		scene.setAttribute('renderer', 'logarithmicDepthBuffer: true;');
+		scene.setAttribute('renderer', 'antialias: true; alpha: true');
+		scene.style.width = '100%';
+		scene.style.height = '100%';
+		scene.style.position = 'absolute';
+		scene.style.top = '0';
+		scene.style.left = '0';
+		scene.style.zIndex = '1';
+		
+		// Add camera
+		const camera = document.createElement('a-entity');
+		camera.setAttribute('camera', '');
+		scene.appendChild(camera);
 		
 		// Add marker with kanji pattern
 		const marker = document.createElement('a-marker');
-		marker.setAttribute('type', 'pattern');
 		marker.setAttribute('preset', 'kanji');
-		marker.id = 'treasure-marker';
+		marker.setAttribute('smooth', 'true');
+		marker.setAttribute('smoothCount', '10');
+		marker.setAttribute('smoothTolerance', '.01');
+		marker.setAttribute('smoothThreshold', '5');
 		
-		// Add 3D treasure model on marker
-		const treasureModel = document.createElement('a-entity');
-		treasureModel.innerHTML = `
-			<!-- Treasure box base -->
-			<a-box 
-				position="0 0.5 0" 
-				rotation="0 45 0"
-				color="#FFD700"
-				metalness="0.7"
-				roughness="0.3"
-				animation="property: rotation; to: 0 405 0; loop: true; dur: 3000">
-			</a-box>
-			
-			<!-- Treasure emoji text -->
-			<a-text 
-				value="${currentTreasure.emoji}"
-				position="0 1.5 0"
-				align="center"
-				color="#FFFFFF"
-				width="6"
-				animation="property: position; to: 0 2 0; loop: true; dur: 1500; dir: alternate; easing: easeInOutSine">
-			</a-text>
-			
-			<!-- Glow effect -->
-			<a-sphere
-				position="0 0.5 0"
-				radius="1"
-				opacity="0.3"
-				color="#FFD700"
-				animation="property: scale; to: 1.5 1.5 1.5; loop: true; dur: 1000; dir: alternate">
-			</a-sphere>
-		`;
+		// Add treasure model to marker - use primitive shapes that work better
+		const treasureModel = document.createElement('a-box');
+		treasureModel.setAttribute('position', '0 0 0');
+		treasureModel.setAttribute('scale', '0.5 0.5 0.5');
+		treasureModel.setAttribute('material', 'color: #FFD700; metalness: 0.7; roughness: 0.3');
+		treasureModel.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 3000; loop: true; easing: linear');
 		
+		// Add treasure emoji text above the box
+		const treasureText = document.createElement('a-text');
+		treasureText.setAttribute('value', currentTreasure.emoji);
+		treasureText.setAttribute('position', '0 1 0');
+		treasureText.setAttribute('align', 'center');
+		treasureText.setAttribute('color', '#FFFFFF');
+		treasureText.setAttribute('width', '6');
+		
+		// Add a simple sphere for glow effect
+		const glowSphere = document.createElement('a-sphere');
+		glowSphere.setAttribute('position', '0 0 0');
+		glowSphere.setAttribute('radius', '0.6');
+		glowSphere.setAttribute('material', 'color: #FFD700; opacity: 0.3; shader: flat');
+		glowSphere.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 1000; loop: true; dir: alternate; easing: easeInOutQuad');
+		
+		// Add all elements to marker
+		marker.appendChild(glowSphere);
 		marker.appendChild(treasureModel);
+		marker.appendChild(treasureText);
 		
-		// Listen for marker events
+		// Use a debounced approach for marker detection to prevent flickering
+		let markerTimeout: NodeJS.Timeout;
+		
 		marker.addEventListener('markerFound', () => {
 			console.log('Marker detected!');
+			clearTimeout(markerTimeout);
 			markerVisible = true;
 			hasDetectedMarker = true;
 		});
 		
 		marker.addEventListener('markerLost', () => {
 			console.log('Marker lost!');
-			markerVisible = false;
+			// Add delay before hiding to prevent flickering
+			clearTimeout(markerTimeout);
+			markerTimeout = setTimeout(() => {
+				markerVisible = false;
+			}, 500);
 		});
 		
-		// Add camera
-		const camera = document.createElement('a-entity');
-		camera.setAttribute('camera', '');
-		
 		scene.appendChild(marker);
-		scene.appendChild(camera);
-		
-		// Add scene to container
 		arContainer.appendChild(scene);
 	}
 	
@@ -191,11 +196,6 @@
 				<div class="camera-icon">⚠️</div>
 				<p>{cameraError}</p>
 			</div>
-		{:else if !markerVisible}
-			<div class="overlay-hint">
-				<p>📷 Aponte para o marcador Kanji</p>
-				<div class="scanning-animation"></div>
-			</div>
 		{/if}
 	</div>
 	
@@ -225,7 +225,7 @@
 			</button>	
 		{:else}
 			<div class="hint-text">
-				Aponte a câmera para o marcador AR
+				📷 Aponte para o marcador Kanji
 			</div>
 		{/if}
 		
@@ -242,9 +242,16 @@
 		left: 0;
 		width: 100%;
 		height: 100vh;
-		background: #000;
+		background: transparent;
 		display: flex;
 		flex-direction: column;
+	}
+	
+	.ar-scene {
+		position: relative;
+		flex: 1;
+		background: transparent;
+		overflow: hidden;
 	}
 	
 	.header {
@@ -280,19 +287,6 @@
 		border-radius: 20px;
 	}
 	
-	.overlay-hint {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: rgba(0, 0, 0, 0.7);
-		color: white;
-		padding: 1rem 2rem;
-		border-radius: 10px;
-		text-align: center;
-		z-index: 10;
-		pointer-events: none;
-	}
 	
 	@keyframes pulse {
 		0%, 100% { opacity: 0.5; }
@@ -316,6 +310,21 @@
 		align-items: center;
 		gap: 15px;
 		z-index: 10;
+	}
+	
+	.camera-placeholder {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: #1a1a1a;
+		color: #fff;
+		z-index: 1000;
 	}
 	
 	.detection-alert {
