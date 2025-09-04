@@ -6,11 +6,14 @@
 	const win = window as any;
 	
 	let isCapturing = false;
+	let markerElement: HTMLElement;
 	let arContainer: HTMLDivElement;
 	let hasDetectedMarker = false;
 	let cameraError = '';
 	let isLoading = true;
 	let markerVisible = false;
+	let scriptsLoaded = false;
+	let markerTimeout: NodeJS.Timeout;
 	
 	$: currentTreasure = $gameState.treasures[$gameState.currentTreasureIndex];
 	$: treasureNumber = $gameState.currentTreasureIndex + 1;
@@ -20,15 +23,30 @@
 	}
 	
 	function handleCapture() {
-		if (!markerVisible || isCapturing) return;
-		
 		isCapturing = true;
+		hasDetectedMarker = true;
 		
-		// Capture animation and success
+		// Simulate capture animation
 		setTimeout(() => {
 			gameState.captureTreasure();
 			isCapturing = false;
 		}, 500);
+	}
+	
+	function handleMarkerFound() {
+		console.log('Marker detected!');
+		clearTimeout(markerTimeout);
+		markerVisible = true;
+		hasDetectedMarker = true;
+	}
+	
+	function handleMarkerLost() {
+		console.log('Marker lost!');
+		// Add delay before hiding to prevent flickering
+		clearTimeout(markerTimeout);
+		markerTimeout = setTimeout(() => {
+			markerVisible = false;
+		}, 300);
 	}
 	
 	// Initialize AR.js when component mounts
@@ -48,10 +66,16 @@
 			// Wait for libraries to initialize
 			await new Promise(resolve => setTimeout(resolve, 500));
 			
-			// Create AR scene
-			createARScene();
-			
+			scriptsLoaded = true;
 			isLoading = false;
+			
+			// Wait a bit for A-Frame to initialize the marker element
+			setTimeout(() => {
+				if (markerElement) {
+					markerElement.addEventListener('markerFound', handleMarkerFound);
+					markerElement.addEventListener('markerLost', handleMarkerLost);
+				}
+			}, 100);
 		} catch (error) {
 			console.error('Error initializing AR:', error);
 			cameraError = 'Erro ao acessar câmera. Por favor, permita o acesso à câmera.';
@@ -60,7 +84,23 @@
 	});
 	
 	onDestroy(() => {
-		cleanupARScene();
+		// Clean up event listeners
+		if (markerElement) {
+			markerElement.removeEventListener('markerFound', handleMarkerFound);
+			markerElement.removeEventListener('markerLost', handleMarkerLost);
+		}
+		
+		// Clear timeout
+		clearTimeout(markerTimeout);
+		
+		// Stop any active media streams
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia({ video: true })
+				.then(stream => {
+					stream.getTracks().forEach(track => track.stop());
+				})
+				.catch(() => {});
+		}
 	});
 	
 	function loadScript(src: string): Promise<void> {
@@ -72,77 +112,6 @@
 			document.head.appendChild(script);
 		});
 	}
-	
-	function createARScene() {
-		if (!arContainer) return;
-		
-		// Create A-Frame scene with simpler configuration
-		const scene = document.createElement('a-scene');
-		scene.setAttribute('embedded', '');
-		scene.setAttribute('arjs', 'trackingMethod: best; sourceType: webcam; debugUIEnabled: false;');
-		scene.setAttribute('vr-mode-ui', 'enabled: false');
-		scene.setAttribute('renderer', 'logarithmicDepthBuffer: true;');
-		scene.style.width = '100%';
-		scene.style.height = '100%';
-		
-		// Add camera
-		const camera = document.createElement('a-camera-static');
-		scene.appendChild(camera);
-		
-		// Add marker with kanji pattern
-		const marker = document.createElement('a-marker');
-		marker.setAttribute('preset', 'kanji');
-		
-		// Add a simple box as treasure
-		const treasureModel = document.createElement('a-box');
-		treasureModel.setAttribute('position', '0 0.5 0');
-		treasureModel.setAttribute('material', 'color: yellow');
-		treasureModel.setAttribute('animation', 'property: rotation; to: 360 360 0; dur: 3000; loop: true');
-		
-		marker.appendChild(treasureModel);
-		
-		// Use a debounced approach for marker detection to prevent flickering
-		let markerTimeout: NodeJS.Timeout;
-		
-		marker.addEventListener('markerFound', () => {
-			console.log('Marker detected!');
-			clearTimeout(markerTimeout);
-			markerVisible = true;
-			hasDetectedMarker = true;
-		});
-		
-		marker.addEventListener('markerLost', () => {
-			console.log('Marker lost!');
-			// Add delay before hiding to prevent flickering
-			clearTimeout(markerTimeout);
-			markerTimeout = setTimeout(() => {
-				markerVisible = false;
-			}, 300);
-		});
-		
-		scene.appendChild(marker);
-		arContainer.appendChild(scene);
-	}
-	
-	function cleanupARScene() {
-		if (arContainer) {
-			// Remove all A-Frame elements
-			const scene = arContainer.querySelector('a-scene');
-			if (scene) {
-				scene.remove();
-			}
-		}
-		
-		// Stop any active media streams
-		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-			navigator.mediaDevices.getUserMedia({ video: true })
-				.then(stream => {
-					stream.getTracks().forEach(track => track.stop());
-				})
-				.catch(() => {});
-		}
-	}
-	
 </script>
 
 <div class="ar-container">
@@ -156,7 +125,6 @@
 	</div>
 	
 	<div class="ar-scene" bind:this={arContainer}>
-		<!-- AR.js scene will be inserted here -->
 		{#if isLoading}
 			<div class="camera-placeholder">
 				<div class="camera-icon">📷</div>
@@ -168,6 +136,36 @@
 				<div class="camera-icon">⚠️</div>
 				<p>{cameraError}</p>
 			</div>
+		{:else if scriptsLoaded}
+			<!-- A-Frame AR Scene using Svelte template -->
+			<a-scene
+				embedded
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+				vr-mode-ui="enabled: false"
+				renderer="logarithmicDepthBuffer: true;"
+			>
+				<a-camera-static></a-camera-static>
+				
+				<a-marker 
+					preset="kanji"
+					bind:this={markerElement}
+					on:markerFound={handleMarkerFound}
+					on:markerLost={handleMarkerLost}
+				>
+					<a-box
+						position="0 0.5 0"
+						material="color: yellow"
+						animation="property: rotation; to: 360 360 0; dur: 3000; loop: true"
+					></a-box>
+					<a-text
+						value={currentTreasure.emoji}
+						position="0 1.5 0"
+						align="center"
+						color="#FFFFFF"
+						width="4"
+					></a-text>
+				</a-marker>
+			</a-scene>
 		{/if}
 	</div>
 	
