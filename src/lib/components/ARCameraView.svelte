@@ -148,11 +148,8 @@
 				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
-				cursor="rayOrigin: mouse"
 			>
-				<a-camera-static>
-					<a-cursor></a-cursor>
-				</a-camera-static>
+				<a-camera-static></a-camera-static>
 
 				<a-marker
 					preset="kanji"
@@ -169,9 +166,6 @@
 						<a-box
 							position="0 0.5 0"
 							material="color: {isCapturing ? '#4CAF50' : '#FFD700'}"
-							animation="property: rotation; to: 360 360 0; dur: 3000; loop: true"
-							animation__mouseenter="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
-							animation__mouseleave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
 						></a-box>
 						<a-text
 							value={currentTreasure.emoji}
@@ -180,14 +174,6 @@
 							color="#FFFFFF"
 							width="4"
 						></a-text>
-						<!-- Add a glow effect when hovering -->
-						<a-sphere
-							position="0 0.5 0"
-							radius="0.7"
-							material="color: #FFD700; opacity: 0.2; shader: flat"
-							animation="property: scale; to: 1.3 1.3 1.3; dur: 1000; loop: true; dir: alternate; easing: easeInOutQuad"
-							visible={markerVisible && !isCapturing}
-						></a-sphere>
 					</a-entity>
 				</a-marker>
 			</a-scene>
