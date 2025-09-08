@@ -42,7 +42,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Paleta das Cores',
 		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
 		markerId: 'marker-2',
-		markerType: 'hiro',
+		markerType: 'kanji',
 		found: false
 	},
 	{
