@@ -12,13 +12,13 @@
 </svelte:head>
 
 <div class="app-container">
-	{#if $gameState.currentScreen === 'name-entry'}
+	{#if gameState.currentScreen === 'name-entry'}
 		<NameEntry />
-	{:else if $gameState.currentScreen === 'clue'}
+	{:else if gameState.currentScreen === 'clue'}
 		<ClueScreen />
-	{:else if $gameState.currentScreen === 'ar-camera'}
+	{:else if gameState.currentScreen === 'ar-camera'}
 		<ARCameraView />
-	{:else if $gameState.currentScreen === 'capture-success'}
+	{:else if gameState.currentScreen === 'capture-success'}
 		<CaptureSuccess />
 	{/if}
 </div>

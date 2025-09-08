@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { gameState } from '$lib/stores/gameState';
 	
-	$: currentTreasure = $gameState.treasures[$gameState.currentTreasureIndex];
-	$: treasureNumber = $gameState.currentTreasureIndex + 1;
-	$: totalTreasures = $gameState.treasures.length;
+	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
+	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
+	let totalTreasures = $derived(gameState.treasures.length);
 	
 	function handleOpenCamera() {
 		gameState.navigateToScreen('ar-camera');
@@ -13,7 +13,7 @@
 <div class="screen-container">
 	<div class="header">
 		<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
-		<div class="timer">⏱️ {$gameState.totalTime}</div>
+		<div class="timer">⏱️ {gameState.totalTime}</div>
 	</div>
 	
 	<div class="container">
@@ -25,7 +25,7 @@
 			</div>
 		</div>
 		
-		<button class="camera-button" on:click={handleOpenCamera}>
+		<button class="camera-button" onclick={handleOpenCamera}>
 			<span class="camera-icon">📷</span>
 			<span>Abrir Câmera</span>
 		</button>
@@ -43,7 +43,7 @@
 		</div>
 		
 		<p class="treasures-found">
-			{$gameState.treasures.filter(t => t.found).length} tesouros encontrados
+			{gameState.treasures.filter((t) => t.found).length} tesouros encontrados
 		</p>
 	</div>
 </div>

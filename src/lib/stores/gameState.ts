@@ -1,5 +1,3 @@
-import { writable, type Writable } from 'svelte/store';
-
 export type GameScreen = 'name-entry' | 'clue' | 'ar-camera' | 'capture-success';
 
 export interface Treasure {
@@ -11,18 +9,6 @@ export interface Treasure {
 	markerType: 'kanji' | 'hiro';
 	found: boolean;
 	capturedAt?: Date;
-}
-
-export interface GameState {
-	currentScreen: GameScreen;
-	playerName: string;
-	gameStartTime: Date | null;
-	startTime: number;
-	elapsedTime: number;
-	currentTreasureIndex: number;
-	treasures: Treasure[];
-	totalTime: string;
-	isGameActive: boolean;
 }
 
 // Pistas e tesouros para o jogo (Phase 1 - 10 tesouros)
@@ -119,124 +105,119 @@ const initialTreasures: Treasure[] = [
 	}
 ];
 
-const initialState: GameState = {
-	currentScreen: 'name-entry',
-	playerName: '',
-	gameStartTime: null,
-	startTime: 0,
-	elapsedTime: 0,
-	currentTreasureIndex: 0,
-	treasures: initialTreasures,
-	totalTime: '00:00',
-	isGameActive: false
-};
+class GameState {
+	currentScreen = $state<GameScreen>('name-entry');
+	playerName = $state('');
+	gameStartTime = $state<Date | null>(null);
+	startTime = $state(0);
+	elapsedTime = $state(0);
+	currentTreasureIndex = $state(0);
+	treasures = $state<Treasure[]>([...initialTreasures]);
+	totalTime = $state('00:00');
+	isGameActive = $state(false);
 
-function createGameStore() {
-	const { subscribe, set, update } = writable<GameState>(initialState);
+	private timerInterval: ReturnType<typeof setInterval> | null = null;
 
-	let timerInterval: ReturnType<typeof setInterval> | null = null;
+	constructor() {
+		// Start the timer effect
+		$effect(() => {
+			if (this.isGameActive && this.gameStartTime) {
+				this.startTimer();
+			} else {
+				this.stopTimer();
+			}
+		});
 
-	function startTimer() {
-		if (timerInterval) return;
+		// Update total time based on elapsed time
+		$effect(() => {
+			if (this.startTime > 0) {
+				const elapsed = this.elapsedTime;
+				const minutes = Math.floor(elapsed / 60000);
+				const seconds = Math.floor((elapsed % 60000) / 1000);
+				this.totalTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+			}
+		});
+	}
+
+	private startTimer() {
+		if (this.timerInterval) return;
 		
-		timerInterval = setInterval(() => {
-			update(state => {
-				if (!state.gameStartTime || !state.isGameActive) return state;
-				
+		this.timerInterval = setInterval(() => {
+			if (this.gameStartTime && this.isGameActive) {
 				const now = new Date();
-				const diff = now.getTime() - state.gameStartTime.getTime();
+				const diff = now.getTime() - this.gameStartTime.getTime();
 				const minutes = Math.floor(diff / 60000);
 				const seconds = Math.floor((diff % 60000) / 1000);
-				
-				return {
-					...state,
-					totalTime: `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-				};
-			});
+				this.totalTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+			}
+			
+			if (this.startTime > 0) {
+				this.elapsedTime = Date.now() - this.startTime;
+			}
 		}, 1000);
 	}
 
-	function stopTimer() {
-		if (timerInterval) {
-			clearInterval(timerInterval);
-			timerInterval = null;
+	private stopTimer() {
+		if (this.timerInterval) {
+			clearInterval(this.timerInterval);
+			this.timerInterval = null;
 		}
 	}
 
-	return {
-		subscribe,
-		setPlayerName: (name: string) => {
-			update(state => ({
-				...state,
-				playerName: name
-			}));
-		},
-		startGame: (playerName: string) => {
-			update(state => ({
-				...state,
-				playerName,
-				currentScreen: 'clue',
-				startTime: Date.now(),
-				elapsedTime: 0
-			}));
+	setPlayerName(name: string) {
+		this.playerName = name;
+	}
 
-			// Start timer
-			if (timerInterval) clearInterval(timerInterval);
-			timerInterval = setInterval(() => {
-				update(state => ({
-					...state,
-					elapsedTime: Date.now() - state.startTime
-				}));
-			}, 1000);
-		},
-		navigateToScreen: (screen: GameScreen) => {
-			update(state => ({
-				...state,
-				currentScreen: screen
-			}));
-		},
-		captureTreasure: () => {
-			update(state => {
-				const newTreasures = [...state.treasures];
-				newTreasures[state.currentTreasureIndex] = {
-					...newTreasures[state.currentTreasureIndex],
-					found: true,
-					capturedAt: new Date()
-				};
+	startGame(playerName: string) {
+		this.playerName = playerName;
+		this.currentScreen = 'clue';
+		this.startTime = Date.now();
+		this.elapsedTime = 0;
+		this.gameStartTime = new Date();
+		this.isGameActive = true;
+	}
 
-				return {
-					...state,
-					treasures: newTreasures,
-					currentScreen: 'capture-success'
-				};
-			});
-		},
-		nextTreasure: () => {
-			update(state => {
-				const nextIndex = state.currentTreasureIndex + 1;
-				
-				// Check if all treasures are found
-				if (nextIndex >= state.treasures.length) {
-					stopTimer();
-					return {
-						...state,
-						isGameActive: false,
-						currentScreen: 'clue' // Will show completion in Phase 2
-					};
-				}
+	navigateToScreen(screen: GameScreen) {
+		this.currentScreen = screen;
+	}
 
-				return {
-					...state,
-					currentTreasureIndex: nextIndex,
-					currentScreen: 'clue'
-				};
-			});
-		},
-		resetGame: () => {
-			stopTimer();
-			set(initialState);
+	captureTreasure() {
+		const newTreasures = [...this.treasures];
+		newTreasures[this.currentTreasureIndex] = {
+			...newTreasures[this.currentTreasureIndex],
+			found: true,
+			capturedAt: new Date()
+		};
+		this.treasures = newTreasures;
+		this.currentScreen = 'capture-success';
+	}
+
+	nextTreasure() {
+		const nextIndex = this.currentTreasureIndex + 1;
+		
+		// Check if all treasures are found
+		if (nextIndex >= this.treasures.length) {
+			this.isGameActive = false;
+			this.currentScreen = 'clue'; // Will show completion in Phase 2
+			return;
 		}
-	};
+
+		this.currentTreasureIndex = nextIndex;
+		this.currentScreen = 'clue';
+	}
+
+	resetGame() {
+		this.stopTimer();
+		this.currentScreen = 'name-entry';
+		this.playerName = '';
+		this.gameStartTime = null;
+		this.startTime = 0;
+		this.elapsedTime = 0;
+		this.currentTreasureIndex = 0;
+		this.treasures = [...initialTreasures];
+		this.totalTime = '00:00';
+		this.isGameActive = false;
+	}
 }
 
-export const gameState = createGameStore();
+export const gameState = new GameState();

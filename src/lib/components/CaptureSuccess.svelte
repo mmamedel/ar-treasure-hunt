@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { gameState } from '$lib/stores/gameState';
-	
-	$: currentTreasure = $gameState.treasures[$gameState.currentTreasureIndex];
-	$: treasureNumber = $gameState.currentTreasureIndex + 1;
-	$: totalTreasures = $gameState.treasures.length;
-	$: remainingTreasures = totalTreasures - treasureNumber;
-	
+
+	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
+	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
+	let totalTreasures = $derived(gameState.treasures.length);
+	let remainingTreasures = $derived(totalTreasures - treasureNumber);
+
 	function handleContinue() {
 		gameState.nextTreasure();
 	}
@@ -16,30 +16,28 @@
 		<div class="checkmark">✓</div>
 		<div class="sparkles">✨</div>
 	</div>
-	
+
 	<h1>Tesouro Capturado!</h1>
-	
+
 	<div class="treasure-card">
 		<div class="treasure-emoji">{currentTreasure.emoji}</div>
 		<div class="treasure-name">{currentTreasure.name}</div>
 		<div class="treasure-number">#{treasureNumber} de {totalTreasures}</div>
 	</div>
-	
+
 	<div class="stats">
 		<div class="stat-item">
 			<span class="stat-label">Tempo Total</span>
-			<span class="stat-value">{$gameState.totalTime}</span>
+			<span class="stat-value">{gameState.totalTime}</span>
 		</div>
 		<div class="stat-item">
 			<span class="stat-label">Tesouros Restantes</span>
 			<span class="stat-value">{remainingTreasures}</span>
 		</div>
 	</div>
-	
+
 	{#if remainingTreasures > 0}
-		<button class="continue-button" on:click={handleContinue}>
-			Próxima Pista →
-		</button>
+		<button class="continue-button" onclick={handleContinue}> Próxima Pista → </button>
 		<p class="motivational">
 			{#if remainingTreasures === 1}
 				🎯 Apenas mais um tesouro para completar!
@@ -53,17 +51,12 @@
 		<div class="completion-message">
 			<h2>🎉 Parabéns!</h2>
 			<p>Você encontrou todos os tesouros!</p>
-			<button class="continue-button" on:click={handleContinue}>
-				Ver Resultado Final
-			</button>
+			<button class="continue-button" onclick={handleContinue}> Ver Resultado Final </button>
 		</div>
 	{/if}
-	
+
 	<div class="progress-bar">
-		<div 
-			class="progress-fill" 
-			style="width: {treasureNumber / totalTreasures * 100}%"
-		></div>
+		<div class="progress-fill" style="width: {(treasureNumber / totalTreasures) * 100}%"></div>
 	</div>
 </div>
 
@@ -86,7 +79,7 @@
 		box-sizing: border-box;
 		overflow-y: auto;
 	}
-	
+
 	.success-animation {
 		position: relative;
 		margin-bottom: 30px;
@@ -95,11 +88,11 @@
 		align-items: center;
 		justify-content: center;
 	}
-	
+
 	.checkmark {
 		width: 100px;
 		height: 100px;
-		background: #4CAF50;
+		background: #4caf50;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -109,7 +102,7 @@
 		animation: scaleIn 0.5s ease;
 		box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
 	}
-	
+
 	@keyframes scaleIn {
 		from {
 			transform: scale(0);
@@ -120,7 +113,7 @@
 			opacity: 1;
 		}
 	}
-	
+
 	.sparkles {
 		position: absolute;
 		top: 50%;
@@ -130,7 +123,7 @@
 		animation: sparkle 1s ease;
 		pointer-events: none;
 	}
-	
+
 	@keyframes sparkle {
 		0% {
 			transform: translate(-50%, -50%) scale(0) rotate(0deg);
@@ -144,14 +137,14 @@
 			opacity: 0;
 		}
 	}
-	
+
 	h1 {
 		font-size: clamp(24px, 6vw, 32px);
 		margin-bottom: 20px;
 		animation: fadeInUp 0.6s ease 0.2s both;
 		width: 100%;
 	}
-	
+
 	@keyframes fadeInUp {
 		from {
 			transform: translateY(20px);
@@ -162,7 +155,7 @@
 			opacity: 1;
 		}
 	}
-	
+
 	.treasure-card {
 		background: rgba(255, 255, 255, 0.1);
 		border: 2px solid rgba(255, 255, 255, 0.3);
@@ -174,18 +167,18 @@
 		max-width: 350px;
 		box-sizing: border-box;
 	}
-	
+
 	.treasure-emoji {
 		font-size: 80px;
 		margin-bottom: 15px;
 	}
-	
+
 	.treasure-name {
 		font-size: 24px;
 		font-weight: 600;
 		margin-bottom: 10px;
 	}
-	
+
 	.treasure-number {
 		font-size: 16px;
 		opacity: 0.8;
@@ -194,7 +187,7 @@
 		padding: 5px 15px;
 		border-radius: 15px;
 	}
-	
+
 	.stats {
 		display: flex;
 		justify-content: space-around;
@@ -203,23 +196,23 @@
 		width: 100%;
 		max-width: 350px;
 	}
-	
+
 	.stat-item {
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
 	}
-	
+
 	.stat-label {
 		font-size: 14px;
 		opacity: 0.7;
 	}
-	
+
 	.stat-value {
 		font-size: 24px;
 		font-weight: 600;
 	}
-	
+
 	.continue-button {
 		background: linear-gradient(135deg, #667eea, #764ba2);
 		color: white;
@@ -233,19 +226,19 @@
 		transition: transform 0.2s;
 		animation: fadeInUp 0.6s ease 0.5s both;
 	}
-	
+
 	.continue-button:hover {
 		transform: scale(1.05);
 		box-shadow: 0 5px 20px rgba(103, 126, 234, 0.4);
 	}
-	
+
 	.motivational {
 		font-size: 16px;
 		opacity: 0.9;
 		margin-bottom: 30px;
 		animation: fadeInUp 0.6s ease 0.6s both;
 	}
-	
+
 	.progress-bar {
 		width: 100%;
 		max-width: 350px;
@@ -255,103 +248,103 @@
 		overflow: hidden;
 		animation: fadeInUp 0.6s ease 0.7s both;
 	}
-	
+
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #4CAF50, #8BC34A);
+		background: linear-gradient(90deg, #4caf50, #8bc34a);
 		transition: width 1s ease;
 		box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 	}
-	
+
 	.completion-message {
 		margin: 20px 0;
 		animation: fadeInUp 0.6s ease 0.5s both;
 	}
-	
+
 	.completion-message h2 {
 		font-size: 28px;
 		margin-bottom: 10px;
 	}
-	
+
 	.completion-message p {
 		font-size: 18px;
 		margin-bottom: 20px;
 		opacity: 0.9;
 	}
-	
+
 	/* Mobile optimizations */
 	@media (max-width: 480px) {
 		.container {
 			padding: 15px;
 		}
-		
+
 		.success-animation {
 			height: 100px;
 			margin-bottom: 20px;
 		}
-		
+
 		.checkmark {
 			width: 80px;
 			height: 80px;
 			font-size: 40px;
 		}
-		
+
 		.sparkles {
 			font-size: 100px;
 		}
-		
+
 		.treasure-emoji {
 			font-size: 60px;
 		}
-		
+
 		.treasure-name {
 			font-size: 20px;
 		}
-		
+
 		.treasure-card {
 			padding: 15px;
 		}
-		
+
 		.stat-value {
 			font-size: 20px;
 		}
-		
+
 		.continue-button {
 			padding: 12px 30px;
 			font-size: 16px;
 		}
-		
+
 		.motivational {
 			margin-bottom: 20px;
 		}
 	}
-	
+
 	/* Small height devices */
 	@media (max-height: 600px) {
 		.container {
 			justify-content: flex-start;
 			padding-top: 10px;
 		}
-		
+
 		.success-animation {
 			height: 80px;
 			margin-bottom: 15px;
 		}
-		
+
 		.checkmark {
 			width: 60px;
 			height: 60px;
 			font-size: 30px;
 		}
-		
+
 		h1 {
 			margin-bottom: 15px;
 		}
-		
+
 		.treasure-card {
 			margin-bottom: 15px;
 		}
-		
+
 		.stats {
 			margin-bottom: 15px;
 		}

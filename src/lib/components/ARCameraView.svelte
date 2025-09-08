@@ -2,21 +2,18 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { gameState } from '$lib/stores/gameState';
 
-	// Type for AFRAME on window
-	const win = window as any;
-
-	let isCapturing = false;
-	let markerElement: HTMLElement;
-	let arContainer: HTMLDivElement;
-	let hasDetectedMarker = false;
-	let cameraError = '';
-	let isLoading = true;
-	let markerVisible = false;
-	let scriptsLoaded = false;
+	let isCapturing = $state(false);
+	let markerElement: HTMLElement | undefined = $state();
+	let arContainer: HTMLDivElement | undefined = $state();
+	let hasDetectedMarker = $state(false);
+	let cameraError = $state('');
+	let isLoading = $state(true);
+	let markerVisible = $state(false);
+	let scriptsLoaded = $state(false);
 	let markerTimeout: NodeJS.Timeout;
 
-	$: currentTreasure = $gameState.treasures[$gameState.currentTreasureIndex];
-	$: treasureNumber = $gameState.currentTreasureIndex + 1;
+	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
+	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 
 	function handleBack() {
 		gameState.navigateToScreen('clue');
@@ -180,7 +177,7 @@
 
 <div class="ar-container">
 	<div class="header">
-		<button class="back-button" on:click={handleBack}> ← Voltar </button>
+		<button class="back-button" onclick={handleBack}> ← Voltar </button>
 		<div class="treasure-info">
 			Procurando: {currentTreasure.emoji} #{treasureNumber}
 		</div>
@@ -220,8 +217,8 @@
 				<a-marker
 					preset={currentTreasure.markerType}
 					bind:this={markerElement}
-					on:markerFound={handleMarkerFound}
-					on:markerLost={handleMarkerLost}
+					onmarkerFound={handleMarkerFound}
+					onmarkerLost={handleMarkerLost}
 				>
 					<!-- Clickable treasure model -->
 					<a-box id="treasure-box" class="clickable" position="0 0.5 0" material="color: #FFD700"
