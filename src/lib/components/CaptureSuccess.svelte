@@ -69,15 +69,22 @@
 
 <style>
 	.container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		width: 100%;
 		max-width: 500px;
 		margin: 0 auto;
 		padding: 20px;
 		text-align: center;
-		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+		align-items: center;
+		box-sizing: border-box;
+		overflow-y: auto;
 	}
 	
 	.success-animation {
@@ -139,9 +146,10 @@
 	}
 	
 	h1 {
-		font-size: 32px;
-		margin-bottom: 30px;
+		font-size: clamp(24px, 6vw, 32px);
+		margin-bottom: 20px;
 		animation: fadeInUp 0.6s ease 0.2s both;
+		width: 100%;
 	}
 	
 	@keyframes fadeInUp {
@@ -159,9 +167,12 @@
 		background: rgba(255, 255, 255, 0.1);
 		border: 2px solid rgba(255, 255, 255, 0.3);
 		border-radius: 20px;
-		padding: 30px;
-		margin-bottom: 30px;
+		padding: 20px;
+		margin-bottom: 20px;
 		animation: fadeInUp 0.6s ease 0.3s both;
+		width: 100%;
+		max-width: 350px;
+		box-sizing: border-box;
 	}
 	
 	.treasure-emoji {
@@ -187,8 +198,10 @@
 	.stats {
 		display: flex;
 		justify-content: space-around;
-		margin-bottom: 30px;
+		margin-bottom: 20px;
 		animation: fadeInUp 0.6s ease 0.4s both;
+		width: 100%;
+		max-width: 350px;
 	}
 	
 	.stat-item {
@@ -235,6 +248,7 @@
 	
 	.progress-bar {
 		width: 100%;
+		max-width: 350px;
 		height: 8px;
 		background: rgba(255, 255, 255, 0.2);
 		border-radius: 4px;
@@ -263,5 +277,83 @@
 		font-size: 18px;
 		margin-bottom: 20px;
 		opacity: 0.9;
+	}
+	
+	/* Mobile optimizations */
+	@media (max-width: 480px) {
+		.container {
+			padding: 15px;
+		}
+		
+		.success-animation {
+			height: 100px;
+			margin-bottom: 20px;
+		}
+		
+		.checkmark {
+			width: 80px;
+			height: 80px;
+			font-size: 40px;
+		}
+		
+		.sparkles {
+			font-size: 100px;
+		}
+		
+		.treasure-emoji {
+			font-size: 60px;
+		}
+		
+		.treasure-name {
+			font-size: 20px;
+		}
+		
+		.treasure-card {
+			padding: 15px;
+		}
+		
+		.stat-value {
+			font-size: 20px;
+		}
+		
+		.continue-button {
+			padding: 12px 30px;
+			font-size: 16px;
+		}
+		
+		.motivational {
+			margin-bottom: 20px;
+		}
+	}
+	
+	/* Small height devices */
+	@media (max-height: 600px) {
+		.container {
+			justify-content: flex-start;
+			padding-top: 10px;
+		}
+		
+		.success-animation {
+			height: 80px;
+			margin-bottom: 15px;
+		}
+		
+		.checkmark {
+			width: 60px;
+			height: 60px;
+			font-size: 30px;
+		}
+		
+		h1 {
+			margin-bottom: 15px;
+		}
+		
+		.treasure-card {
+			margin-bottom: 15px;
+		}
+		
+		.stats {
+			margin-bottom: 15px;
+		}
 	}
 </style>
