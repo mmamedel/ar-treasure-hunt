@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState.svelte';
+	import { getGameState } from '$lib/stores/gameState.svelte';
 
-	let playerName = '';
-	let isValid = false;
+	const gameState = getGameState();
 
-	$: isValid = playerName.trim().length >= 2 && playerName.trim().length <= 20;
+	let playerName = $state('');
+	let isValid = $state(false);
+
+	$effect(() => {
+		isValid = playerName.trim().length >= 2 && playerName.trim().length <= 20;
+	});
 
 	function handleSubmit() {
 		if (isValid) {
@@ -31,12 +35,12 @@
 			placeholder="Seu nome"
 			maxlength="20"
 			bind:value={playerName}
-			on:keypress={handleKeyPress}
+			onkeypress={handleKeyPress}
 			autofocus
 		/>
 	</div>
 
-	<button class="button" disabled={!isValid} on:click={handleSubmit}> Começar Aventura </button>
+	<button class="button" disabled={!isValid} onclick={handleSubmit}> Começar Aventura </button>
 
 	<p class="info">💡 Este nome aparecerá no placar</p>
 </div>

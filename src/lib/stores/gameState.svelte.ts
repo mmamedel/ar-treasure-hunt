@@ -1,3 +1,5 @@
+import { getContext, setContext } from "svelte";
+
 export type GameScreen = 'name-entry' | 'clue' | 'ar-camera' | 'capture-success';
 
 export interface Treasure {
@@ -105,7 +107,7 @@ const initialTreasures: Treasure[] = [
 	}
 ];
 
-class GameState {
+export class GameState {
 	currentScreen = $state<GameScreen>('name-entry');
 	playerName = $state('');
 	gameStartTime = $state<Date | null>(null);
@@ -220,4 +222,12 @@ class GameState {
 	}
 }
 
-export const gameState = new GameState();
+export function createGameState() {
+	const gameState = new GameState();
+	setContext<GameState>('gameState', gameState);
+	return gameState;
+}
+
+export function getGameState() {
+	return getContext<GameState>('gameState');
+}

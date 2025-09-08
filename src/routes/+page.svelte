@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState.svelte';
+	import { createGameState } from '$lib/stores/gameState.svelte';
 	import NameEntry from '$lib/components/NameEntry.svelte';
 	import ClueScreen from '$lib/components/ClueScreen.svelte';
 	import ARCameraView from '$lib/components/ARCameraView.svelte';
 	import CaptureSuccess from '$lib/components/CaptureSuccess.svelte';
+
+	const gameState = createGameState();
 </script>
 
 <svelte:head>

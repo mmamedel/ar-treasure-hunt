@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { gameState } from '$lib/stores/gameState.svelte';
+	import { getGameState } from '$lib/stores/gameState.svelte';
 
 	let isCapturing = $state(false);
 	let markerElement: HTMLElement | undefined = $state();
@@ -11,6 +11,8 @@
 	let markerVisible = $state(false);
 	let scriptsLoaded = $state(false);
 	let markerTimeout: NodeJS.Timeout;
+
+	const gameState = getGameState();
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
