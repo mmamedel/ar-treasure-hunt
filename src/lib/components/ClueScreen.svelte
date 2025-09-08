@@ -32,7 +32,7 @@
 		
 		<div class="instructions">
 			<p>Encontre o local indicado pela pista</p>
-			<p>Procure pelo marcador AR no local</p>
+			<p>Procure pelo marcador {currentTreasure.markerType === 'kanji' ? 'Kanji' : 'Hiro'} no local</p>
 		</div>
 		
 		<div class="progress-bar">

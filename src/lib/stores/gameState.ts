@@ -8,6 +8,7 @@ export interface Treasure {
 	name: string;
 	clue: string;
 	markerId: string;
+	markerType: 'kanji' | 'hiro';
 	found: boolean;
 	capturedAt?: Date;
 }
@@ -32,6 +33,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Livro do Conhecimento',
 		clue: 'Onde as mentes jovens se reúnem para aprender, procure pelo símbolo do saber eterno.',
 		markerId: 'marker-1',
+		markerType: 'kanji',
 		found: false
 	},
 	{
@@ -40,6 +42,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Paleta das Cores',
 		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
 		markerId: 'marker-2',
+		markerType: 'hiro',
 		found: false
 	},
 	{
@@ -48,6 +51,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Bola Dourada',
 		clue: 'Onde os campeões praticam seus sonhos, procure pela glória esportiva.',
 		markerId: 'marker-3',
+		markerType: 'kanji',
 		found: false
 	},
 	{
@@ -56,6 +60,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Máscara Misteriosa',
 		clue: 'No palco onde histórias ganham vida, a cortina esconde um segredo.',
 		markerId: 'marker-4',
+		markerType: 'hiro',
 		found: false
 	},
 	{
@@ -64,6 +69,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Frasco da Ciência',
 		clue: 'No laboratório das descobertas, o conhecimento borbulha em segredo.',
 		markerId: 'marker-5',
+		markerType: 'kanji',
 		found: false
 	},
 	{
@@ -72,6 +78,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Nota Musical',
 		clue: 'Onde as melodias ecoam, encontre a harmonia perdida.',
 		markerId: 'marker-6',
+		markerType: 'hiro',
 		found: false
 	},
 	{
@@ -80,6 +87,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Estrela Brilhante',
 		clue: 'No topo do mundo escolar, uma luz guia os perdidos.',
 		markerId: 'marker-7',
+		markerType: 'kanji',
 		found: false
 	},
 	{
@@ -88,6 +96,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Troféu da Vitória',
 		clue: 'Na sala dos campeões, a glória espera por você.',
 		markerId: 'marker-8',
+		markerType: 'hiro',
 		found: false
 	},
 	{
@@ -96,6 +105,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Diamante Raro',
 		clue: 'No cofre do diretor, um tesouro especial aguarda.',
 		markerId: 'marker-9',
+		markerType: 'kanji',
 		found: false
 	},
 	{
@@ -104,6 +114,7 @@ const initialTreasures: Treasure[] = [
 		name: 'Coroa Real',
 		clue: 'No trono do conhecimento, a realeza do saber reina suprema.',
 		markerId: 'marker-10',
+		markerType: 'hiro',
 		found: false
 	}
 ];

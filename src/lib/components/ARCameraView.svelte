@@ -212,7 +212,7 @@
 				</a-camera-static>
 
 				<a-marker
-					preset="kanji"
+					preset={currentTreasure.markerType}
 					bind:this={markerElement}
 					on:markerFound={handleMarkerFound}
 					on:markerLost={handleMarkerLost}
