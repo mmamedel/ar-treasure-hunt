@@ -80,10 +80,10 @@
 					await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
 					await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for A-Frame to initialize
 				}
-				
+
 				// Check if AR.js components are already registered
 				const aframe = (window as any).AFRAME;
-				if (aframe && !aframe.components['arjs']) {
+				if (aframe && !aframe.components['arjs-anchor']) {
 					await loadScript(
 						'https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js'
 					);
