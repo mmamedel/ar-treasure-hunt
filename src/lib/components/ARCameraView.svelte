@@ -72,19 +72,8 @@
 
 		const initAR = async () => {
 			try {
-<<<<<<< HEAD
-				// Request camera permissions with better quality settings
-				await navigator.mediaDevices.getUserMedia({
-					video: {
-						facingMode: 'environment',
-						width: { ideal: 1280 },
-						height: { ideal: 720 }
-					}
-				});
-=======
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
->>>>>>> parent of 80b3596 (feat: improve AR marker detection with enhanced camera settings and smoother tracking)
 
 				// Load A-Frame and AR.js
 				if (!(window as any).AFRAME) {
@@ -207,11 +196,7 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-<<<<<<< HEAD
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; smooth: true; smoothCount: 5; smoothTolerance: 0.01; smoothThreshold: 5; patternRatio: 0.75; maxDetectionRate: 60;"
-=======
 				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
->>>>>>> parent of 80b3596 (feat: improve AR marker detection with enhanced camera settings and smoother tracking)
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
 			>
@@ -231,13 +216,6 @@
 					bind:this={markerElement}
 					on:markerFound={handleMarkerFound}
 					on:markerLost={handleMarkerLost}
-<<<<<<< HEAD
-					smooth="true"
-					smoothCount="5"
-					smoothTolerance="0.01"
-					smoothThreshold="5"
-=======
->>>>>>> parent of 80b3596 (feat: improve AR marker detection with enhanced camera settings and smoother tracking)
 				>
 					<!-- Clickable treasure model -->
 					<a-box id="treasure-box" class="clickable" position="0 0.5 0" material="color: #FFD700"
