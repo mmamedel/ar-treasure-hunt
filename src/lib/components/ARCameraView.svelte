@@ -31,7 +31,7 @@
 
 		// Visual feedback
 		console.log('Capturing treasure:', currentTreasure.name);
-		
+
 		// Change box color to green when capturing
 		const treasureBox = document.getElementById('treasure-box');
 		if (treasureBox) {
@@ -69,16 +69,16 @@
 	onMount(() => {
 		// Store event handler for cleanup
 		let handleSceneClick: ((e: Event) => void) | null = null;
-		
+
 		const initAR = async () => {
 			try {
 				// Request camera permissions with better quality settings
-				await navigator.mediaDevices.getUserMedia({ 
-					video: { 
+				await navigator.mediaDevices.getUserMedia({
+					video: {
 						facingMode: 'environment',
 						width: { ideal: 1280 },
 						height: { ideal: 720 }
-					} 
+					}
 				});
 
 				// Load A-Frame and AR.js
@@ -93,7 +93,7 @@
 				await new Promise((resolve) => setTimeout(resolve, 500));
 
 				scriptsLoaded = true;
-				
+
 				// Attach event listeners after scene is created
 				setTimeout(() => {
 					if (markerElement) {
@@ -108,7 +108,7 @@
 						// Add touch events for mobile
 						treasureBox.addEventListener('touchstart', handleCapture);
 					}
-					
+
 					// Add touch/click listener to the entire scene for mobile AR fallback
 					const scene = document.querySelector('a-scene');
 					if (scene) {
@@ -132,7 +132,7 @@
 		};
 
 		initAR();
-		
+
 		// Return cleanup function
 		return () => {
 			if (markerElement) {
@@ -202,15 +202,15 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; smooth: true; smoothCount: 5; smoothTolerance: 0.01; smoothThreshold: 5; patternRatio: 0.75; maxDetectionRate: 60;"
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; smooth: true; smoothCount: 5; smoothTolerance: 0.01; smoothThreshold: 5; patternRatio: 0.75; maxDetectionRate: 60;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true; precision: high;"
 			>
 				<a-camera-static>
 					<!-- Cursor for click detection only - no fuse/gaze triggering -->
-					<a-cursor 
+					<a-cursor
 						visible="false"
-						fuse="false" 
+						fuse="false"
 						fuseTimeout="0"
 						raycaster="objects: .clickable; far: 100"
 						geometry="radiusInner: 0; radiusOuter: 0"
@@ -226,14 +226,9 @@
 					smoothCount="5"
 					smoothTolerance="0.01"
 					smoothThreshold="5"
-					size="1"
 				>
 					<!-- Clickable treasure model -->
-					<a-box
-						id="treasure-box"
-						class="clickable"
-						position="0 0.5 0"
-						material="color: #FFD700"
+					<a-box id="treasure-box" class="clickable" position="0 0.5 0" material="color: #FFD700"
 					></a-box>
 					<a-text
 						value={currentTreasure.emoji}
