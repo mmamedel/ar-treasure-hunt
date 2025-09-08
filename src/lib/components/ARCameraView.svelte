@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { gameState } from '$lib/stores/gameState';
+	import 'aframe';
+	import 'ar.js/aframe/build/aframe-ar';
 
 	// Type for AFRAME on window
 	const win = window as any;
@@ -74,14 +76,6 @@
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-				// Load A-Frame and AR.js
-				if (!(window as any).AFRAME) {
-					await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
-				}
-				await loadScript(
-					'https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js'
-				);
 
 				// Wait a bit for scripts to fully initialize
 				await new Promise((resolve) => setTimeout(resolve, 500));
@@ -161,15 +155,6 @@
 		}
 	});
 
-	function loadScript(src: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.src = src;
-			script.onload = () => resolve();
-			script.onerror = reject;
-			document.head.appendChild(script);
-		});
-	}
 </script>
 
 <div class="ar-container">
