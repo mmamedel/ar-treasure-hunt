@@ -58,11 +58,11 @@
 
 	function handleMarkerLost() {
 		console.log('Marker lost!');
-		// Add delay before hiding to prevent flickering
+		// Add longer delay before hiding to prevent flickering
 		clearTimeout(markerTimeout);
 		markerTimeout = setTimeout(() => {
 			markerVisible = false;
-		}, 300);
+		}, 1000); // Increased from 300ms to 1000ms
 	}
 
 	// Initialize AR.js when component mounts
@@ -72,8 +72,14 @@
 		
 		const initAR = async () => {
 			try {
-				// Request camera permissions
-				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+				// Request camera permissions with better quality settings
+				await navigator.mediaDevices.getUserMedia({ 
+					video: { 
+						facingMode: 'environment',
+						width: { ideal: 1280 },
+						height: { ideal: 720 }
+					} 
+				});
 
 				// Load A-Frame and AR.js
 				if (!(window as any).AFRAME) {
@@ -196,9 +202,9 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; smooth: true; smoothCount: 5; smoothTolerance: 0.01; smoothThreshold: 5; patternRatio: 0.75; maxDetectionRate: 60;"
 				vr-mode-ui="enabled: false"
-				renderer="logarithmicDepthBuffer: true;"
+				renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true; precision: high;"
 			>
 				<a-camera-static>
 					<!-- Cursor for click detection only - no fuse/gaze triggering -->
@@ -216,6 +222,11 @@
 					bind:this={markerElement}
 					on:markerFound={handleMarkerFound}
 					on:markerLost={handleMarkerLost}
+					smooth="true"
+					smoothCount="5"
+					smoothTolerance="0.01"
+					smoothThreshold="5"
+					size="1"
 				>
 					<!-- Clickable treasure model -->
 					<a-box
