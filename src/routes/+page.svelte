@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState';
+	import { gameState } from '$lib/stores/gameState.svelte';
 	import NameEntry from '$lib/components/NameEntry.svelte';
 	import ClueScreen from '$lib/components/ClueScreen.svelte';
 	import ARCameraView from '$lib/components/ARCameraView.svelte';

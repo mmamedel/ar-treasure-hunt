@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState';
+	import { gameState } from '$lib/stores/gameState.svelte';
 
 	let playerName = '';
 	let isValid = false;

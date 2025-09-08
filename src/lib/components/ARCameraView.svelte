@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { gameState } from '$lib/stores/gameState';
+	import { gameState } from '$lib/stores/gameState.svelte';
 
 	let isCapturing = $state(false);
 	let markerElement: HTMLElement | undefined = $state();

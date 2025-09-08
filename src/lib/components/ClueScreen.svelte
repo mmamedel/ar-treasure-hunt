@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState';
-	
+	import { gameState } from '$lib/stores/gameState.svelte';
+
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 	let totalTreasures = $derived(gameState.treasures.length);
-	
+
 	function handleOpenCamera() {
 		gameState.navigateToScreen('ar-camera');
 	}
@@ -15,7 +15,7 @@
 		<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
 		<div class="timer">⏱️ {gameState.totalTime}</div>
 	</div>
-	
+
 	<div class="container">
 		<div class="clue-card">
 			<div class="clue-number">Pista #{treasureNumber}</div>
@@ -24,24 +24,26 @@
 				{currentTreasure.clue}
 			</div>
 		</div>
-		
+
 		<button class="camera-button" onclick={handleOpenCamera}>
 			<span class="camera-icon">📷</span>
 			<span>Abrir Câmera</span>
 		</button>
-		
+
 		<div class="instructions">
 			<p>Encontre o local indicado pela pista</p>
-			<p>Procure pelo marcador {currentTreasure.markerType === 'kanji' ? 'Kanji' : 'Hiro'} no local</p>
+			<p>
+				Procure pelo marcador {currentTreasure.markerType === 'kanji' ? 'Kanji' : 'Hiro'} no local
+			</p>
 		</div>
-		
+
 		<div class="progress-bar">
-			<div 
-				class="progress-fill" 
-				style="width: {(treasureNumber - 1) / totalTreasures * 100}%"
+			<div
+				class="progress-fill"
+				style="width: {((treasureNumber - 1) / totalTreasures) * 100}%"
 			></div>
 		</div>
-		
+
 		<p class="treasures-found">
 			{gameState.treasures.filter((t) => t.found).length} tesouros encontrados
 		</p>
@@ -62,19 +64,19 @@
 		box-sizing: border-box;
 		overflow-y: auto;
 	}
-	
+
 	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 30px;
 	}
-	
+
 	.progress {
 		font-size: 14px;
 		opacity: 0.9;
 	}
-	
+
 	.timer {
 		font-size: 16px;
 		font-weight: 600;
@@ -82,7 +84,7 @@
 		padding: 8px 15px;
 		border-radius: 20px;
 	}
-	
+
 	.container {
 		flex: 1;
 		display: flex;
@@ -95,7 +97,7 @@
 		padding: 0 10px;
 		box-sizing: border-box;
 	}
-	
+
 	.clue-card {
 		background: rgba(255, 255, 255, 0.95);
 		color: #333;
@@ -107,7 +109,7 @@
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 		box-sizing: border-box;
 	}
-	
+
 	.clue-number {
 		background: linear-gradient(135deg, #667eea, #764ba2);
 		color: white;
@@ -118,13 +120,13 @@
 		margin-bottom: 20px;
 		font-size: 14px;
 	}
-	
+
 	.clue-icon {
 		font-size: 64px;
 		margin-bottom: 20px;
 		text-align: center;
 	}
-	
+
 	.clue-text {
 		font-size: clamp(16px, 4vw, 20px);
 		line-height: 1.6;
@@ -132,9 +134,9 @@
 		color: #333;
 		font-weight: 500;
 	}
-	
+
 	.camera-button {
-		background: #4CAF50;
+		background: #4caf50;
 		color: white;
 		border: none;
 		padding: 15px 40px;
@@ -148,27 +150,27 @@
 		gap: 10px;
 		margin-bottom: 30px;
 	}
-	
+
 	.camera-button:hover {
 		transform: scale(1.05);
 		box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
 	}
-	
+
 	.camera-icon {
 		font-size: 24px;
 	}
-	
+
 	.instructions {
 		text-align: center;
 		margin-bottom: 30px;
 		opacity: 0.8;
 	}
-	
+
 	.instructions p {
 		margin: 5px 0;
 		font-size: 14px;
 	}
-	
+
 	.progress-bar {
 		width: 100%;
 		max-width: 300px;
@@ -178,73 +180,73 @@
 		overflow: hidden;
 		margin-bottom: 10px;
 	}
-	
+
 	.progress-fill {
 		height: 100%;
-		background: #4CAF50;
+		background: #4caf50;
 		transition: width 0.5s ease;
 	}
-	
+
 	.treasures-found {
 		font-size: 14px;
 		opacity: 0.9;
 		text-align: center;
 	}
-	
+
 	/* Mobile optimizations */
 	@media (max-width: 480px) {
 		.screen-container {
 			padding: 15px;
 		}
-		
+
 		.header {
 			margin-bottom: 20px;
 		}
-		
+
 		.timer {
 			font-size: 14px;
 			padding: 6px 12px;
 		}
-		
+
 		.clue-card {
 			padding: 15px;
 		}
-		
+
 		.clue-icon {
 			font-size: 48px;
 			margin-bottom: 15px;
 		}
-		
+
 		.camera-button {
 			padding: 12px 30px;
 			font-size: 16px;
 			margin-bottom: 20px;
 		}
-		
+
 		.instructions {
 			margin-bottom: 20px;
 		}
 	}
-	
+
 	/* Small height devices */
 	@media (max-height: 600px) {
 		.header {
 			margin-bottom: 15px;
 		}
-		
+
 		.clue-card {
 			margin-bottom: 15px;
 		}
-		
+
 		.clue-icon {
 			font-size: 40px;
 			margin-bottom: 10px;
 		}
-		
+
 		.camera-button {
 			margin-bottom: 15px;
 		}
-		
+
 		.instructions {
 			margin-bottom: 15px;
 		}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/gameState';
+	import { gameState } from '$lib/stores/gameState.svelte';
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
