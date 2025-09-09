@@ -73,41 +73,10 @@
 
 	// Initialize AR.js when component mounts
 	onMount(() => {
-		// Store event handler for cleanup
-		// let handleSceneClick: ((e: Event) => void) | null = null;
-
 		const initAR = async () => {
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-				// Attach event listeners after scene is created
-				setTimeout(() => {
-					// if (markerElement) {
-					// 	markerElement.addEventListener('markerFound', handleMarkerFound);
-					// 	markerElement.addEventListener('markerLost', handleMarkerLost);
-					// }
-					// Add click event listener to treasure box
-					// const treasureBox = document.getElementById('treasure-box');
-					// if (treasureBox) {
-					// 	treasureBox.addEventListener('click', handleCapture);
-					// 	// Add touch events for mobile
-					// 	treasureBox.addEventListener('touchstart', handleCapture);
-					// }
-					// Add touch/click listener to the entire scene for mobile AR fallback
-					// const scene = document.querySelector('a-scene');
-					// if (scene) {
-					// 	handleSceneClick = (e: Event) => {
-					// 		// Only capture if marker is visible
-					// 		if (markerVisible) {
-					// 			handleCapture();
-					// 		}
-					// 	};
-					// 	scene.addEventListener('click', handleSceneClick);
-					// 	scene.addEventListener('touchend', handleSceneClick);
-					// }
-				}, 100);
-
 				isLoading = false;
 			} catch (error) {
 				console.error('Error initializing AR:', error);
@@ -117,24 +86,6 @@
 		};
 
 		initAR();
-
-		// Return cleanup function
-		return () => {
-			// if (markerElement) {
-			// 	markerElement.removeEventListener('markerFound', handleMarkerFound);
-			// 	markerElement.removeEventListener('markerLost', handleMarkerLost);
-			// }
-			// const treasureBox = document.getElementById('treasure-box');
-			// if (treasureBox) {
-			// 	treasureBox.removeEventListener('click', handleCapture);
-			// 	treasureBox.removeEventListener('touchstart', handleCapture);
-			// }
-			// const scene = document.querySelector('a-scene');
-			// if (scene && handleSceneClick) {
-			// 	scene.removeEventListener('click', handleSceneClick);
-			// 	scene.removeEventListener('touchend', handleSceneClick);
-			// }
-		};
 	});
 
 	onDestroy(() => {
@@ -166,6 +117,9 @@
 		bind:this={arContainer}
 		onclick={handleSceneClick}
 		ontouchend={handleSceneClick}
+		role="button"
+		tabindex="0"
+		onkeydown={null}
 	>
 		{#if isLoading}
 			<div class="camera-placeholder">
@@ -211,6 +165,9 @@
 						material="color: #FFD700"
 						onclick={handleCapture}
 						ontouchstart={handleCapture}
+						role="button"
+						tabindex="0"
+						onkeydown={null}
 					></a-box>
 					<a-text
 						value={currentTreasure.emoji}
