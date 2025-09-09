@@ -99,14 +99,14 @@
 		}
 
 		// Stop any active media streams
-		// if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-		// 	navigator.mediaDevices
-		// 		.getUserMedia({ video: true })
-		// 		.then((stream) => {
-		// 			stream.getTracks().forEach((track) => track.stop());
-		// 		})
-		// 		.catch(() => {});
-		// }
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices
+				.getUserMedia({ video: true })
+				.then((stream) => {
+					stream.getTracks().forEach((track) => track.stop());
+				})
+				.catch(() => {});
+		}
 	});
 </script>
 
