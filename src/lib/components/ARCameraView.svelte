@@ -92,6 +92,12 @@
 		// Clear timeout
 		clearTimeout(markerTimeout);
 
+		const scene = document.querySelector('a-scene');
+		if (scene) {
+			console.log('Clearing scene');
+			scene.innerHTML = '';
+		}
+
 		// Stop any active media streams
 		// if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 		// 	navigator.mediaDevices
