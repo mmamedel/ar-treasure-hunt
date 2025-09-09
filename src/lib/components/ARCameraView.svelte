@@ -92,7 +92,7 @@
 		// Clear timeout
 		clearTimeout(markerTimeout);
 
-		const arjsVideo = document.querySelector('arjs-video');
+		const arjsVideo = document.querySelector('#arjs-video');
 		if (arjsVideo) {
 			console.log('Clearing scene');
 			arjsVideo.remove();
