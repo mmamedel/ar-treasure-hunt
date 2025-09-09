@@ -11,7 +11,6 @@
 	let isLoading = $state(true);
 	let markerVisible = $state(false);
 	let markerTimeout: NodeJS.Timeout;
-	let arSceneReady = $state(false);
 
 	const gameState = getGameState();
 
@@ -58,7 +57,7 @@
 			markerVisible = false;
 		}, 300);
 	}
-	
+
 	// Handle AR scene errors
 	function handleARError(event: Event) {
 		console.error('AR Scene error:', event);
@@ -81,14 +80,13 @@
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-				isLoading = false;
-				
+
 				// Wait a bit for DOM to be ready before initializing AR scene
 				// This prevents the "reading 'idPatt'" error
 				await tick();
 				setTimeout(() => {
-					arSceneReady = true;
-				}, 100);
+					isLoading = false;
+				}, 1000);
 			} catch (error) {
 				console.error('Error initializing AR:', error);
 				cameraError = 'Erro ao acessar câmera. Por favor, permita o acesso à câmera.';
@@ -149,7 +147,7 @@
 				<div class="camera-icon">⚠️</div>
 				<p>{cameraError}</p>
 			</div>
-		{:else if arSceneReady}
+		{:else}
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
@@ -196,13 +194,6 @@
 					></a-text>
 				</a-marker>
 			</a-scene>
-		{:else}
-			<!-- Show loading state while AR scene initializes -->
-			<div class="camera-placeholder">
-				<div class="camera-icon">🎥</div>
-				<p>Inicializando realidade aumentada...</p>
-				<div class="scanning-animation"></div>
-			</div>
 		{/if}
 	</div>
 
