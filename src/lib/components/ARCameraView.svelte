@@ -4,7 +4,6 @@
 	import { goto } from '$app/navigation';
 
 	let isCapturing = $state(false);
-	let markerElement: HTMLElement | undefined = $state();
 	let arContainer: HTMLDivElement | undefined = $state();
 	let hasDetectedMarker = $state(false);
 	let cameraError = $state('');
@@ -80,13 +79,7 @@
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-				// Wait a bit for DOM to be ready before initializing AR scene
-				// This prevents the "reading 'idPatt'" error
-				await tick();
-				setTimeout(() => {
-					isLoading = false;
-				}, 1000);
+				isLoading = false;
 			} catch (error) {
 				console.error('Error initializing AR:', error);
 				cameraError = 'Erro ao acessar câmera. Por favor, permita o acesso à câmera.';
@@ -167,16 +160,34 @@
 					></a-cursor>
 				</a-camera-static>
 
-				<a-marker
-					preset={currentTreasure.markerType}
-					bind:this={markerElement}
-					onmarkerFound={handleMarkerFound}
-					onmarkerLost={handleMarkerLost}
-				>
+				<a-marker preset="kanji" onmarkerFound={handleMarkerFound} onmarkerLost={handleMarkerLost}>
 					<!-- Clickable treasure model -->
 					<a-box
 						id="treasure-box"
 						class="clickable"
+						class:hidden={currentTreasure.markerType !== 'kanji'}
+						position="0 0.5 0"
+						material="color: #FFD700"
+						onclick={handleCapture}
+						ontouchstart={handleCapture}
+						role="button"
+						tabindex="0"
+						onkeydown={null}
+					></a-box>
+					<a-text
+						value={currentTreasure.emoji}
+						position="0 1.5 0"
+						align="center"
+						color="#FFFFFF"
+						width="4"
+					></a-text>
+				</a-marker>
+				<a-marker preset="hiro" onmarkerFound={handleMarkerFound} onmarkerLost={handleMarkerLost}>
+					<!-- Clickable treasure model -->
+					<a-box
+						id="treasure-box"
+						class="clickable"
+						class:hidden={currentTreasure.markerType !== 'hiro'}
 						position="0 0.5 0"
 						material="color: #FFD700"
 						onclick={handleCapture}
@@ -235,6 +246,10 @@
 		flex: 1;
 		background: transparent;
 		overflow: hidden;
+	}
+
+	.hidden {
+		display: none;
 	}
 
 	.header {
