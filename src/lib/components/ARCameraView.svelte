@@ -43,6 +43,7 @@
 	}
 
 	function handleMarkerFound() {
+		alert('found');
 		console.log('Marker detected!');
 		clearTimeout(markerTimeout);
 		markerVisible = true;
