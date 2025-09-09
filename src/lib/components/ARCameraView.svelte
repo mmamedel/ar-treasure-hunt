@@ -136,7 +136,7 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
 			>
