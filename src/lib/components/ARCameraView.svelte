@@ -12,9 +12,7 @@
 	let markerVisible = $state(false);
 	let markerTimeout: NodeJS.Timeout;
 
-	const { onCameraClose } = $props<{
-		onCameraClose?: () => void;
-	}>();
+	const { onCameraClose } = $props();
 
 	const gameState = getGameState();
 
@@ -140,7 +138,7 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true;"
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true;sourceWidth: window.innerWidth > window.innerHeight ? 640 : 480; sourceHeight: window.innerWidth > window.innerHeight ? 480 : 640"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
 			>

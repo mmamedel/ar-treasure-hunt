@@ -7,22 +7,21 @@
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 	let totalTreasures = $derived(gameState.treasures.length);
-	let cameraOpened = $state(false);
+	let isCameraOpened = $state(false);
 
 	function handleOpenCamera() {
-		cameraOpened = true;
+		/* goto('ar-camera'); */
+		isCameraOpened = true;
 	}
 
 	function handleCloseCamera() {
-		cameraOpened = false;
+		isCameraOpened = false;
 	}
 </script>
 
-<div class:hidden={!cameraOpened}>
-	<ARCameraView onCameraClose={handleCloseCamera} />
-</div>
+<ARCameraView onCameraClose={handleCloseCamera} />
 
-<div class="screen-container" class:hidden={cameraOpened}>
+<div class="screen-container" class:hidden={isCameraOpened}>
 	<div class="header">
 		<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
 		<div class="timer">⏱️ {gameState.totalTime}</div>
