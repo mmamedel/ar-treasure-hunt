@@ -92,10 +92,10 @@
 		// Clear timeout
 		clearTimeout(markerTimeout);
 
-		const scene = document.querySelector('a-scene');
-		if (scene) {
+		const arjsVideo = document.querySelector('arjs-video');
+		if (arjsVideo) {
 			console.log('Clearing scene');
-			scene.innerHTML = '';
+			arjsVideo.remove();
 		}
 
 		// Stop any active media streams
