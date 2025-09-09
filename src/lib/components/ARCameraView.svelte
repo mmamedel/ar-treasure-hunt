@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { goto } from '$app/navigation';
 
@@ -21,7 +21,7 @@
 		goto('/clue');
 	}
 
-	function handleCapture() {
+	async function handleCapture() {
 		// Check marker is visible AND not already capturing
 		if (!markerVisible || isCapturing || !hasDetectedMarker) return;
 
@@ -37,15 +37,9 @@
 			treasureBox.setAttribute('material', 'color: #4CAF50');
 		}
 
-		// Simulate capture animation
-		setTimeout(() => {
-			gameState.captureTreasure();
-			isCapturing = false;
-			// Reset box color to gold
-			if (treasureBox) {
-				treasureBox.setAttribute('material', 'color: #FFD700');
-			}
-		}, 800);
+		isCapturing = false;
+		await tick();
+		gameState.captureTreasure();
 	}
 
 	function handleMarkerFound() {

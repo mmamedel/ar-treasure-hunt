@@ -178,13 +178,9 @@ export class GameState {
 	}
 
 	captureTreasure() {
-		const newTreasures = [...this.treasures];
-		newTreasures[this.currentTreasureIndex] = {
-			...newTreasures[this.currentTreasureIndex],
-			found: true,
-			capturedAt: new Date()
-		};
-		this.treasures = newTreasures;
+		const currentTreasure = this.treasures[this.currentTreasureIndex];
+		currentTreasure.found = true;
+		currentTreasure.capturedAt = new Date();
 		goto('/capture-success');
 	}
 
