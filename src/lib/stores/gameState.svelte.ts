@@ -1,5 +1,5 @@
-import { goto } from "$app/navigation";
-import { getContext, setContext } from "svelte";
+import { goto } from '$app/navigation';
+import { getContext, setContext } from 'svelte';
 
 export interface Treasure {
 	id: number;
@@ -141,7 +141,7 @@ export class GameState {
 
 	private startTimer() {
 		if (this.timerInterval) return;
-		
+
 		this.timerInterval = setInterval(() => {
 			if (this.gameStartTime && this.isGameActive) {
 				const now = new Date();
@@ -150,7 +150,7 @@ export class GameState {
 				const seconds = Math.floor((diff % 60000) / 1000);
 				this.totalTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 			}
-			
+
 			if (this.startTime > 0) {
 				this.elapsedTime = Date.now() - this.startTime;
 			}
@@ -181,12 +181,13 @@ export class GameState {
 		const currentTreasure = this.treasures[this.currentTreasureIndex];
 		currentTreasure.found = true;
 		currentTreasure.capturedAt = new Date();
-		goto('/capture-success');
+
+		setTimeout(() => this.nextTreasure(), 1000);
 	}
 
 	nextTreasure() {
 		const nextIndex = this.currentTreasureIndex + 1;
-		
+
 		// Check if all treasures are found
 		if (nextIndex >= this.treasures.length) {
 			this.isGameActive = false;
