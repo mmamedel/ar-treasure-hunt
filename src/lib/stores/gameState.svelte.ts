@@ -23,88 +23,89 @@ const initialTreasures: Treasure[] = [
 		markerType: 'kanji',
 		found: false
 	},
-	{
-		id: 2,
-		emoji: '🎨',
-		name: 'Paleta das Cores',
-		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
-		markerId: 'marker-2',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 3,
-		emoji: '⚽',
-		name: 'Bola Dourada',
-		clue: 'Onde os campeões praticam seus sonhos, procure pela glória esportiva.',
-		markerId: 'marker-3',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 4,
-		emoji: '🎭',
-		name: 'Máscara Misteriosa',
-		clue: 'No palco onde histórias ganham vida, a cortina esconde um segredo.',
-		markerId: 'marker-4',
-		markerType: 'hiro',
-		found: false
-	},
-	{
-		id: 5,
-		emoji: '🔬',
-		name: 'Frasco da Ciência',
-		clue: 'No laboratório das descobertas, o conhecimento borbulha em segredo.',
-		markerId: 'marker-5',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 6,
-		emoji: '🎵',
-		name: 'Nota Musical',
-		clue: 'Onde as melodias ecoam, encontre a harmonia perdida.',
-		markerId: 'marker-6',
-		markerType: 'hiro',
-		found: false
-	},
-	{
-		id: 7,
-		emoji: '🌟',
-		name: 'Estrela Brilhante',
-		clue: 'No topo do mundo escolar, uma luz guia os perdidos.',
-		markerId: 'marker-7',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 8,
-		emoji: '🏆',
-		name: 'Troféu da Vitória',
-		clue: 'Na sala dos campeões, a glória espera por você.',
-		markerId: 'marker-8',
-		markerType: 'hiro',
-		found: false
-	},
-	{
-		id: 9,
-		emoji: '💎',
-		name: 'Diamante Raro',
-		clue: 'No cofre do diretor, um tesouro especial aguarda.',
-		markerId: 'marker-9',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 10,
-		emoji: '👑',
-		name: 'Coroa Real',
-		clue: 'No trono do conhecimento, a realeza do saber reina suprema.',
-		markerId: 'marker-10',
-		markerType: 'hiro',
-		found: false
-	}
-];
+]
+// 	{
+// 		id: 2,
+// 		emoji: '🎨',
+// 		name: 'Paleta das Cores',
+// 		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
+// 		markerId: 'marker-2',
+// 		markerType: 'kanji',
+// 		found: false
+// 	},
+// 	{
+// 		id: 3,
+// 		emoji: '⚽',
+// 		name: 'Bola Dourada',
+// 		clue: 'Onde os campeões praticam seus sonhos, procure pela glória esportiva.',
+// 		markerId: 'marker-3',
+// 		markerType: 'kanji',
+// 		found: false
+// 	},
+// 	{
+// 		id: 4,
+// 		emoji: '🎭',
+// 		name: 'Máscara Misteriosa',
+// 		clue: 'No palco onde histórias ganham vida, a cortina esconde um segredo.',
+// 		markerId: 'marker-4',
+// 		markerType: 'hiro',
+// 		found: false
+// 	},
+// 	{
+// 		id: 5,
+// 		emoji: '🔬',
+// 		name: 'Frasco da Ciência',
+// 		clue: 'No laboratório das descobertas, o conhecimento borbulha em segredo.',
+// 		markerId: 'marker-5',
+// 		markerType: 'kanji',
+// 		found: false
+// 	},
+// 	{
+// 		id: 6,
+// 		emoji: '🎵',
+// 		name: 'Nota Musical',
+// 		clue: 'Onde as melodias ecoam, encontre a harmonia perdida.',
+// 		markerId: 'marker-6',
+// 		markerType: 'hiro',
+// 		found: false
+// 	},
+// 	{
+// 		id: 7,
+// 		emoji: '🌟',
+// 		name: 'Estrela Brilhante',
+// 		clue: 'No topo do mundo escolar, uma luz guia os perdidos.',
+// 		markerId: 'marker-7',
+// 		markerType: 'kanji',
+// 		found: false
+// 	},
+// 	{
+// 		id: 8,
+// 		emoji: '🏆',
+// 		name: 'Troféu da Vitória',
+// 		clue: 'Na sala dos campeões, a glória espera por você.',
+// 		markerId: 'marker-8',
+// 		markerType: 'hiro',
+// 		found: false
+// 	},
+// 	{
+// 		id: 9,
+// 		emoji: '💎',
+// 		name: 'Diamante Raro',
+// 		clue: 'No cofre do diretor, um tesouro especial aguarda.',
+// 		markerId: 'marker-9',
+// 		markerType: 'kanji',
+// 		found: false
+// 	},
+// 	{
+// 		id: 10,
+// 		emoji: '👑',
+// 		name: 'Coroa Real',
+// 		clue: 'No trono do conhecimento, a realeza do saber reina suprema.',
+// 		markerId: 'marker-10',
+// 		markerType: 'hiro',
+// 		found: false
+// 	}
+// ];
 
 export class GameState {
 	playerName = $state('');

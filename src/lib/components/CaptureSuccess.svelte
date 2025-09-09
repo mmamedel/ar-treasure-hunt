@@ -52,7 +52,6 @@
 		<div class="completion-message">
 			<h2>🎉 Parabéns!</h2>
 			<p>Você encontrou todos os tesouros!</p>
-			<button class="continue-button" onclick={handleContinue}> Ver Resultado Final </button>
 		</div>
 	{/if}
 
