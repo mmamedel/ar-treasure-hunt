@@ -8,7 +8,7 @@
 	let totalTreasures = $derived(gameState.treasures.length);
 
 	function handleOpenCamera() {
-		goto('ar-camera');
+		goto('/ar-camera');
 	}
 </script>
 
