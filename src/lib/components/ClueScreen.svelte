@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	const gameState = getGameState();
 
@@ -7,7 +8,7 @@
 	let totalTreasures = $derived(gameState.treasures.length);
 
 	function handleOpenCamera() {
-		gameState.navigateToScreen('ar-camera');
+		goto('ar-camera');
 	}
 </script>
 
