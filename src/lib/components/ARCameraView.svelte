@@ -12,13 +12,17 @@
 	let markerVisible = $state(false);
 	let markerTimeout: NodeJS.Timeout;
 
+	const { onCameraClose } = $props<{
+		onCameraClose?: () => void;
+	}>();
+
 	const gameState = getGameState();
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 
 	function handleBack() {
-		goto('/clue');
+		onCameraClose();
 	}
 
 	async function handleCapture() {
@@ -43,7 +47,6 @@
 	}
 
 	function handleMarkerFound() {
-		alert('found');
 		console.log('Marker detected!');
 		clearTimeout(markerTimeout);
 		markerVisible = true;

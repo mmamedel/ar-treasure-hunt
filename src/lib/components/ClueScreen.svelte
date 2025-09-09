@@ -1,18 +1,28 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import ARCameraView from '$lib/components/ARCameraView.svelte';
 	const gameState = getGameState();
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 	let totalTreasures = $derived(gameState.treasures.length);
+	let cameraOpened = $state(false);
 
 	function handleOpenCamera() {
-		goto('/ar-camera');
+		cameraOpened = true;
+	}
+
+	function handleCloseCamera() {
+		cameraOpened = false;
 	}
 </script>
 
-<div class="screen-container">
+<div class:hidden={!cameraOpened}>
+	<ARCameraView onCameraClose={handleCloseCamera} />
+</div>
+
+<div class="screen-container" class:hidden={cameraOpened}>
 	<div class="header">
 		<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
 		<div class="timer">⏱️ {gameState.totalTime}</div>
@@ -252,5 +262,9 @@
 		.instructions {
 			margin-bottom: 15px;
 		}
+	}
+
+	.hidden {
+		display: none;
 	}
 </style>
