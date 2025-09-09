@@ -168,8 +168,7 @@
 				</a-camera-static>
 
 				<a-marker
-					type="pattern"
-					url="pattern-marker.patt"
+					preset={currentTreasure.markerType}
 					bind:this={markerElement}
 					onmarkerFound={handleMarkerFound}
 					onmarkerLost={handleMarkerLost}
