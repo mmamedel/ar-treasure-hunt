@@ -17,8 +17,8 @@ const initialTreasures: Treasure[] = [
 	{
 		id: 1,
 		emoji: '📚',
-		name: 'Livro do Conhecimento',
-		clue: 'Onde as mentes jovens se reúnem para aprender, procure pelo símbolo do saber eterno.',
+		name: 'Ministério de Jesus',
+		clue: 'Durante seu ministério, Jesus curou um homem que esperava por um milagre há 38 anos. Onde ele foi?',
 		markerId: 'marker-1',
 		markerType: 'kanji',
 		found: false
