@@ -64,10 +64,17 @@
 		}, 300);
 	}
 
+	function handleSceneClick(e: Event) {
+		// Only capture if marker is visible
+		if (markerVisible) {
+			handleCapture();
+		}
+	}
+
 	// Initialize AR.js when component mounts
 	onMount(() => {
 		// Store event handler for cleanup
-		let handleSceneClick: ((e: Event) => void) | null = null;
+		// let handleSceneClick: ((e: Event) => void) | null = null;
 
 		const initAR = async () => {
 			try {
@@ -76,31 +83,29 @@
 
 				// Attach event listeners after scene is created
 				setTimeout(() => {
-					if (markerElement) {
-						markerElement.addEventListener('markerFound', handleMarkerFound);
-						markerElement.addEventListener('markerLost', handleMarkerLost);
-					}
-
+					// if (markerElement) {
+					// 	markerElement.addEventListener('markerFound', handleMarkerFound);
+					// 	markerElement.addEventListener('markerLost', handleMarkerLost);
+					// }
 					// Add click event listener to treasure box
-					const treasureBox = document.getElementById('treasure-box');
-					if (treasureBox) {
-						treasureBox.addEventListener('click', handleCapture);
-						// Add touch events for mobile
-						treasureBox.addEventListener('touchstart', handleCapture);
-					}
-
+					// const treasureBox = document.getElementById('treasure-box');
+					// if (treasureBox) {
+					// 	treasureBox.addEventListener('click', handleCapture);
+					// 	// Add touch events for mobile
+					// 	treasureBox.addEventListener('touchstart', handleCapture);
+					// }
 					// Add touch/click listener to the entire scene for mobile AR fallback
-					const scene = document.querySelector('a-scene');
-					if (scene) {
-						handleSceneClick = (e: Event) => {
-							// Only capture if marker is visible
-							if (markerVisible) {
-								handleCapture();
-							}
-						};
-						scene.addEventListener('click', handleSceneClick);
-						scene.addEventListener('touchend', handleSceneClick);
-					}
+					// const scene = document.querySelector('a-scene');
+					// if (scene) {
+					// 	handleSceneClick = (e: Event) => {
+					// 		// Only capture if marker is visible
+					// 		if (markerVisible) {
+					// 			handleCapture();
+					// 		}
+					// 	};
+					// 	scene.addEventListener('click', handleSceneClick);
+					// 	scene.addEventListener('touchend', handleSceneClick);
+					// }
 				}, 100);
 
 				isLoading = false;
@@ -115,20 +120,20 @@
 
 		// Return cleanup function
 		return () => {
-			if (markerElement) {
-				markerElement.removeEventListener('markerFound', handleMarkerFound);
-				markerElement.removeEventListener('markerLost', handleMarkerLost);
-			}
-			const treasureBox = document.getElementById('treasure-box');
-			if (treasureBox) {
-				treasureBox.removeEventListener('click', handleCapture);
-				treasureBox.removeEventListener('touchstart', handleCapture);
-			}
-			const scene = document.querySelector('a-scene');
-			if (scene && handleSceneClick) {
-				scene.removeEventListener('click', handleSceneClick);
-				scene.removeEventListener('touchend', handleSceneClick);
-			}
+			// if (markerElement) {
+			// 	markerElement.removeEventListener('markerFound', handleMarkerFound);
+			// 	markerElement.removeEventListener('markerLost', handleMarkerLost);
+			// }
+			// const treasureBox = document.getElementById('treasure-box');
+			// if (treasureBox) {
+			// 	treasureBox.removeEventListener('click', handleCapture);
+			// 	treasureBox.removeEventListener('touchstart', handleCapture);
+			// }
+			// const scene = document.querySelector('a-scene');
+			// if (scene && handleSceneClick) {
+			// 	scene.removeEventListener('click', handleSceneClick);
+			// 	scene.removeEventListener('touchend', handleSceneClick);
+			// }
 		};
 	});
 
@@ -156,11 +161,16 @@
 		</div>
 	</div>
 
-	<div class="ar-scene" bind:this={arContainer}>
+	<div
+		class="ar-scene"
+		bind:this={arContainer}
+		onclick={handleSceneClick}
+		ontouchend={handleSceneClick}
+	>
 		{#if isLoading}
 			<div class="camera-placeholder">
 				<div class="camera-icon">📷</div>
-				<p>Carregando câmera AR...</p>
+				<p>Carregando câmera...</p>
 				<div class="scanning-animation"></div>
 			</div>
 		{:else if cameraError}
@@ -172,7 +182,7 @@
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
-				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true;"
+				arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
 				vr-mode-ui="enabled: false"
 				renderer="logarithmicDepthBuffer: true;"
 			>
@@ -194,7 +204,13 @@
 					onmarkerLost={handleMarkerLost}
 				>
 					<!-- Clickable treasure model -->
-					<a-box id="treasure-box" class="clickable" position="0 0.5 0" material="color: #FFD700"
+					<a-box
+						id="treasure-box"
+						class="clickable"
+						position="0 0.5 0"
+						material="color: #FFD700"
+						onclick={handleCapture}
+						ontouchstart={handleCapture}
 					></a-box>
 					<a-text
 						value={currentTreasure.emoji}
