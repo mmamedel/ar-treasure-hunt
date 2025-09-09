@@ -1,6 +1,5 @@
+import { goto } from "$app/navigation";
 import { getContext, setContext } from "svelte";
-
-export type GameScreen = 'name-entry' | 'clue' | 'ar-camera' | 'capture-success';
 
 export interface Treasure {
 	id: number;
@@ -108,7 +107,6 @@ const initialTreasures: Treasure[] = [
 ];
 
 export class GameState {
-	currentScreen = $state<GameScreen>('name-entry');
 	playerName = $state('');
 	gameStartTime = $state<Date | null>(null);
 	startTime = $state(0);
@@ -172,15 +170,11 @@ export class GameState {
 
 	startGame(playerName: string) {
 		this.playerName = playerName;
-		this.currentScreen = 'clue';
+		goto('/clue');
 		this.startTime = Date.now();
 		this.elapsedTime = 0;
 		this.gameStartTime = new Date();
 		this.isGameActive = true;
-	}
-
-	navigateToScreen(screen: GameScreen) {
-		this.currentScreen = screen;
 	}
 
 	captureTreasure() {
@@ -191,7 +185,7 @@ export class GameState {
 			capturedAt: new Date()
 		};
 		this.treasures = newTreasures;
-		this.currentScreen = 'capture-success';
+		goto('/capture-success');
 	}
 
 	nextTreasure() {
@@ -200,17 +194,17 @@ export class GameState {
 		// Check if all treasures are found
 		if (nextIndex >= this.treasures.length) {
 			this.isGameActive = false;
-			this.currentScreen = 'clue'; // Will show completion in Phase 2
+			goto('/clue'); // Will show completion in Phase 2
 			return;
 		}
 
 		this.currentTreasureIndex = nextIndex;
-		this.currentScreen = 'clue';
+		goto('/clue');
 	}
 
 	resetGame() {
 		this.stopTimer();
-		this.currentScreen = 'name-entry';
+		goto('/name-entry');
 		this.playerName = '';
 		this.gameStartTime = null;
 		this.startTime = 0;

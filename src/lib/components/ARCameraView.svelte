@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import { goto } from '$app/navigation';
 
 	let isCapturing = $state(false);
 	let markerElement: HTMLElement | undefined = $state();
@@ -9,7 +10,6 @@
 	let cameraError = $state('');
 	let isLoading = $state(true);
 	let markerVisible = $state(false);
-	let scriptsLoaded = $state(false);
 	let markerTimeout: NodeJS.Timeout;
 
 	const gameState = getGameState();
@@ -18,7 +18,7 @@
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 
 	function handleBack() {
-		gameState.navigateToScreen('clue');
+		goto('/clue');
 	}
 
 	function handleCapture() {
@@ -73,25 +73,6 @@
 			try {
 				// Request camera permissions
 				await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-
-				// Load A-Frame and AR.js
-				if (!(window as any).AFRAME) {
-					await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js');
-					await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for A-Frame to initialize
-				}
-
-				// Check if AR.js components are already registered
-				const aframe = (window as any).AFRAME;
-				if (aframe && !aframe.components['arjs-anchor']) {
-					await loadScript(
-						'https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js'
-					);
-				}
-
-				// Wait a bit for scripts to fully initialize
-				await new Promise((resolve) => setTimeout(resolve, 500));
-
-				scriptsLoaded = true;
 
 				// Attach event listeners after scene is created
 				setTimeout(() => {
@@ -165,16 +146,6 @@
 				.catch(() => {});
 		}
 	});
-
-	function loadScript(src: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.src = src;
-			script.onload = () => resolve();
-			script.onerror = reject;
-			document.head.appendChild(script);
-		});
-	}
 </script>
 
 <div class="ar-container">
@@ -197,7 +168,7 @@
 				<div class="camera-icon">⚠️</div>
 				<p>{cameraError}</p>
 			</div>
-		{:else if scriptsLoaded}
+		{:else}
 			<!-- A-Frame AR Scene using Svelte template -->
 			<a-scene
 				embedded
