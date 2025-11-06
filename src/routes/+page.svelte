@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	goto('/name-entry');
+	const { users } = $props();
+
+	console.log(users);
+	// goto('/name-entry');
 </script>
