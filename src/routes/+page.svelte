@@ -3,6 +3,8 @@
 
 	const { users } = $props();
 
-	console.log(users);
+	setTimeout(() => {
+		console.log(users);
+	}, 5000);
 	// goto('/name-entry');
 </script>
