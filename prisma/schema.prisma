@@ -7,8 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model GameSession {
+  id         Int        @id @default(autoincrement())
+  playerName String     @unique
+  start      DateTime   @default(now())
+  end        DateTime?
+  questions  Question[]
+}
+
+model Question {
+  id             Int         @id @default(autoincrement())
+  gameSessionId  Int
+  gameSession    GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  questionNumber Int
+  start          DateTime    @default(now())
+  end            DateTime?
 }

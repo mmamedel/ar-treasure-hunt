@@ -1,10 +1,14 @@
 import prisma from '$lib/prisma';
 
 export async function load() {
-	const users = await prisma.user.findMany();
-	console.log(users);
+	const gameSessions = await prisma.gameSession.findMany({
+		include: {
+			questions: true
+		}
+	});
+	console.log(gameSessions);
 
 	return {
-		users
+		gameSessions
 	};
 }

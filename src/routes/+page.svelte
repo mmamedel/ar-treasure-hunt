@@ -3,6 +3,6 @@
 
 	const { data } = $props();
 
-	console.log(data.users);
+	console.log(data.gameSessions);
 	// goto('/name-entry');
 </script>
