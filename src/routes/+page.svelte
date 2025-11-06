@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
+	const { data } = $props();
 
-	setTimeout(() => {
-		console.log(data.users);
-	}, 5000);
+	console.log(data.users);
 	// goto('/name-entry');
 </script>
