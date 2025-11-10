@@ -1,5 +1,11 @@
-import { goto } from "$app/navigation";
-import { getContext, setContext } from "svelte";
+import { goto } from '$app/navigation';
+import { getContext, setContext } from 'svelte';
+
+export interface GameStateProps {
+	playerName: string;
+	startTime: number;
+	currentTreasureIndex: number;
+}
 
 export interface Treasure {
 	id: number;
@@ -22,8 +28,8 @@ const initialTreasures: Treasure[] = [
 		markerId: 'marker-1',
 		markerType: 'kanji',
 		found: false
-	},
-]
+	}
+];
 // 	{
 // 		id: 2,
 // 		emoji: '🎨',
@@ -108,18 +114,22 @@ const initialTreasures: Treasure[] = [
 // ];
 
 export class GameState {
-	playerName = $state('');
+	playerName: string;
 	gameStartTime = $state<Date | null>(null);
-	startTime = $state(0);
+	startTime: number;
 	elapsedTime = $state(0);
-	currentTreasureIndex = $state(0);
+	currentTreasureIndex: number;
 	treasures = $state<Treasure[]>([...initialTreasures]);
 	totalTime = $state('00:00');
 	isGameActive = $state(false);
 
 	private timerInterval: ReturnType<typeof setInterval> | null = null;
 
-	constructor() {
+	constructor(props?: GameStateProps) {
+		this.playerName = $state(props?.playerName || '');
+		this.startTime = $state(props?.startTime || 0);
+		this.currentTreasureIndex = $state(props?.currentTreasureIndex || 0);
+
 		// Start the timer effect
 		$effect(() => {
 			if (this.isGameActive && this.gameStartTime) {
@@ -142,7 +152,7 @@ export class GameState {
 
 	private startTimer() {
 		if (this.timerInterval) return;
-		
+
 		this.timerInterval = setInterval(() => {
 			if (this.gameStartTime && this.isGameActive) {
 				const now = new Date();
@@ -151,7 +161,7 @@ export class GameState {
 				const seconds = Math.floor((diff % 60000) / 1000);
 				this.totalTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 			}
-			
+
 			if (this.startTime > 0) {
 				this.elapsedTime = Date.now() - this.startTime;
 			}
@@ -165,17 +175,17 @@ export class GameState {
 		}
 	}
 
-	setPlayerName(name: string) {
-		this.playerName = name;
-	}
-
 	startGame(playerName: string) {
 		this.playerName = playerName;
-		goto('/clue');
 		this.startTime = Date.now();
 		this.elapsedTime = 0;
-		this.gameStartTime = new Date();
 		this.isGameActive = true;
+
+		goto('/clue');
+	}
+
+	resumeGame() {
+		goto('/clue');
 	}
 
 	captureTreasure() {
@@ -187,11 +197,11 @@ export class GameState {
 
 	nextTreasure() {
 		const nextIndex = this.currentTreasureIndex + 1;
-		
+
 		// Check if all treasures are found
 		if (nextIndex >= this.treasures.length) {
 			this.isGameActive = false;
-			goto('/clue'); // Will show completion in Phase 2
+			goto('/clue');
 			return;
 		}
 
@@ -213,8 +223,8 @@ export class GameState {
 	}
 }
 
-export function createGameState() {
-	const gameState = new GameState();
+export function createGameState(props?: GameStateProps) {
+	const gameState = new GameState(props);
 	setContext<GameState>('gameState', gameState);
 	return gameState;
 }

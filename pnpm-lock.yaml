@@ -23,6 +23,9 @@ importers:
       aframe-ar:
         specifier: 0.2.1-a
         version: 0.2.1-a
+      runed:
+        specifier: ^0.36.0
+        version: 0.36.0(@sveltejs/kit@2.33.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1)))(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1)))(svelte@5.38.2)
       three:
         specifier: ^0.179.1
         version: 0.179.1
@@ -51,6 +54,9 @@ importers:
       '@testing-library/svelte':
         specifier: ^5.2.4
         version: 5.2.8(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1))(vitest@3.2.4(@types/node@24.3.0)(jiti@2.6.1)(jsdom@26.1.0))
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       eslint:
         specifier: ^9.18.0
         version: 9.33.0(jiti@2.6.1)
@@ -1043,6 +1049,10 @@ packages:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
 
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
+
   dtype@2.0.0:
     resolution: {integrity: sha512-s2YVcLKdFGS0hpFqJaTwscsyt0E8nNFdmo73Ocd81xNPj4URI4rj6D60A+vFMIw7BXWlb4yRkEwfBqcZzPGiZg==}
     engines: {node: '>= 0.8.0'}
@@ -1779,6 +1789,18 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+
+  runed@0.36.0:
+    resolution: {integrity: sha512-CK84KPwAausPQEyWF9t6miCuNW5isAKPMswDsz7jhdueiZZ9du/UrgWc/aggLts8QuppT8KucryrHDFBAqk9Ww==}
+    peerDependencies:
+      '@sveltejs/kit': ^2.21.0
+      svelte: ^5.7.0
+      zod: ^4.1.0
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      zod:
+        optional: true
 
   sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
@@ -3063,6 +3085,8 @@ snapshots:
 
   dotenv@16.6.1: {}
 
+  dotenv@17.2.3: {}
+
   dtype@2.0.0: {}
 
   duplexer3@0.1.5: {}
@@ -3820,6 +3844,15 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
+
+  runed@0.36.0(@sveltejs/kit@2.33.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1)))(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1)))(svelte@5.38.2):
+    dependencies:
+      dequal: 2.0.3
+      esm-env: 1.2.2
+      lz-string: 1.5.0
+      svelte: 5.38.2
+    optionalDependencies:
+      '@sveltejs/kit': 2.33.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1)))(svelte@5.38.2)(vite@6.3.5(@types/node@24.3.0)(jiti@2.6.1))
 
   sade@1.8.1:
     dependencies:

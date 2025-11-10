@@ -3,17 +3,17 @@
 
 	const gameState = getGameState();
 
-	let playerName = $state('');
+	let name = $state('');
+
 	let isValid = $state(false);
 
 	$effect(() => {
-		isValid = playerName.trim().length >= 2 && playerName.trim().length <= 20;
+		isValid = name.trim().length >= 2 && name.trim().length <= 20;
 	});
 
 	function handleSubmit() {
 		if (isValid) {
-			gameState.setPlayerName(playerName.trim());
-			gameState.startGame(playerName);
+			gameState.startGame(name);
 		}
 	}
 
@@ -34,7 +34,7 @@
 			type="text"
 			placeholder="Seu nome"
 			maxlength="20"
-			bind:value={playerName}
+			bind:value={name}
 			onkeypress={handleKeyPress}
 			autofocus
 		/>
