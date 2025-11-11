@@ -1,9 +1,14 @@
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [sveltekit(), basicSsl()],
+	server: {
+		host: true, // Listen on all network interfaces
+		port: 5173 // Optional: specify port (default is 5173)
+	},
 	test: {
 		workspace: [
 			{
