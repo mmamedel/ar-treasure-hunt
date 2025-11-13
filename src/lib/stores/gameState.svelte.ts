@@ -1,12 +1,21 @@
 import { goto } from '$app/navigation';
 import { getContext, setContext } from 'svelte';
-import { addTreasure, createSession, updateTreasures } from './gameSessionPersisted';
+import {
+	createSession,
+	setSessionCurrentTreasureIndex,
+	setSessionGameFinished,
+	updateSessionTreasures,
+	type Question
+} from './gameSessionPersisted';
 import { onOnlineStatusChange } from '../offline';
 
 export interface GameStateProps {
 	playerName: string;
 	startTime: number;
+	endTime?: number;
+	isFinished: boolean;
 	currentTreasureIndex: number;
+	treasuresData: Question[];
 }
 
 export interface Treasure {
@@ -21,10 +30,9 @@ export interface Treasure {
 	capturedAt?: number;
 }
 
-// Pistas e tesouros para o jogo (Phase 1 - 10 tesouros)
-const initialTreasures: Treasure[] = [
+export const initialTreasures: Treasure[] = [
 	{
-		id: 1,
+		id: 0,
 		emoji: '📚',
 		name: 'Ministério de Jesus',
 		clue: 'Durante seu ministério, Jesus curou um homem que esperava por um milagre há 38 anos. Onde ele foi?',
@@ -33,16 +41,16 @@ const initialTreasures: Treasure[] = [
 		found: false
 	},
 	{
-		id: 2,
+		id: 1,
 		emoji: '🎨',
 		name: 'Paleta das Cores',
 		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
 		markerId: 'marker-2',
 		markerType: 'kanji',
 		found: false
-	}
-	/* 	{
-		id: 3,
+	},
+	{
+		id: 2,
 		emoji: '⚽',
 		name: 'Bola Dourada',
 		clue: 'Onde os campeões praticam seus sonhos, procure pela glória esportiva.',
@@ -51,16 +59,16 @@ const initialTreasures: Treasure[] = [
 		found: false
 	},
 	{
-		id: 4,
+		id: 3,
 		emoji: '🎭',
 		name: 'Máscara Misteriosa',
 		clue: 'No palco onde histórias ganham vida, a cortina esconde um segredo.',
 		markerId: 'marker-4',
 		markerType: 'hiro',
 		found: false
-	},
-	{
-		id: 5,
+	}
+	/*{
+		id: 4,
 		emoji: '🔬',
 		name: 'Frasco da Ciência',
 		clue: 'No laboratório das descobertas, o conhecimento borbulha em segredo.',
@@ -69,7 +77,7 @@ const initialTreasures: Treasure[] = [
 		found: false
 	},
 	{
-		id: 6,
+		id: 5,
 		emoji: '🎵',
 		name: 'Nota Musical',
 		clue: 'Onde as melodias ecoam, encontre a harmonia perdida.',
@@ -78,39 +86,12 @@ const initialTreasures: Treasure[] = [
 		found: false
 	},
 	{
-		id: 7,
+		id: 6,
 		emoji: '🌟',
 		name: 'Estrela Brilhante',
 		clue: 'No topo do mundo escolar, uma luz guia os perdidos.',
 		markerId: 'marker-7',
 		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 8,
-		emoji: '🏆',
-		name: 'Troféu da Vitória',
-		clue: 'Na sala dos campeões, a glória espera por você.',
-		markerId: 'marker-8',
-		markerType: 'hiro',
-		found: false
-	},
-	{
-		id: 9,
-		emoji: '💎',
-		name: 'Diamante Raro',
-		clue: 'No cofre do diretor, um tesouro especial aguarda.',
-		markerId: 'marker-9',
-		markerType: 'kanji',
-		found: false
-	},
-	{
-		id: 10,
-		emoji: '👑',
-		name: 'Coroa Real',
-		clue: 'No trono do conhecimento, a realeza do saber reina suprema.',
-		markerId: 'marker-10',
-		markerType: 'hiro',
 		found: false
 	} */
 ];
@@ -118,10 +99,12 @@ const initialTreasures: Treasure[] = [
 export class GameState {
 	playerName: string;
 	startTime: number;
+	endTime?: number;
+	duration?: string;
 	elapsedTime = $state(0);
 	currentTreasureIndex: number;
 	treasures = $state<Treasure[]>([...initialTreasures]);
-	totalTime = $state('00:00');
+	elapsedTimeCode = $state('00:00');
 	isGameActive: boolean;
 	isOnline = $state(true);
 	unsubscribeOnlineStatus: (() => void) | null = null;
@@ -131,12 +114,30 @@ export class GameState {
 	constructor(props?: GameStateProps) {
 		this.playerName = $state(props?.playerName || '');
 		this.startTime = $state(props?.startTime || 0);
+		this.endTime = $state(props?.endTime);
+
+		let elapsedTime = 0;
+		if ((props?.isFinished, props?.endTime)) {
+			elapsedTime = props.endTime - props.startTime;
+			console.log(props.endTime, props.startTime, elapsedTime, this.formatTime(elapsedTime));
+		}
+		this.duration = $state(this.formatTime(elapsedTime));
+
 		this.currentTreasureIndex = $state(props?.currentTreasureIndex || 0);
 		this.isGameActive = $state(!!props || false);
 
+		// Update treasures infomation based on what was stored in local storage
+		for (const treasure of this.treasures) {
+			const storedTreasure = props?.treasuresData.find((data) => data.id === treasure.id);
+
+			treasure.start = storedTreasure?.start;
+			treasure.capturedAt = storedTreasure?.end;
+			treasure.found = storedTreasure?.found || false;
+		}
+
 		// Start/stop the timer based on game active state
 		$effect(() => {
-			if (this.isGameActive && this.startTime > 0) {
+			if (this.isGameActive && this.startTime > 0 && !props?.isFinished) {
 				this.startTimer();
 			} else {
 				this.stopTimer();
@@ -154,6 +155,12 @@ export class GameState {
 		}
 	}
 
+	private formatTime(time: number) {
+		const minutes = Math.floor(time / 60000);
+		const seconds = Math.floor((time % 60000) / 1000);
+		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	}
+
 	/** Starts the interval timer that updates every second for live UI display */
 	private startTimer() {
 		if (this.timerInterval) return;
@@ -161,9 +168,7 @@ export class GameState {
 		this.timerInterval = setInterval(() => {
 			if (this.startTime > 0 && this.isGameActive) {
 				this.elapsedTime = Date.now() - this.startTime;
-				const minutes = Math.floor(this.elapsedTime / 60000);
-				const seconds = Math.floor((this.elapsedTime % 60000) / 1000);
-				this.totalTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+				this.elapsedTimeCode = this.formatTime(this.elapsedTime);
 			}
 		}, 1000);
 	}
@@ -188,7 +193,7 @@ export class GameState {
 
 		this.treasures[this.currentTreasureIndex].start = this.startTime;
 
-		createSession(this.playerName, this.startTime, this.treasures[this.currentTreasureIndex]);
+		createSession(this.playerName, this.startTime, this.treasures);
 	}
 
 	captureTreasure() {
@@ -196,13 +201,14 @@ export class GameState {
 		currentTreasure.found = true;
 		currentTreasure.capturedAt = Date.now();
 
-		updateTreasures(currentTreasure);
+		updateSessionTreasures(currentTreasure);
 
 		// Check if all treasures are found
 		const nextIndex = this.currentTreasureIndex + 1;
 		if (nextIndex >= this.treasures.length) {
 			this.isGameActive = false;
 			this.stopTimer();
+			setSessionGameFinished(currentTreasure.capturedAt);
 		}
 
 		goto('/');
@@ -211,8 +217,10 @@ export class GameState {
 	nextTreasure() {
 		const nextIndex = this.currentTreasureIndex + 1;
 		this.currentTreasureIndex = nextIndex;
+		this.treasures[this.currentTreasureIndex].start = Date.now();
 
-		addTreasure(this.treasures[this.currentTreasureIndex]);
+		setSessionCurrentTreasureIndex(nextIndex);
+		updateSessionTreasures(this.treasures[this.currentTreasureIndex]);
 	}
 
 	get isFinished() {

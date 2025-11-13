@@ -19,7 +19,7 @@
 	<div class="screen-container">
 		<div class="header">
 			<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
-			<div class="timer">⏱️ {gameState.totalTime}</div>
+			<div class="timer">⏱️ {gameState.elapsedTimeCode}</div>
 		</div>
 
 		<div class="container">

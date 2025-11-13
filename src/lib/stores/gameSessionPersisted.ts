@@ -7,6 +7,7 @@ export interface Question {
 	id: number;
 	start?: number;
 	end?: number;
+	found: boolean;
 }
 
 export interface GameSession {
@@ -14,6 +15,8 @@ export interface GameSession {
 	start: number;
 	end?: number;
 	questions: Question[];
+	currentTreasureIndex: number;
+	isFinished: boolean;
 }
 
 export function getSession() {
@@ -29,24 +32,30 @@ export function loadSession() {
 		return createGameState({
 			playerName: session.current.playerName,
 			startTime: session.current.start,
-			currentTreasureIndex: 0 // TODO calculate what treasure the user is based on what is in the local storage
+			endTime: session.current.end,
+			currentTreasureIndex: session.current.currentTreasureIndex,
+			treasuresData: session.current.questions,
+			isFinished: session.current.isFinished
 		});
 	} else {
 		return createGameState();
 	}
 }
 
-export async function createSession(name: string, startTime: number, startTreasure: Treasure) {
+export async function createSession(name: string, startTime: number, treasures: Treasure[]) {
+	const allTreasures = treasures.map((treasure) => ({
+		id: treasure.id,
+		start: treasure.start,
+		end: treasure.capturedAt,
+		found: treasure.found
+	}));
+
 	new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, {
 		playerName: name,
 		start: startTime,
-		questions: [
-			{
-				id: startTreasure.id,
-				start: startTreasure.start,
-				end: startTreasure.capturedAt
-			}
-		]
+		questions: allTreasures,
+		currentTreasureIndex: 0,
+		isFinished: false
 	});
 
 	// Create Session in DB via API (server-side)
@@ -66,34 +75,44 @@ export async function createSession(name: string, startTime: number, startTreasu
 	}
 }
 
-export function addTreasure(treasure: Treasure) {
+export function setSessionCurrentTreasureIndex(index: number) {
 	const session = getSession();
-	session.current?.questions.push({
-		id: treasure.id,
-		start: treasure.start,
-		end: treasure.capturedAt
-	});
+
+	if (session.current) {
+		session.current.currentTreasureIndex = index;
+	} else {
+		throw new Error('session was not defined when setting current treasure index');
+	}
 
 	// TODO Update DB
 }
 
-export function updateTreasures(treasure: Treasure) {
+export function updateSessionTreasures(treasure: Treasure) {
 	const session = getSession();
 
-	const foundTreasure = session.current?.questions.find(
+	const storedTreasure = session.current?.questions.find(
 		(storedTreasure) => storedTreasure.id === treasure.id
 	);
 
-	if (!foundTreasure) {
-		console.warn('Treasure not found in the localStorage. Adding it.');
-		session.current?.questions.push({
-			id: treasure.id,
-			start: treasure.start,
-			end: treasure.capturedAt
-		});
+	if (!storedTreasure) {
+		console.error('Treasure not found', JSON.stringify(treasure));
+		throw new Error('Treasure not found in the localStorage');
 	} else {
-		foundTreasure.end = treasure.capturedAt;
+		storedTreasure.start = treasure.start;
+		storedTreasure.end = treasure.capturedAt;
+		storedTreasure.found = treasure.found;
 	}
 
 	// TODO Update DB
+}
+
+export function setSessionGameFinished(endTime: number) {
+	const session = getSession();
+
+	if (session.current) {
+		session.current.isFinished = true;
+		session.current.end = endTime;
+	} else {
+		throw new Error('session was not defined when setting game finished');
+	}
 }

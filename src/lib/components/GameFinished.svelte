@@ -15,7 +15,7 @@
 	<div class="stats">
 		<div class="stat-item">
 			<span class="stat-label">Tempo Total</span>
-			<span class="stat-value">{gameState.totalTime}</span>
+			<span class="stat-value">{gameState.duration}</span>
 		</div>
 	</div>
 
