@@ -1,55 +1,55 @@
 {
-  "name": "Caça ao Tesouro AR",
-  "short_name": "Tesouro AR",
-  "description": "Encontre tesouros escondidos no mundo real usando realidade aumentada",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#667eea",
-  "background_color": "#ffffff",
-  "categories": ["games", "education"],
-  "screenshots": [
-    {
-      "src": "/images/screenshot-1.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
-  "icons": [
-    {
-      "src": "/favicon.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Iniciar Jogo",
-      "short_name": "Jogar",
-      "description": "Inicie um novo jogo de caça ao tesouro",
-      "url": "/name-entry",
-      "icons": [
-        {
-          "src": "/favicon.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    }
-  ]
+	"name": "Caça ao Tesouro AR",
+	"short_name": "Tesouro AR",
+	"description": "Encontre tesouros escondidos no mundo real usando realidade aumentada",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait",
+	"theme_color": "#667eea",
+	"background_color": "#ffffff",
+	"categories": ["games", "education"],
+	"screenshots": [
+		{
+			"src": "/favicon.png",
+			"sizes": "128x128",
+			"type": "image/png",
+			"form_factor": "narrow"
+		}
+	],
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"sizes": "128x128",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/favicon.png",
+			"sizes": "128x128",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/favicon.png",
+			"sizes": "128x128",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Iniciar Jogo",
+			"short_name": "Jogar",
+			"description": "Inicie um novo jogo de caça ao tesouro",
+			"url": "/name-entry",
+			"icons": [
+				{
+					"src": "/favicon.png",
+					"sizes": "128x128",
+					"type": "image/png"
+				}
+			]
+		}
+	]
 }
