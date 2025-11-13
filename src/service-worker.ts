@@ -1,182 +1,94 @@
+// Disables access to DOM typings like `HTMLElement` which are not available
+// inside a service worker and instantiates the correct globals
+/// <reference no-default-lib="true"/>
+/// <reference lib="esnext" />
 /// <reference lib="webworker" />
-declare const self: ServiceWorkerGlobalScope;
 
-const CACHE_NAME = 'ar-treasure-hunt-v1';
-const RUNTIME_CACHE = 'ar-treasure-hunt-runtime';
+// Ensures that the `$service-worker` import has proper type definitions
+/// <reference types="@sveltejs/kit" />
 
-// Assets to cache on install
-const PRECACHE_ASSETS = [
-	'/',
-	'/index.html',
-	'/favicon.png',
-	'/manifest.json',
-	'/pattern-marker.patt',
-	'/data/hiro.patt',
-	'/data/kanji.patt',
-	'/data/02.patt'
+// Only necessary if you have an import from `$env/static/public`
+/// <reference types="../.svelte-kit/ambient.d.ts" />
+
+import { build, files, version } from '$service-worker';
+
+// This gives `self` the correct types
+const self = globalThis.self as unknown as ServiceWorkerGlobalScope;
+
+// Create a unique cache name for this deployment
+const CACHE = `cache-${version}`;
+
+const ASSETS = [
+	...build, // the app itself
+	...files // everything in `static`
 ];
 
-// Install event - precache essential assets
-self.addEventListener('install', (event: ExtendableEvent) => {
-	event.waitUntil(
-		caches.open(CACHE_NAME).then((cache) => {
-			return cache.addAll(PRECACHE_ASSETS).catch(() => {
-				// Continue even if some assets fail to cache
-				return Promise.resolve();
-			});
-		})
-	);
-	self.skipWaiting();
+self.addEventListener('install', (event) => {
+	// Create a new cache and add all files to it
+	async function addFilesToCache() {
+		const cache = await caches.open(CACHE);
+		await cache.addAll(ASSETS);
+	}
+
+	event.waitUntil(addFilesToCache());
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event: ExtendableEvent) => {
-	event.waitUntil(
-		caches.keys().then((cacheNames) => {
-			return Promise.all(
-				cacheNames.map((cacheName) => {
-					if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-						return caches.delete(cacheName);
-					}
-					return Promise.resolve();
-				})
-			);
-		})
-	);
-	self.clients.claim();
+self.addEventListener('activate', (event) => {
+	// Remove previous cached data from disk
+	async function deleteOldCaches() {
+		for (const key of await caches.keys()) {
+			if (key !== CACHE) await caches.delete(key);
+		}
+	}
+
+	event.waitUntil(deleteOldCaches());
 });
 
-// Fetch event - network first, fallback to cache, offline support
-self.addEventListener('fetch', (event: FetchEvent) => {
-	const { request } = event;
-	const url = new URL(request.url);
+self.addEventListener('fetch', (event) => {
+	// ignore POST requests etc
+	if (event.request.method !== 'GET') return;
 
-	// Skip cross-origin requests
-	if (url.origin !== location.origin) {
-		return;
+	async function respond() {
+		const url = new URL(event.request.url);
+		const cache = await caches.open(CACHE);
+
+		// `build`/`files` can always be served from the cache
+		if (ASSETS.includes(url.pathname)) {
+			const response = await cache.match(url.pathname);
+
+			if (response) {
+				return response;
+			}
+		}
+
+		// for everything else, try the network first, but
+		// fall back to the cache if we're offline
+		try {
+			const response = await fetch(event.request);
+
+			// if we're offline, fetch can return a value that is not a Response
+			// instead of throwing - and we can't pass this non-Response to respondWith
+			if (!(response instanceof Response)) {
+				throw new Error('invalid response from fetch');
+			}
+
+			if (response.status === 200) {
+				cache.put(event.request, response.clone());
+			}
+
+			return response;
+		} catch (err) {
+			const response = await cache.match(event.request);
+
+			if (response) {
+				return response;
+			}
+
+			// if there's no cache, then just error out
+			// as there is nothing we can do to respond to this request
+			throw err;
+		}
 	}
 
-	// Skip API calls for offline-first - they'll be handled by client
-	if (url.pathname.startsWith('/api/')) {
-		event.respondWith(
-			fetch(request)
-				.then((response) => {
-					// Cache successful API responses
-					if (response.ok) {
-						const cacheCopy = response.clone();
-						caches.open(RUNTIME_CACHE).then((cache) => {
-							cache.put(request, cacheCopy);
-						});
-					}
-					return response;
-				})
-				.catch(() => {
-					// Return cached response if available
-					return caches.match(request).then((cached) => {
-						return (
-							cached ||
-							new Response(
-								JSON.stringify({ error: 'offline', cached: false }),
-								{
-									status: 503,
-									statusText: 'Service Unavailable',
-									headers: { 'Content-Type': 'application/json' }
-								}
-							)
-						);
-					});
-				})
-		);
-		return;
-	}
-
-	// For HTML, CSS, JS - network first
-	if (
-		request.method === 'GET' &&
-		(url.pathname.endsWith('.html') ||
-			url.pathname.endsWith('.js') ||
-			url.pathname.endsWith('.css') ||
-			url.pathname.endsWith('.json') ||
-			url.pathname.endsWith('.png') ||
-			url.pathname.endsWith('.jpg') ||
-			url.pathname.endsWith('.jpeg') ||
-			url.pathname.endsWith('.gif') ||
-			url.pathname.endsWith('.svg') ||
-			url.pathname.endsWith('.woff') ||
-			url.pathname.endsWith('.woff2') ||
-			url.pathname.endsWith('.ttf') ||
-			url.pathname.endsWith('.patt'))
-	) {
-		event.respondWith(
-			fetch(request)
-				.then((response) => {
-					if (response.ok) {
-						const cacheCopy = response.clone();
-						caches.open(RUNTIME_CACHE).then((cache) => {
-							cache.put(request, cacheCopy);
-						});
-					}
-					return response;
-				})
-				.catch(() => {
-					return caches.match(request).then((cached) => {
-						return (
-							cached ||
-							new Response('Offline - resource not available', {
-								status: 503,
-								statusText: 'Service Unavailable'
-							})
-						);
-					});
-				})
-		);
-		return;
-	}
-
-	// For other requests, use cache first
-	event.respondWith(
-		caches.match(request).then((cached) => {
-			return (
-				cached ||
-				fetch(request).then((response) => {
-					if (response.ok) {
-						const cacheCopy = response.clone();
-						caches.open(RUNTIME_CACHE).then((cache) => {
-							cache.put(request, cacheCopy);
-						});
-					}
-					return response;
-				})
-			);
-		})
-	);
+	event.respondWith(respond());
 });
-
-// Background sync for queued actions when connection returns
-self.addEventListener('sync', ((event: Event) => {
-	const syncEvent = event as ExtendableEvent & { tag: string };
-	if (syncEvent.tag === 'sync-game-data') {
-		syncEvent.waitUntil(
-			Promise.resolve().then(() => {
-				// Notify all clients that sync is happening
-				return self.clients.matchAll().then((clients) => {
-					clients.forEach((client) => {
-						client.postMessage({
-							type: 'SYNC_START',
-							tag: syncEvent.tag
-						});
-					});
-				});
-			})
-		);
-	}
-}) as EventListener);
-
-// Message handling for client communication
-self.addEventListener('message', (event: ExtendableMessageEvent) => {
-	if (event.data && event.data.type === 'SKIP_WAITING') {
-		self.skipWaiting();
-	}
-});
-
-export {};
