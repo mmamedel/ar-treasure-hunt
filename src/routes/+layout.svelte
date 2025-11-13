@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createGameState } from '$lib/stores/gameState.svelte';
+	import { loadSession } from '$lib/stores/gameSessionPersisted';
 
 	let { children } = $props();
-	createGameState();
+	loadSession();
 </script>
 
 <svelte:head>

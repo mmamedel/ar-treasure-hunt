@@ -1,3 +1,4 @@
+import './load-env';
 import { PrismaClient } from '@prisma/client';
 import { PrismaClient as PrismaClientEdge } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
