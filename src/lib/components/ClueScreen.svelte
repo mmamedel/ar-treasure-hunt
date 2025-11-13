@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import CaptureSuccess from './CaptureSuccess.svelte';
 	const gameState = getGameState();
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
@@ -12,45 +13,47 @@
 	}
 </script>
 
-<div class="screen-container">
-	<div class="header">
-		<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
-		<div class="timer">⏱️ {gameState.totalTime}</div>
-	</div>
-
-	<div class="container">
-		<div class="clue-card">
-			<div class="clue-number">Pista #{treasureNumber}</div>
-			<div class="clue-icon">{currentTreasure.emoji}</div>
-			<div class="clue-text">
-				{currentTreasure.clue}
-			</div>
+{#if currentTreasure.found}
+	<CaptureSuccess />
+{:else}
+	<div class="screen-container">
+		<div class="header">
+			<div class="progress">Pista {treasureNumber} de {totalTreasures}</div>
+			<div class="timer">⏱️ {gameState.totalTime}</div>
 		</div>
 
-		<button class="camera-button" onclick={handleOpenCamera}>
-			<span class="camera-icon">📷</span>
-			<span>Abrir Câmera</span>
-		</button>
+		<div class="container">
+			<div class="clue-card">
+				<div class="clue-number">Pista #{treasureNumber}</div>
+				<div class="clue-icon">{currentTreasure.emoji}</div>
+				<div class="clue-text">
+					{currentTreasure.clue}
+				</div>
+			</div>
 
-		<div class="instructions">
-			<p>Encontre o local indicado pela pista</p>
-			<p>
-				Procure pelo marcador {currentTreasure.markerType === 'kanji' ? 'Kanji' : 'Hiro'} no local
+			<button class="camera-button" onclick={handleOpenCamera}>
+				<span class="camera-icon">📷</span>
+				<span>Abrir Câmera</span>
+			</button>
+
+			<div class="instructions">
+				<p>Encontre o local indicado pela pista</p>
+				<p>Procure pela marca no local</p>
+			</div>
+
+			<div class="progress-bar">
+				<div
+					class="progress-fill"
+					style="width: {((treasureNumber - 1) / totalTreasures) * 100}%"
+				></div>
+			</div>
+
+			<p class="treasures-found">
+				{gameState.treasures.filter((t) => t.found).length} tesouros encontrados
 			</p>
 		</div>
-
-		<div class="progress-bar">
-			<div
-				class="progress-fill"
-				style="width: {((treasureNumber - 1) / totalTreasures) * 100}%"
-			></div>
-		</div>
-
-		<p class="treasures-found">
-			{gameState.treasures.filter((t) => t.found).length} tesouros encontrados
-		</p>
 	</div>
-</div>
+{/if}
 
 <style>
 	.screen-container {

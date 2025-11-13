@@ -16,8 +16,10 @@
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 
+	gameState.captureTreasure();
+
 	function handleBack() {
-		goto('/clue');
+		goto('/');
 	}
 
 	async function handleCapture() {

@@ -1,11 +1,10 @@
 import { PersistedState } from 'runed';
-import { createGameState } from './gameState.svelte';
+import { createGameState, type Treasure } from './gameState.svelte';
 
 const GAME_SSESION_KEY = 'GameSession ';
 
 export interface Question {
-	id: string;
-	questionNumber: number;
+	id: number;
 	start?: number;
 	end?: number;
 }
@@ -17,8 +16,12 @@ export interface GameSession {
 	questions: Question[];
 }
 
+export function getSession() {
+	return new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, undefined);
+}
+
 export function loadSession() {
-	const session = new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, undefined);
+	const session = getSession();
 
 	if (session.current?.playerName) {
 		// TODO: Sync local session to DB
@@ -26,18 +29,24 @@ export function loadSession() {
 		return createGameState({
 			playerName: session.current.playerName,
 			startTime: session.current.start,
-			currentTreasureIndex: 0
+			currentTreasureIndex: 0 // TODO calculate what treasure the user is based on what is in the local storage
 		});
 	} else {
 		return createGameState();
 	}
 }
 
-export async function createSession(name: string, startTime: number) {
+export async function createSession(name: string, startTime: number, startTreasure: Treasure) {
 	new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, {
 		playerName: name,
 		start: startTime,
-		questions: []
+		questions: [
+			{
+				id: startTreasure.id,
+				start: startTreasure.start,
+				end: startTreasure.capturedAt
+			}
+		]
 	});
 
 	// Create Session in DB via API (server-side)
@@ -55,4 +64,36 @@ export async function createSession(name: string, startTime: number) {
 	} catch (error) {
 		console.error('Failed to create game session', error);
 	}
+}
+
+export function addTreasure(treasure: Treasure) {
+	const session = getSession();
+	session.current?.questions.push({
+		id: treasure.id,
+		start: treasure.start,
+		end: treasure.capturedAt
+	});
+
+	// TODO Update DB
+}
+
+export function updateTreasures(treasure: Treasure) {
+	const session = getSession();
+
+	const foundTreasure = session.current?.questions.find(
+		(storedTreasure) => storedTreasure.id === treasure.id
+	);
+
+	if (!foundTreasure) {
+		console.warn('Treasure not found in the localStorage. Adding it.');
+		session.current?.questions.push({
+			id: treasure.id,
+			start: treasure.start,
+			end: treasure.capturedAt
+		});
+	} else {
+		foundTreasure.end = treasure.capturedAt;
+	}
+
+	// TODO Update DB
 }
