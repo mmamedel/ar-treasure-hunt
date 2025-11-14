@@ -112,17 +112,38 @@ export function updateSessionTreasures(treasure: Treasure) {
 	// TODO Update DB
 }
 
-export function setSessionGameFinished(endTime: number) {
+export async function setSessionGameFinished(endTime: number) {
 	const session = getSession();
 
 	if (session.current) {
 		session.current.isFinished = true;
 		session.current.end = endTime;
+
+		// Call API to update game session as completed
+		try {
+			const response = await fetch('/api/game-session/complete', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					playerName: session.current.playerName,
+					treasures: session.current.treasures,
+					endTime
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				console.error('Failed to complete game session:', error);
+			} else {
+				const result = await response.json();
+				console.log('Game session completed successfully:', result);
+			}
+		} catch (error) {
+			console.error('Failed to complete game session', error);
+		}
 	} else {
 		throw new Error('session was not defined when setting game finished');
 	}
-
-	// TODO Update DB
 }
 
 export function clearGameSession() {
