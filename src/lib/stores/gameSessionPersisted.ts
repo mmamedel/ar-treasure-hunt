@@ -81,22 +81,46 @@ export async function createSession(name: string, startTime: number, treasures: 
 	}
 }
 
-export function setSessionCurrentTreasureIndex(index: number) {
+export async function setSessionCurrentTreasureIndex(index: number) {
 	const session = getSession();
 
 	if (session.current) {
 		session.current.currentTreasureIndex = index;
+
+		// Call API to update treasure index in DB
+		try {
+			const response = await fetch('/api/treasure/set-index', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					playerName: session.current.playerName,
+					index
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				console.error('Failed to set treasure index in DB:', error);
+			} else {
+				const result = await response.json();
+				console.log('Treasure index updated successfully:', result);
+			}
+		} catch (error) {
+			console.error('Failed to set treasure index in DB', error);
+		}
 	} else {
 		throw new Error('session was not defined when setting current treasure index');
 	}
-
-	// TODO Update DB
 }
 
-export function updateSessionTreasures(treasure: Treasure) {
+export async function updateSessionTreasures(treasure: Treasure) {
 	const session = getSession();
 
-	const storedTreasure = session.current?.treasures.find(
+	if (!session.current) {
+		throw new Error('Session not found');
+	}
+
+	const storedTreasure = session.current.treasures.find(
 		(storedTreasure) => storedTreasure.id === treasure.id
 	);
 
@@ -107,9 +131,30 @@ export function updateSessionTreasures(treasure: Treasure) {
 		storedTreasure.start = treasure.start;
 		storedTreasure.end = treasure.capturedAt;
 		storedTreasure.found = treasure.found;
-	}
 
-	// TODO Update DB
+		try {
+			const response = await fetch('/api/treasure/update', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					playerName: session.current.playerName,
+					treasureId: treasure.id,
+					start: treasure.start,
+					end: treasure.capturedAt
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				console.error('Failed to update treasure in DB:', error);
+			} else {
+				const result = await response.json();
+				console.log('Treasure updated successfully:', result);
+			}
+		} catch (error) {
+			console.error('Failed to update treasure in DB', error);
+		}
+	}
 }
 
 export async function setSessionGameFinished(endTime: number) {
