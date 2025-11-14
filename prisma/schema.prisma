@@ -15,6 +15,7 @@ model GameSession {
   treasures            Treasure[]
   currentTreasureIndex Int
   hasReceivedPrize     Boolean    @default(false)
+  hasFinished          Boolean    @default(false)
 }
 
 model Treasure {

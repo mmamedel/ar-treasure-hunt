@@ -2,6 +2,7 @@
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import QRCode from 'qrcode';
 
+	let qrCode = $state('');
 	let qrCodeUrl = $state('');
 
 	const gameState = getGameState();
@@ -9,7 +10,8 @@
 	async function generateQR() {
 		// Generate QR code pointing to your app route
 		const url = `${window.location.origin}/prize-distribution?playerName=${gameState.playerName}`;
-		qrCodeUrl = await QRCode.toDataURL(url);
+		qrCodeUrl = url;
+		qrCode = await QRCode.toDataURL(url);
 	}
 
 	generateQR();
@@ -34,9 +36,10 @@
 	<div class="completion-message">
 		Mostre esse QRCode no quisque to jogo para receber seu prêmio
 	</div>
-	{#if qrCodeUrl}
-		<img src={qrCodeUrl} alt="QR Code" />
+	{#if qrCode}
+		<img src={qrCode} alt="QR Code" />
 	{/if}
+	<a href={qrCodeUrl}>Link</a>
 </div>
 
 <style>
