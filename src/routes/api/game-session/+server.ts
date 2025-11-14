@@ -1,10 +1,14 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
+import type { SessionTreasure } from '$lib/stores/gameSessionPersisted';
 
 interface CreateGameSessionRequest {
 	playerName: string;
 	startTime: number;
+	treasures: SessionTreasure[];
+	currentTreasureIndex?: number;
+	isFinished?: boolean;
 }
 
 interface ErrorResponse {
@@ -14,7 +18,7 @@ interface ErrorResponse {
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = (await request.json()) as CreateGameSessionRequest;
-		const { playerName, startTime } = body;
+		const { playerName, startTime, treasures, currentTreasureIndex = 0, isFinished = false } = body;
 
 		// Validate input
 		if (!playerName || typeof playerName !== 'string') {
@@ -43,12 +47,36 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
+		// Validate optional currentTreasureIndex
+		if (currentTreasureIndex !== undefined && typeof currentTreasureIndex !== 'number') {
+			const errorResponse: ErrorResponse = { error: 'currentTreasureIndex must be a number' };
+			return json(errorResponse, { status: 400 });
+		}
+
+		// Validate optional isFinished
+		if (isFinished !== undefined && typeof isFinished !== 'boolean') {
+			const errorResponse: ErrorResponse = { error: 'isFinished must be a boolean' };
+			return json(errorResponse, { status: 400 });
+		}
+
 		// Create the game session
 		// Note: Prisma will handle uniqueness constraint violation
 		const gameSession = await prisma.gameSession.create({
 			data: {
 				playerName: playerName.trim(),
-				start: new Date(startTime)
+				start: new Date(startTime),
+				hasReceivedPrize: false,
+				treasures: {
+					createMany: {
+						data: treasures.map((treasure) => ({
+							treasureNumber: treasure.id,
+							start: treasure.start ? new Date(treasure.start) : undefined,
+							end: treasure.end ? new Date(treasure.end) : undefined,
+							found: treasure.found
+						}))
+					}
+				},
+				currentTreasureIndex: currentTreasureIndex
 			}
 		});
 

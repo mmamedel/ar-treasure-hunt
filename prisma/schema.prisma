@@ -8,18 +8,21 @@ datasource db {
 }
 
 model GameSession {
-  id         Int        @id @default(autoincrement())
-  playerName String     @unique
-  start      DateTime   @default(now())
-  end        DateTime?
-  questions  Question[]
+  id                   Int        @id @default(autoincrement())
+  playerName           String     @unique
+  start                DateTime
+  end                  DateTime?
+  treasures            Treasure[]
+  currentTreasureIndex Int
+  hasReceivedPrize     Boolean    @default(false)
 }
 
-model Question {
+model Treasure {
   id             Int         @id @default(autoincrement())
   gameSessionId  Int
   gameSession    GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
-  questionNumber Int
+  treasureNumber Int
   start          DateTime    @default(now())
   end            DateTime?
+  found          Boolean     @default(false)
 }

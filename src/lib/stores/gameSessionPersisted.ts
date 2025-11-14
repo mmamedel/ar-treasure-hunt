@@ -3,7 +3,7 @@ import { createGameState, type Treasure } from './gameState.svelte';
 
 const GAME_SSESION_KEY = 'GameSession ';
 
-export interface Question {
+export interface SessionTreasure {
 	id: number;
 	start?: number;
 	end?: number;
@@ -14,7 +14,7 @@ export interface GameSession {
 	playerName: string;
 	start: number;
 	end?: number;
-	questions: Question[];
+	treasures: SessionTreasure[];
 	currentTreasureIndex: number;
 	isFinished: boolean;
 }
@@ -34,7 +34,7 @@ export function loadSession() {
 			startTime: session.current.start,
 			endTime: session.current.end,
 			currentTreasureIndex: session.current.currentTreasureIndex,
-			treasuresData: session.current.questions,
+			treasuresData: session.current.treasures,
 			isFinished: session.current.isFinished
 		});
 	} else {
@@ -53,7 +53,7 @@ export async function createSession(name: string, startTime: number, treasures: 
 	new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, {
 		playerName: name,
 		start: startTime,
-		questions: allTreasures,
+		treasures: allTreasures,
 		currentTreasureIndex: 0,
 		isFinished: false
 	});
@@ -63,7 +63,13 @@ export async function createSession(name: string, startTime: number, treasures: 
 		const response = await fetch('/api/game-session', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ playerName: name, startTime })
+			body: JSON.stringify({
+				playerName: name,
+				startTime,
+				treasures,
+				currentTreasureIndex: 0,
+				isFinished: false
+			})
 		});
 
 		if (!response.ok) {
@@ -90,7 +96,7 @@ export function setSessionCurrentTreasureIndex(index: number) {
 export function updateSessionTreasures(treasure: Treasure) {
 	const session = getSession();
 
-	const storedTreasure = session.current?.questions.find(
+	const storedTreasure = session.current?.treasures.find(
 		(storedTreasure) => storedTreasure.id === treasure.id
 	);
 

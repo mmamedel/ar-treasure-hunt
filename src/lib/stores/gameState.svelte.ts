@@ -5,7 +5,7 @@ import {
 	setSessionCurrentTreasureIndex,
 	setSessionGameFinished,
 	updateSessionTreasures,
-	type Question
+	type SessionTreasure
 } from './gameSessionPersisted';
 import { onOnlineStatusChange } from '../offline';
 
@@ -15,7 +15,7 @@ export interface GameStateProps {
 	endTime?: number;
 	isFinished: boolean;
 	currentTreasureIndex: number;
-	treasuresData: Question[];
+	treasuresData: SessionTreasure[];
 }
 
 export interface Treasure {
