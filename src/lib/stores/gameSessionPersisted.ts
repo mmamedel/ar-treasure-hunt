@@ -116,3 +116,14 @@ export function setSessionGameFinished(endTime: number) {
 		throw new Error('session was not defined when setting game finished');
 	}
 }
+
+export function clearGameSession() {
+	try {
+		const session = getSession();
+		session.current = undefined;
+		localStorage.removeItem(GAME_SSESION_KEY);
+		console.log('Game session cleared from localStorage');
+	} catch (error) {
+		console.error('Failed to clear game session:', error);
+	}
+}

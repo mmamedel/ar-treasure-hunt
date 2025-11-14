@@ -16,7 +16,8 @@
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 
-	gameState.captureTreasure();
+	// FIXME Testing only
+	// gameState.captureTreasure();
 
 	function handleBack() {
 		goto('/');
