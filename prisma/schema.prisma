@@ -12,6 +12,7 @@ model GameSession {
   playerName           String     @unique
   start                DateTime
   end                  DateTime?
+  durationMs           Int?
   treasures            Treasure[]
   currentTreasureIndex Int
   hasReceivedPrize     Boolean    @default(false)

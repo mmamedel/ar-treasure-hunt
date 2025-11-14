@@ -6,6 +6,7 @@ import type { SessionTreasure } from '$lib/stores/gameSessionPersisted';
 interface UpdateGameSessionRequest {
 	playerName: string;
 	treasures: SessionTreasure[];
+	startTime: number;
 	endTime: number;
 }
 
@@ -17,12 +18,13 @@ interface SuccessResponse {
 	message: string;
 	hasFinished: boolean;
 	allTreasuresFound: boolean;
+	durationMs: number;
 }
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = (await request.json()) as UpdateGameSessionRequest;
-		const { playerName, treasures, endTime } = body;
+		const { playerName, treasures, startTime, endTime } = body;
 
 		// Validate input
 		if (!playerName || typeof playerName !== 'string') {
@@ -40,8 +42,18 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
+		if (typeof startTime !== 'number' || startTime <= 0) {
+			const errorResponse: ErrorResponse = { error: 'startTime must be a positive number' };
+			return json(errorResponse, { status: 400 });
+		}
+
 		if (typeof endTime !== 'number' || endTime <= 0) {
 			const errorResponse: ErrorResponse = { error: 'endTime must be a positive number' };
+			return json(errorResponse, { status: 400 });
+		}
+
+		if (endTime < startTime) {
+			const errorResponse: ErrorResponse = { error: 'endTime cannot be before startTime' };
 			return json(errorResponse, { status: 400 });
 		}
 
@@ -57,33 +69,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
-		// Find the game session
-		const gameSession = await (
-			prisma.gameSession.findUnique as unknown as (args: {
-				where: { playerName: string };
-			}) => Promise<{ id: number; playerName: string } | null>
-		)({
-			where: { playerName: playerName.trim() }
-		});
-
-		if (!gameSession) {
-			const errorResponse: ErrorResponse = { error: 'Game session not found' };
-			return json(errorResponse, { status: 404 });
-		}
+		// Calculate duration (end - start) in milliseconds
+		const startDate = new Date(startTime);
+		const endDate = new Date(endTime);
+		const durationMs = endDate.getTime() - startDate.getTime();
 
 		// Update game session as finished
 		const updatedSession = await prisma.gameSession.update({
 			where: { playerName: playerName.trim() },
 			data: {
 				hasFinished: true,
-				end: new Date(endTime)
+				start: startDate,
+				end: endDate,
+				durationMs: durationMs
 			}
 		});
 
 		const successResponse: SuccessResponse = {
 			message: 'Game session completed successfully',
 			hasFinished: updatedSession.hasFinished,
-			allTreasuresFound: allTreasuresComplete
+			allTreasuresFound: allTreasuresComplete,
+			durationMs: durationMs
 		};
 
 		return json(successResponse, { status: 200 });

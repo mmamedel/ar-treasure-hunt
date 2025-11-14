@@ -226,14 +226,6 @@
 		gap: 0.5rem;
 	}
 
-	.status-item label {
-		font-weight: 600;
-		color: #666;
-		font-size: 0.875rem;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
 	.status-label {
 		font-weight: 600;
 		color: #666;

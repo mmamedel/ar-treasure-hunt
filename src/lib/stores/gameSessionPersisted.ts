@@ -172,6 +172,7 @@ export async function setSessionGameFinished(endTime: number) {
 				body: JSON.stringify({
 					playerName: session.current.playerName,
 					treasures: session.current.treasures,
+					startTime: session.current.start,
 					endTime
 				})
 			});
