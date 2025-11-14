@@ -23,7 +23,7 @@
 		<div class="sparkles">✨</div>
 	</div>
 
-	<h1>PARABÉNS!</h1>
+	<h1>PARABÉNS {gameState.playerName}!</h1>
 	<h1>Você pegou todos os tesouros!</h1>
 
 	<div class="stats">

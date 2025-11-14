@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import { goto } from '$app/navigation';
 
 	let { data } = $props();
 
@@ -40,16 +40,22 @@
 		if (rank === 3) return '🥉';
 		return '';
 	}
+
+	function handleBack() {
+		goto('/');
+	}
 </script>
 
 <svelte:head>
-	<title>Leaderboard - AR Treasure Hunt</title>
+	<title>Ranking - AR Treasure Hunt</title>
 </svelte:head>
 
 <div class="container">
 	<div class="header">
-		<h1>🏆 Leaderboard</h1>
-		<p class="subtitle">Top 50 Fastest Players</p>
+		<div></div>
+		<button class="back-button" onclick={handleBack}>«</button>
+		<h1>🏆 Ranking</h1>
+		<p class="subtitle">Top 50 Jogadores Mais Rapidos</p>
 	</div>
 
 	{#if playerInfo}
@@ -69,10 +75,10 @@
 			<thead>
 				<tr>
 					<th class="rank-col">Rank</th>
-					<th class="name-col">Player Name</th>
-					<th class="start-col">Started</th>
-					<th class="end-col">Finished</th>
-					<th class="duration-col">Duration</th>
+					<th class="name-col">Nome</th>
+					<th class="start-col">Início</th>
+					<th class="end-col">Fim</th>
+					<th class="duration-col">Tempo de Jogo</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -111,6 +117,7 @@
 		min-height: 100vh;
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		padding: 2rem;
+		margin-top: 1.5rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -138,7 +145,7 @@
 		width: 100%;
 		max-width: 1000px;
 		margin-bottom: 2rem;
-		padding: 1.5rem;
+		padding: 0.5rem 0;
 		background: white;
 		border-radius: 12px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -148,6 +155,7 @@
 	.highlight-content {
 		display: flex;
 		align-items: center;
+		padding: 0 1rem;
 		gap: 1.5rem;
 	}
 
@@ -295,10 +303,6 @@
 			font-size: 1.5rem;
 		}
 
-		.player-highlight {
-			padding: 1rem;
-		}
-
 		.highlight-content {
 			gap: 1rem;
 		}
@@ -337,5 +341,19 @@
 		.duration-col {
 			width: 100px;
 		}
+	}
+
+	.back-button {
+		position: fixed;
+		top: 1rem;
+		left: 1.5rem;
+		background: rgba(255, 255, 255, 0.2);
+		color: white;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 20px;
+		font-size: 16px;
+		cursor: pointer;
+		backdrop-filter: blur(10px);
 	}
 </style>

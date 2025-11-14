@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadSession } from '$lib/stores/gameSessionPersisted';
-	import ClearStorageButton from '$lib/components/ClearStorageButton.svelte';
+	import MenuButton from '$lib/components/MenuButton.svelte';
 
 	let { children } = $props();
 	loadSession();
@@ -13,7 +13,7 @@
 
 <div class="app-container">
 	{@render children()}
-	<ClearStorageButton />
+	<MenuButton />
 </div>
 
 <style>
