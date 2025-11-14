@@ -119,7 +119,6 @@ export class GameState {
 		let elapsedTime = 0;
 		if ((props?.isFinished, props?.endTime)) {
 			elapsedTime = props.endTime - props.startTime;
-			console.log(props.endTime, props.startTime, elapsedTime, this.formatTime(elapsedTime));
 		}
 		this.duration = $state(this.formatTime(elapsedTime));
 

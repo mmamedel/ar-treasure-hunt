@@ -1,13 +1,58 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-
 	let { data } = $props();
 
 	const { prizeStatus } = data;
 
+	let isMarking = $state(false);
+	let successMessage = $state('');
+	let errorMessage = $state('');
+
+	let prizeStatusState = $state(prizeStatus);
+
 	function formatDate(date: Date | undefined): string {
 		if (!date) return 'N/A';
 		return new Date(date).toLocaleString();
+	}
+
+	async function markPrizeAsDelivered() {
+		isMarking = true;
+		errorMessage = '';
+		successMessage = '';
+
+		try {
+			const response = await fetch('/api/prize/mark-delivered', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					playerName: prizeStatusState.playerName
+				})
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				errorMessage = error.error || 'Failed to mark prize as delivered';
+				isMarking = false;
+				return;
+			}
+
+			const result = await response.json();
+			successMessage = result.message || 'Prize marked as delivered successfully!';
+
+			// Update the local status
+			prizeStatusState.hasReceivedPrize = true;
+			prizeStatusState.message = 'This player has already received their prize.';
+			prizeStatusState.eligibleForPrize = false;
+
+			isMarking = false;
+			// Reload page data after 2 seconds
+			/* setTimeout(() => {
+				window.location.reload();
+			}, 2000); */
+		} catch (error) {
+			console.error('Error marking prize as delivered:', error);
+			errorMessage = 'An error occurred. Please try again.';
+			isMarking = false;
+		}
 	}
 </script>
 
@@ -23,62 +68,91 @@
 
 	<div class="card">
 		<div class="player-info">
-			<h2>Player: {prizeStatus.playerName}</h2>
+			<h2>Player: {prizeStatusState.playerName}</h2>
 		</div>
 
 		<div class="status-section">
 			<div class="status-grid">
 				<div class="status-item">
 					<span class="status-label">Game Status</span>
-					<span class={prizeStatus.isFinished ? 'status-badge finished' : 'status-badge pending'}>
-						{prizeStatus.isFinished ? '✓ Finished' : '⏳ In Progress'}
+					<span
+						class={prizeStatusState.isFinished ? 'status-badge finished' : 'status-badge pending'}
+					>
+						{prizeStatusState.isFinished ? '✓ Finished' : '⏳ In Progress'}
 					</span>
 				</div>
 
 				<div class="status-item">
 					<span class="status-label">Prize Status</span>
 					<span
-						class={prizeStatus.hasReceivedPrize ? 'status-badge received' : 'status-badge pending'}
+						class={prizeStatusState.hasReceivedPrize
+							? 'status-badge received'
+							: 'status-badge pending'}
 					>
-						{prizeStatus.hasReceivedPrize ? '✓ Received' : '⊘ Not Received'}
+						{prizeStatusState.hasReceivedPrize ? '✓ Received' : '⊘ Not Received'}
 					</span>
 				</div>
 			</div>
 
 			<div class="timing-info">
-				{#if prizeStatus.startTime}
+				{#if prizeStatusState.startTime}
 					<p>
 						<strong>Started:</strong>
-						{formatDate(prizeStatus.startTime)}
+						{formatDate(prizeStatusState.startTime)}
 					</p>
 				{/if}
-				{#if prizeStatus.endTime}
+				{#if prizeStatusState.endTime}
 					<p>
 						<strong>Finished:</strong>
-						{formatDate(prizeStatus.endTime)}
+						{formatDate(prizeStatusState.endTime)}
 					</p>
 				{/if}
 			</div>
 		</div>
 
 		<div class="message-section">
-			<div class={`message ${prizeStatus.eligibleForPrize ? 'eligible' : 'ineligible'}`}>
+			<div class={`message ${prizeStatusState.eligibleForPrize ? 'eligible' : 'ineligible'}`}>
 				<div class="message-icon">
-					{#if prizeStatus.eligibleForPrize}
+					{#if prizeStatusState.eligibleForPrize}
 						✅
 					{:else}
 						⚠️
 					{/if}
 				</div>
 				<div class="message-content">
-					<p>{prizeStatus.message}</p>
+					<p>{prizeStatusState.message}</p>
 				</div>
 			</div>
+
+			{#if successMessage}
+				<div class="message success-message">
+					<div class="message-icon">✓</div>
+					<div class="message-content">
+						<p>{successMessage}</p>
+					</div>
+				</div>
+			{/if}
+
+			{#if errorMessage}
+				<div class="message error-message">
+					<div class="message-icon">✕</div>
+					<div class="message-content">
+						<p>{errorMessage}</p>
+					</div>
+				</div>
+			{/if}
 		</div>
 
-		{#if prizeStatus.eligibleForPrize}
+		{#if prizeStatusState.eligibleForPrize && !successMessage}
 			<div class="action-section">
-				<button class="btn-primary">Mark Prize as Delivered</button>
+				<button class="btn-primary" onclick={markPrizeAsDelivered} disabled={isMarking}>
+					{#if isMarking}
+						<span class="spinner"></span>
+						Marking...
+					{:else}
+						✓ Mark Prize as Delivered
+					{/if}
+				</button>
 			</div>
 		{/if}
 	</div>
@@ -264,15 +338,54 @@
 		font-size: 1rem;
 		cursor: pointer;
 		transition: all 0.3s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 	}
 
-	.btn-primary:hover {
+	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
 		box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 	}
 
-	.btn-primary:active {
+	.btn-primary:active:not(:disabled) {
 		transform: translateY(0);
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	.spinner {
+		display: inline-block;
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top: 2px solid white;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.message.success-message {
+		background: #d4edda;
+		border: 1px solid #c3e6cb;
+		color: #155724;
+		margin-top: 1rem;
+	}
+
+	.message.error-message {
+		background: #f8d7da;
+		border: 1px solid #f5c6cb;
+		color: #721c24;
+		margin-top: 1rem;
 	}
 
 	@media (max-width: 600px) {
