@@ -101,10 +101,10 @@ export class GameState {
 	startTime: number;
 	endTime?: number;
 	duration?: string;
-	elapsedTime = $state(0);
+	elapsedTimeClock = $state(0);
 	currentTreasureIndex: number;
 	treasures = $state<Treasure[]>([...initialTreasures]);
-	elapsedTimeCode = $state('00:00');
+	elapsedTimeCodeClock = $state('00:00');
 	isGameActive: boolean;
 	isOnline = $state(true);
 	unsubscribeOnlineStatus: (() => void) | null = null;
@@ -167,8 +167,8 @@ export class GameState {
 
 		this.timerInterval = setInterval(() => {
 			if (this.startTime > 0 && this.isGameActive) {
-				this.elapsedTime = Date.now() - this.startTime;
-				this.elapsedTimeCode = this.formatTime(this.elapsedTime);
+				this.elapsedTimeClock = Date.now() - this.startTime;
+				this.elapsedTimeCodeClock = this.formatTime(this.elapsedTimeClock);
 			}
 		}, 1000);
 	}
@@ -188,7 +188,7 @@ export class GameState {
 	startGame(playerName: string) {
 		this.playerName = playerName;
 		this.startTime = Date.now();
-		this.elapsedTime = 0;
+		this.elapsedTimeClock = 0;
 		this.isGameActive = true;
 
 		this.treasures[this.currentTreasureIndex].start = this.startTime;

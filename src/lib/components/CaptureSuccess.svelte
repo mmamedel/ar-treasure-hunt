@@ -29,7 +29,7 @@
 	<div class="stats">
 		<div class="stat-item">
 			<span class="stat-label">Tempo Total</span>
-			<span class="stat-value">{gameState.totalTime}</span>
+			<span class="stat-value">{gameState.elapsedTimeCodeClock}</span>
 		</div>
 		<div class="stat-item">
 			<span class="stat-label">Tesouros Restantes</span>
