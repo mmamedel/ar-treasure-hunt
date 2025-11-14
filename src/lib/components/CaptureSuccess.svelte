@@ -37,23 +37,16 @@
 		</div>
 	</div>
 
-	{#if remainingTreasures > 0}
-		<button class="continue-button" onclick={handleContinue}> Próxima Pista → </button>
-		<p class="motivational">
-			{#if remainingTreasures === 1}
-				🎯 Apenas mais um tesouro para completar!
-			{:else if remainingTreasures <= 3}
-				🔥 Você está quase lá! Continue assim!
-			{:else}
-				💪 Excelente! Continue explorando!
-			{/if}
-		</p>
-	{:else}
-		<div class="completion-message">
-			<h2>🎉 Parabéns!</h2>
-			<p>Você encontrou todos os tesouros!</p>
-		</div>
-	{/if}
+	<button class="continue-button" onclick={handleContinue}> Próxima Pista → </button>
+	<p class="motivational">
+		{#if remainingTreasures === 1}
+			🎯 Apenas mais um tesouro para completar!
+		{:else if remainingTreasures <= 3}
+			🔥 Você está quase lá! Continue assim!
+		{:else}
+			💪 Excelente! Continue explorando!
+		{/if}
+	</p>
 
 	<div class="progress-bar">
 		<div class="progress-fill" style="width: {(treasureNumber / totalTreasures) * 100}%"></div>
@@ -254,22 +247,6 @@
 		background: linear-gradient(90deg, #4caf50, #8bc34a);
 		transition: width 1s ease;
 		box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-	}
-
-	.completion-message {
-		margin: 20px 0;
-		animation: fadeInUp 0.6s ease 0.5s both;
-	}
-
-	.completion-message h2 {
-		font-size: 28px;
-		margin-bottom: 10px;
-	}
-
-	.completion-message p {
-		font-size: 18px;
-		margin-bottom: 20px;
-		opacity: 0.9;
 	}
 
 	/* Mobile optimizations */

@@ -115,6 +115,8 @@ export function setSessionGameFinished(endTime: number) {
 	} else {
 		throw new Error('session was not defined when setting game finished');
 	}
+
+	// TODO Update DB
 }
 
 export function clearGameSession() {
