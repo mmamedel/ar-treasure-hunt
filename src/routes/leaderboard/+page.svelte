@@ -6,8 +6,6 @@
 
 	const { top50 } = data;
 
-	console.log(top50);
-
 	// Load player info from gameState
 	const gameState = getGameState();
 	const playerName = gameState?.playerName;
