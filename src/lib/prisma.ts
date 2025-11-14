@@ -9,4 +9,4 @@ const prisma = isProduction
 	? new PrismaClientEdge().$extends(withAccelerate())
 	: new PrismaClient();
 
-export default prisma;
+export default prisma as PrismaClient;

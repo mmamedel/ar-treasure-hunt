@@ -26,7 +26,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Check if name already exists in database
-		const result = await prisma.gameSession.count({ where: { playerName: trimmedName } });
+		const result = await prisma.gameSession.count({
+			where: { playerName: { equals: trimmedName, mode: 'insensitive' } }
+		});
 
 		const available = result === 0;
 

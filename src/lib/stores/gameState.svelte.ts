@@ -23,6 +23,7 @@ export interface Treasure {
 	emoji: string;
 	name: string;
 	clue: string;
+	hint: string;
 	markerId: string;
 	markerType: 'kanji' | 'hiro';
 	found: boolean;
@@ -34,8 +35,9 @@ export const initialTreasures: Treasure[] = [
 	{
 		id: 0,
 		emoji: '📚',
-		name: 'Ministério de Jesus',
-		clue: 'Durante seu ministério, Jesus curou um homem que esperava por um milagre há 38 anos. Onde ele foi?',
+		name: 'Piscina (Batismo de Jesus)',
+		clue: 'Um homem vestido de camelo chamou as pessoas para se arrependerem. Aqui ele mergulhou o maior de todos.',
+		hint: 'Procure onde a água é funda o bastante para descer e subir, como no Jordão.',
 		markerId: 'marker-1',
 		markerType: 'kanji',
 		found: false
@@ -43,8 +45,9 @@ export const initialTreasures: Treasure[] = [
 	{
 		id: 1,
 		emoji: '🎨',
-		name: 'Paleta das Cores',
-		clue: 'No lugar onde a criatividade ganha vida, encontre o arco-íris escondido.',
+		name: 'Lava-olho (cura do cego – João 9:6,7)',
+		clue: 'Um homem recebeu barro nos olhos e, depois de lavar, viu o mundo pela primeira vez.',
+		hint: 'Veja onde as pessoas limpam os olhos de verdade. Lá está a marca',
 		markerId: 'marker-2',
 		markerType: 'kanji',
 		found: false
@@ -52,8 +55,9 @@ export const initialTreasures: Treasure[] = [
 	{
 		id: 2,
 		emoji: '⚽',
-		name: 'Bola Dourada',
-		clue: 'Onde os campeões praticam seus sonhos, procure pela glória esportiva.',
+		name: ' Torneira (samaritana no poço – João 4:6-15)',
+		clue: 'Uma mulher foi buscar água e encontrou algo melhor: água que dá vida eterna.',
+		hint: 'Procure onde a água jorra facilmente, como num pequeno poço moderno',
 		markerId: 'marker-3',
 		markerType: 'kanji',
 		found: false
@@ -61,17 +65,19 @@ export const initialTreasures: Treasure[] = [
 	{
 		id: 3,
 		emoji: '🎭',
-		name: 'Máscara Misteriosa',
-		clue: 'No palco onde histórias ganham vida, a cortina esconde um segredo.',
+		name: 'Mirante (tentação no alto monte – Mateus 4:8)',
+		clue: 'De um lugar alto, alguém viu todos os reinos da terra em um instante.',
+		hint: 'Olhe de onde se pode enxergar mais longe, lá você encontrará a marca.',
 		markerId: 'marker-4',
 		markerType: 'hiro',
 		found: false
-	}
-	/*{
+	},
+	{
 		id: 4,
 		emoji: '🔬',
-		name: 'Frasco da Ciência',
-		clue: 'No laboratório das descobertas, o conhecimento borbulha em segredo.',
+		name: 'Karaokê (Jesus e discípulos cantaram – Mateus 26:30)',
+		clue: 'Depois de uma refeição sagrada, eles levantaram a voz em harmonia.',
+		hint: 'Procure onde as pessoas também soltam a voz e cantam juntas.',
 		markerId: 'marker-5',
 		markerType: 'kanji',
 		found: false
@@ -79,21 +85,13 @@ export const initialTreasures: Treasure[] = [
 	{
 		id: 5,
 		emoji: '🎵',
-		name: 'Nota Musical',
-		clue: 'Onde as melodias ecoam, encontre a harmonia perdida.',
+		name: 'Auditório (Jesus na sinagoga – Lucas 4:16-21)',
+		clue: 'Ele abriu o rolo e leu palavras sobre boas novas para todos.',
+		hint: 'Veja onde as pessoas se reúnem para ouvir alguém falar em público. Lá está a marca.',
 		markerId: 'marker-6',
 		markerType: 'hiro',
 		found: false
-	},
-	{
-		id: 6,
-		emoji: '🌟',
-		name: 'Estrela Brilhante',
-		clue: 'No topo do mundo escolar, uma luz guia os perdidos.',
-		markerId: 'marker-7',
-		markerType: 'kanji',
-		found: false
-	} */
+	}
 ];
 
 export class GameState {
