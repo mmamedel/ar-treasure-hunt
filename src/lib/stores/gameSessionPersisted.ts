@@ -1,7 +1,7 @@
 import { PersistedState } from 'runed';
 import { createGameState, type Treasure } from './gameState.svelte';
 
-const GAME_SSESION_KEY = 'GameSession ';
+const GAME_SSESION_KEY = 'GameSession';
 
 export interface SessionTreasure {
 	id: number;
