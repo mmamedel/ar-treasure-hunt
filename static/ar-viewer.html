@@ -2,17 +2,43 @@
 <html lang="pt-BR">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<title>AR Treasure Hunt</title>
-		<script src="/js/aframe-v1.6.0.min.js"></script>
-		<script src="/js/aframe-ar (2).js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+					"mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+				}
+			}
+		</script>
 		<style>
 			body {
 				margin: 0;
+				padding: 0;
 				overflow: hidden;
+				width: 100vw;
+				height: 100vh;
+				position: fixed;
 				font-family:
 					-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
 					sans-serif;
+			}
+
+			#container {
+				width: 100vw;
+				height: 100vh;
+				position: fixed;
+				top: 0;
+				left: 0;
+				overflow: hidden;
 			}
 
 			#loading {
@@ -117,29 +143,19 @@
 			<p id="treasureClue"></p>
 		</div>
 
-		<a-scene
-			embedded
-			arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; barcodeRatio: 0.6;"
-			vr-mode-ui="enabled: false"
-			loading-screen="enabled: false"
-		>
-			<a-assets>
-				<a-asset-item id="treasureModel" src=""></a-asset-item>
-			</a-assets>
+		<div id="container"></div>
 
-			<!-- Marker will be added dynamically by JavaScript -->
-			<a-marker id="marker" type="pattern" url="">
-				<a-entity id="model" gltf-model="#treasureModel"> </a-entity>
-			</a-marker>
+		<script type="module">
+			import * as THREE from 'three';
+			import { MindARThree } from 'mindar-image-three';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-			<a-entity camera></a-entity>
-		</a-scene>
-
-		<script>
 			let TREASURES_CONFIG = [];
 			let gameSession = null;
 			let currentTreasure = null;
 			let markerVisible = false;
+			let mindarThree = null;
+			let anchor = null;
 
 			// Load treasure configuration from JSON
 			async function loadTreasures() {
@@ -151,6 +167,84 @@
 					console.error('Error loading treasures:', error);
 					showError('Erro ao carregar configuração dos tesouros');
 				}
+			}
+
+			// Parse scale, rotation, position strings to arrays
+			function parseVector3(str) {
+				return str.split(' ').map(parseFloat);
+			}
+
+			// Initialize Three.js AR scene
+			async function initARScene(treasureConfig) {
+				// Initialize MindAR
+				mindarThree = new MindARThree({
+					container: document.querySelector('#container'),
+					imageTargetSrc: treasureConfig.imageTarget
+				});
+
+				const { renderer, scene, camera } = mindarThree;
+
+				// Add lights
+				const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+				scene.add(light);
+
+				// Create anchor for the target
+				anchor = mindarThree.addAnchor(treasureConfig.targetIndex);
+
+				// Load GLTF model
+				const loader = new GLTFLoader();
+				loader.load(
+					`models/${treasureConfig.model.file}`,
+					(gltf) => {
+						const model = gltf.scene;
+
+						// Apply scale, rotation, position from config
+						const scale = parseVector3(treasureConfig.model.scale);
+						model.scale.set(scale[0], scale[1], scale[2]);
+
+						const rotation = parseVector3(treasureConfig.model.rotation);
+						model.rotation.set(
+							THREE.MathUtils.degToRad(rotation[0]),
+							THREE.MathUtils.degToRad(rotation[1]),
+							THREE.MathUtils.degToRad(rotation[2])
+						);
+
+						const position = parseVector3(treasureConfig.model.position);
+						model.position.set(position[0], position[1], position[2]);
+
+						// Add model to anchor
+						anchor.group.add(model);
+
+						console.log('Model loaded successfully');
+					},
+					undefined,
+					(error) => {
+						console.error('Error loading model:', error);
+						showError('Erro ao carregar modelo 3D');
+					}
+				);
+
+				// Setup target found/lost events
+				anchor.onTargetFound = () => {
+					markerVisible = true;
+					console.log('Target found!');
+					enableClickToContinue();
+				};
+
+				anchor.onTargetLost = () => {
+					markerVisible = false;
+					console.log('Target lost!');
+				};
+
+				// Start AR
+				await mindarThree.start();
+
+				// Start render loop
+				renderer.setAnimationLoop(() => {
+					renderer.render(scene, camera);
+				});
+
+				console.log('AR scene initialized');
 			}
 
 			// Initialize
@@ -191,55 +285,17 @@
 					document.getElementById('treasureClue').textContent = treasureConfig.clue;
 					document.getElementById('treasureInfo').style.display = 'block';
 
-					// Setup AR marker
-					setupMarker(treasureConfig);
+					// Initialize AR scene with Three.js
+					await initARScene(treasureConfig);
 
 					// Hide loading screen
 					setTimeout(() => {
 						document.getElementById('loading').classList.add('hidden');
-					}, 1000);
+					}, 500);
 				} catch (error) {
 					console.error('Error initializing AR:', error);
 					showError('Erro ao carregar o jogo: ' + error.message);
 				}
-			}
-
-			function setupMarker(treasureConfig) {
-				const marker = document.getElementById('marker');
-				const modelAsset = document.getElementById('treasureModel');
-
-				// Setup barcode marker
-				marker.setAttribute('type', 'barcode');
-				marker.setAttribute('value', treasureConfig.markerType.toString());
-				marker.removeAttribute('preset');
-				marker.removeAttribute('url');
-
-				// Setup 3D model
-				modelAsset.setAttribute('src', `models/${treasureConfig.model.file}`);
-
-				// Set scale from JSON
-				const scale = treasureConfig.model.scale;
-				document.getElementById('model').setAttribute('scale', scale);
-
-				// Set rotation from JSON
-				const rotation = treasureConfig.model.rotation;
-				document.getElementById('model').setAttribute('rotation', rotation);
-
-				// Set position from JSON
-				const position = treasureConfig.model.position;
-				document.getElementById('model').setAttribute('position', position);
-
-				// Listen for marker visibility
-				marker.addEventListener('markerFound', () => {
-					markerVisible = true;
-					console.log('Marker found!');
-					enableClickToContinue();
-				});
-
-				marker.addEventListener('markerLost', () => {
-					markerVisible = false;
-					console.log('Marker lost!');
-				});
 			}
 
 			function enableClickToContinue() {
