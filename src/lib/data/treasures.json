@@ -40,7 +40,7 @@
 		"markerId": "marker-3",
 		"markerType": 2,
 		"model": {
-			"file": "wood_bucket.glb",
+			"file": "wood_bucket2.glb",
 			"scale": "0.1 0.1 0.1",
 			"rotation": "-90 0 0",
 			"position": "0 0 0"
