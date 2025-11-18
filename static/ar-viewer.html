@@ -266,6 +266,13 @@
 				// Update treasures array in session
 				gameSession.treasures[gameSession.currentTreasureIndex] = currentTreasure;
 
+				// Check if this is the last treasure
+				if (gameSession.currentTreasureIndex >= gameSession.treasures.length - 1) {
+					gameSession.endTime = now;
+					gameSession.isFinished = true;
+					console.log('Game completed! All treasures found.');
+				}
+
 				// Save to localStorage
 				localStorage.setItem('GameSession', JSON.stringify(gameSession));
 
