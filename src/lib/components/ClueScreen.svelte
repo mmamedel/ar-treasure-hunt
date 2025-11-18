@@ -9,7 +9,7 @@
 	let totalTreasures = $derived(gameState.treasures.length);
 
 	function handleOpenCamera() {
-		goto('/ar-camera');
+		window.location.href = '/ar-viewer.html';
 	}
 </script>
 

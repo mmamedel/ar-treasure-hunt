@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AR Treasure Hunt</title>
+		<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				font-family:
+					-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+					sans-serif;
+			}
+
+			#loading {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				z-index: 9999;
+				transition: opacity 0.5s;
+			}
+
+			#loading.hidden {
+				opacity: 0;
+				pointer-events: none;
+			}
+
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 4px solid rgba(255, 255, 255, 0.3);
+				border-top-color: white;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin-bottom: 20px;
+			}
+
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			#treasureInfo {
+				position: absolute;
+				top: 20px;
+				left: 20px;
+				right: 20px;
+				background: rgba(0, 0, 0, 0.8);
+				color: white;
+				padding: 20px;
+				border-radius: 12px;
+				backdrop-filter: blur(10px);
+				z-index: 1000;
+			}
+
+			#treasureInfo h2 {
+				margin: 0 0 10px 0;
+				font-size: 20px;
+			}
+
+			#treasureInfo p {
+				margin: 5px 0;
+				font-size: 14px;
+				line-height: 1.4;
+			}
+
+			#errorMessage {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(220, 38, 38, 0.95);
+				color: white;
+				padding: 30px;
+				border-radius: 12px;
+				text-align: center;
+				z-index: 9999;
+				max-width: 80%;
+			}
+
+			#errorMessage h2 {
+				margin: 0 0 10px 0;
+			}
+
+			#errorMessage button {
+				margin-top: 20px;
+				background: white;
+				color: #dc2626;
+				border: none;
+				padding: 12px 24px;
+				border-radius: 8px;
+				font-weight: 600;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="loading">
+			<div class="spinner"></div>
+			<p>Carregando AR...</p>
+		</div>
+
+		<div id="treasureInfo" style="display: none">
+			<h2 id="treasureName"></h2>
+			<p id="treasureClue"></p>
+		</div>
+
+		<a-scene
+			embedded
+			arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; barcodeRatio: 0.6;"
+			vr-mode-ui="enabled: false"
+			loading-screen="enabled: false"
+		>
+			<a-assets>
+				<a-asset-item id="treasureModel" src=""></a-asset-item>
+			</a-assets>
+
+			<!-- Marker will be added dynamically by JavaScript -->
+			<a-marker id="marker" type="pattern" url="">
+				<a-entity
+					id="model"
+					gltf-model="#treasureModel"
+					scale="0.5 0.5 0.5"
+					position="0 0 0"
+					rotation="0 0 0"
+				>
+				</a-entity>
+			</a-marker>
+
+			<a-entity camera></a-entity>
+		</a-scene>
+
+		<script>
+			let TREASURES_CONFIG = [];
+			let gameSession = null;
+			let currentTreasure = null;
+			let markerVisible = false;
+
+			// Load treasure configuration from JSON
+			async function loadTreasures() {
+				try {
+					const response = await fetch('treasures.json');
+					TREASURES_CONFIG = await response.json();
+					console.log('Treasures loaded:', TREASURES_CONFIG.length);
+				} catch (error) {
+					console.error('Error loading treasures:', error);
+					showError('Erro ao carregar configuração dos tesouros');
+				}
+			}
+
+			// Initialize
+			async function init() {
+				try {
+					// Load treasures first
+					await loadTreasures();
+
+					// Load game session from localStorage
+					const sessionData = localStorage.getItem('GameSession');
+					if (!sessionData) {
+						showError('Nenhum jogo ativo encontrado. Inicie um jogo primeiro!');
+						return;
+					}
+
+					gameSession = JSON.parse(sessionData);
+
+					// Check if game is finished
+					if (gameSession.isFinished) {
+						showError('O jogo já foi finalizado!');
+						return;
+					}
+
+					// Get current treasure
+					const treasureIndex = gameSession.currentTreasureIndex;
+					const treasureConfig = TREASURES_CONFIG[treasureIndex];
+
+					if (!treasureConfig) {
+						showError('Tesouro não encontrado!');
+						return;
+					}
+
+					currentTreasure = gameSession.treasures[treasureIndex];
+
+					// Update UI with treasure info
+					document.getElementById('treasureName').textContent =
+						`${treasureConfig.emoji} ${treasureConfig.name}`;
+					document.getElementById('treasureClue').textContent = treasureConfig.clue;
+					document.getElementById('treasureInfo').style.display = 'block';
+
+					// Setup AR marker
+					setupMarker(treasureConfig);
+
+					// Hide loading screen
+					setTimeout(() => {
+						document.getElementById('loading').classList.add('hidden');
+					}, 1000);
+				} catch (error) {
+					console.error('Error initializing AR:', error);
+					showError('Erro ao carregar o jogo: ' + error.message);
+				}
+			}
+
+			function setupMarker(treasureConfig) {
+				const marker = document.getElementById('marker');
+				const modelAsset = document.getElementById('treasureModel');
+
+				// Setup barcode marker
+				marker.setAttribute('type', 'barcode');
+				marker.setAttribute('value', treasureConfig.markerType.toString());
+				marker.removeAttribute('preset');
+				marker.removeAttribute('url');
+
+				// Setup 3D model
+				modelAsset.setAttribute('src', `models/${treasureConfig.modelFile}`);
+
+				// Listen for marker visibility
+				marker.addEventListener('markerFound', () => {
+					markerVisible = true;
+					console.log('Marker found!');
+					enableClickToContinue();
+				});
+
+				marker.addEventListener('markerLost', () => {
+					markerVisible = false;
+					console.log('Marker lost!');
+				});
+			}
+
+			function enableClickToContinue() {
+				// Update UI to show treasure was found
+				document.getElementById('treasureInfo').innerHTML = `
+					<h2> Tesouro Encontrado!</h2>
+					<p>Toque na tela para continuar</p>
+				`;
+				// Enable click anywhere to continue
+				document.body.style.cursor = 'pointer';
+				// Add click listener to entire document
+				document.addEventListener('click', handleTreasureFound, { once: true });
+			}
+
+			function handleTreasureFound() {
+				if (!gameSession || !currentTreasure) return;
+
+				const now = Date.now();
+
+				// Update current treasure
+				currentTreasure.found = true;
+				currentTreasure.end = now;
+
+				// Update treasures array in session
+				gameSession.treasures[gameSession.currentTreasureIndex] = currentTreasure;
+
+				// Save to localStorage
+				localStorage.setItem('GameSession', JSON.stringify(gameSession));
+
+				console.log('Treasure marked as found, redirecting...');
+				// Redirect back to app immediately
+				window.location.href = '/';
+			}
+
+			function showError(message) {
+				const errorDiv = document.createElement('div');
+				errorDiv.id = 'errorMessage';
+				errorDiv.innerHTML = `
+					<h2> Erro</h2>
+					<p>${message}</p>
+					<button onclick="window.location.href='/'">Voltar ao Jogo</button>
+				`;
+				document.body.appendChild(errorDiv);
+				document.getElementById('loading').classList.add('hidden');
+			}
+
+			// Start when page loads
+			window.addEventListener('load', init);
+		</script>
+	</body>
+</html>
