@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import CaptureSuccess from './CaptureSuccess.svelte';
 	const gameState = getGameState();
