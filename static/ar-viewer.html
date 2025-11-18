@@ -129,14 +129,7 @@
 
 			<!-- Marker will be added dynamically by JavaScript -->
 			<a-marker id="marker" type="pattern" url="">
-				<a-entity
-					id="model"
-					gltf-model="#treasureModel"
-					scale="0.5 0.5 0.5"
-					position="0 0 0"
-					rotation="0 0 0"
-				>
-				</a-entity>
+				<a-entity id="model" gltf-model="#treasureModel"> </a-entity>
 			</a-marker>
 
 			<a-entity camera></a-entity>
@@ -222,7 +215,19 @@
 				marker.removeAttribute('url');
 
 				// Setup 3D model
-				modelAsset.setAttribute('src', `models/${treasureConfig.modelFile}`);
+				modelAsset.setAttribute('src', `models/${treasureConfig.model.file}`);
+
+				// Set scale from JSON
+				const scale = treasureConfig.model.scale;
+				document.getElementById('model').setAttribute('scale', scale);
+
+				// Set rotation from JSON
+				const rotation = treasureConfig.model.rotation;
+				document.getElementById('model').setAttribute('rotation', rotation);
+
+				// Set position from JSON
+				const position = treasureConfig.model.position;
+				document.getElementById('model').setAttribute('position', position);
 
 				// Listen for marker visibility
 				marker.addEventListener('markerFound', () => {

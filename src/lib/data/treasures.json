@@ -7,7 +7,12 @@
 		"hint": "Procure onde a água é funda o bastante para descer e subir, como no Jordão.",
 		"markerId": "marker-1",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "old_torah_scroll.glb",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	},
 	{
@@ -18,7 +23,12 @@
 		"hint": "Veja onde as pessoas limpam os olhos de verdade. Lá está a marca",
 		"markerId": "marker-2",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "old_torah_scroll.glb",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	},
 	{
@@ -29,7 +39,12 @@
 		"hint": "Procure onde a água jorra facilmente, como num pequeno poço moderno",
 		"markerId": "marker-3",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "wood_bucket.glb",
+			"scale": "0.1 0.1 0.1",
+			"rotation": "-90 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	},
 	{
@@ -40,7 +55,12 @@
 		"hint": "Olhe de onde se pode enxergar mais longe, lá você encontrará a marca.",
 		"markerId": "marker-4",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "old_torah_scroll.glb",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	},
 	{
@@ -51,7 +71,12 @@
 		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas.",
 		"markerId": "marker-5",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "old_torah_scroll.glb",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	},
 	{
@@ -62,7 +87,12 @@
 		"hint": "Veja onde as pessoas se reúnem para ouvir alguém falar em público. Lá está a marca.",
 		"markerId": "marker-6",
 		"markerType": 2,
-		"modelFile": "old_torah_scroll.glb",
+		"model": {
+			"file": "old_torah_scroll.glb",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
 		"found": false
 	}
 ]

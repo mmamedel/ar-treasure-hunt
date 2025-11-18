@@ -27,7 +27,12 @@ export interface Treasure {
 	hint: string;
 	markerId: string;
 	markerType: number;
-	modelFile: string;
+	model: {
+		file: string;
+		scale: string;
+		rotation: string;
+		position: string;
+	};
 	found: boolean;
 	start?: number;
 	capturedAt?: number;
