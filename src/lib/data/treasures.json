@@ -13,6 +13,11 @@
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
+		"animation": {
+			"type": "rotation",
+			"axis": "y",
+			"speed": 0.5
+		},
 		"found": false
 	},
 	{
@@ -29,6 +34,11 @@
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
+		"animation": {
+			"type": "bobbing",
+			"speed": 1,
+			"amount": 0.15
+		},
 		"found": false
 	},
 	{
@@ -44,6 +54,12 @@
 			"scale": "0.1 0.1 0.1",
 			"rotation": "-90 0 0",
 			"position": "0 0 0"
+		},
+		"animation": {
+			"type": "swing",
+			"axis": "z",
+			"speed": 1,
+			"amount": 0.2
 		},
 		"found": false
 	},

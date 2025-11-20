@@ -156,6 +156,8 @@
 			let markerVisible = false;
 			let mindarThree = null;
 			let anchor = null;
+			let model = null;
+			let animationConfig = null;
 
 			// Load treasure configuration from JSON
 			async function loadTreasures() {
@@ -172,6 +174,62 @@
 			// Parse scale, rotation, position strings to arrays
 			function parseVector3(str) {
 				return str.split(' ').map(parseFloat);
+			}
+
+			// Apply animation to model based on configuration
+			function applyAnimation(model, config) {
+				if (!config || !config.type) return;
+
+				const speed = config.speed || 1;
+
+				switch (config.type) {
+					case 'rotation':
+						// Rotation animation
+						const axis = config.axis || 'y';
+						const rotationSpeed = speed * 0.01; // Convert to radians per frame
+
+						if (axis === 'x') {
+							model.rotation.x += rotationSpeed;
+						} else if (axis === 'y') {
+							model.rotation.y += rotationSpeed;
+						} else if (axis === 'z') {
+							model.rotation.z += rotationSpeed;
+						}
+						break;
+
+					case 'bobbing':
+						// Up and down bobbing animation
+						const bobbingSpeed = speed * 0.05;
+						const bobbingAmount = config.amount || 0.1;
+						model.position.y += Math.sin(Date.now() * bobbingSpeed * 0.001) * bobbingAmount * 0.01;
+						break;
+
+					case 'scale-pulse':
+						// Scale pulsing animation
+						const pulseSpeed = speed * 0.002;
+						const pulseAmount = config.amount || 0.1;
+						const scaleFactor = 1 + Math.sin(Date.now() * pulseSpeed) * pulseAmount;
+						model.scale.setScalar(scaleFactor);
+						break;
+
+					case 'swing':
+						// Swinging/pendulum animation
+						const swingSpeed = speed * 0.002;
+						const swingAmount = config.amount || 0.3;
+						const swingAxis = config.axis || 'z';
+
+						if (swingAxis === 'x') {
+							model.rotation.x = Math.sin(Date.now() * swingSpeed) * swingAmount;
+						} else if (swingAxis === 'y') {
+							model.rotation.y = Math.sin(Date.now() * swingSpeed) * swingAmount;
+						} else if (swingAxis === 'z') {
+							model.rotation.z = Math.sin(Date.now() * swingSpeed) * swingAmount;
+						}
+						break;
+
+					default:
+						console.warn(`Unknown animation type: ${config.type}`);
+				}
 			}
 
 			// Initialize Three.js AR scene
@@ -196,7 +254,7 @@
 				loader.load(
 					`models/${treasureConfig.model.file}`,
 					(gltf) => {
-						const model = gltf.scene;
+						model = gltf.scene;
 
 						// Apply scale, rotation, position from config
 						const scale = parseVector3(treasureConfig.model.scale);
@@ -211,6 +269,9 @@
 
 						const position = parseVector3(treasureConfig.model.position);
 						model.position.set(position[0], position[1], position[2]);
+
+						// Store animation config if present
+						animationConfig = treasureConfig.animation || null;
 
 						// Add model to anchor
 						anchor.group.add(model);
@@ -241,6 +302,10 @@
 
 				// Start render loop
 				renderer.setAnimationLoop(() => {
+					// Apply animation if configured and model is loaded
+					if (model && animationConfig) {
+						applyAnimation(model, animationConfig);
+					}
 					renderer.render(scene, camera);
 				});
 
