@@ -90,6 +90,16 @@ export async function updateSessionTreasures(treasure: Treasure) {
 	}
 }
 
+export async function setSessionCurrentTreasureIndex(index: number) {
+	const session = getSession();
+
+	if (session.current) {
+		session.current.currentTreasureIndex = index;
+	} else {
+		throw new Error('session was not defined when setting current treasure index');
+	}
+}
+
 export function clearGameSession() {
 	try {
 		const session = getSession();

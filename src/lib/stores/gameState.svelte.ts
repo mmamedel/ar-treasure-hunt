@@ -3,6 +3,7 @@ import treasuresData from '../data/treasures.json';
 import { onOnlineStatusChange } from '../offline';
 import {
 	createSession,
+	setSessionCurrentTreasureIndex,
 	updateSessionTreasures,
 	type SessionTreasure
 } from './gameSessionPersisted';
@@ -139,6 +140,7 @@ export class GameState {
 		this.currentTreasureIndex = nextIndex;
 		this.treasures[this.currentTreasureIndex].start = Date.now();
 
+		setSessionCurrentTreasureIndex(nextIndex);
 		updateSessionTreasures(this.treasures[this.currentTreasureIndex]);
 	}
 
