@@ -8,15 +8,14 @@ datasource db {
 }
 
 model GameSession {
-  id                   Int        @id @default(autoincrement())
-  playerName           String     @unique
-  start                DateTime
-  end                  DateTime?
-  durationMs           Int?
-  treasures            Treasure[]
-  currentTreasureIndex Int
-  hasReceivedPrize     Boolean    @default(false)
-  hasFinished          Boolean    @default(false)
+  id               Int        @id @default(autoincrement())
+  playerName       String     @unique
+  start            DateTime
+  end              DateTime?
+  durationMs       Int?
+  treasures        Treasure[]
+  hasReceivedPrize Boolean    @default(false)
+  hasFinished      Boolean    @default(false)
 }
 
 model Treasure {

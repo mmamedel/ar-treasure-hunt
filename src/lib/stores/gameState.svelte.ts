@@ -1,14 +1,11 @@
-import { goto } from '$app/navigation';
 import { getContext, setContext } from 'svelte';
+import treasuresData from '../data/treasures.json';
+import { onOnlineStatusChange } from '../offline';
 import {
 	createSession,
-	setSessionCurrentTreasureIndex,
-	setSessionGameFinished,
 	updateSessionTreasures,
 	type SessionTreasure
 } from './gameSessionPersisted';
-import { onOnlineStatusChange } from '../offline';
-import treasuresData from '../data/treasures.json';
 
 export interface GameStateProps {
 	playerName: string;
@@ -25,8 +22,6 @@ export interface Treasure {
 	name: string;
 	clue: string;
 	hint: string;
-	markerId: string;
-	markerType: number;
 	model: {
 		file: string;
 		scale: string;
@@ -35,7 +30,7 @@ export interface Treasure {
 	};
 	found: boolean;
 	start?: number;
-	capturedAt?: number;
+	end?: number;
 }
 
 export const initialTreasures = treasuresData satisfies Treasure[];
@@ -74,7 +69,7 @@ export class GameState {
 			const storedTreasure = props?.treasuresData.find((data) => data.id === treasure.id);
 
 			treasure.start = storedTreasure?.start;
-			treasure.capturedAt = storedTreasure?.end;
+			treasure.end = storedTreasure?.end;
 			treasure.found = storedTreasure?.found || false;
 		}
 
@@ -139,30 +134,11 @@ export class GameState {
 		createSession(this.playerName, this.startTime, this.treasures);
 	}
 
-	captureTreasure() {
-		const currentTreasure = this.treasures[this.currentTreasureIndex];
-		currentTreasure.found = true;
-		currentTreasure.capturedAt = Date.now();
-
-		updateSessionTreasures(currentTreasure);
-
-		// Check if all treasures are found
-		const nextIndex = this.currentTreasureIndex + 1;
-		if (nextIndex >= this.treasures.length) {
-			this.isGameActive = false;
-			this.stopTimer();
-			setSessionGameFinished(currentTreasure.capturedAt);
-		}
-
-		goto('/');
-	}
-
 	nextTreasure() {
 		const nextIndex = this.currentTreasureIndex + 1;
 		this.currentTreasureIndex = nextIndex;
 		this.treasures[this.currentTreasureIndex].start = Date.now();
 
-		setSessionCurrentTreasureIndex(nextIndex);
 		updateSessionTreasures(this.treasures[this.currentTreasureIndex]);
 	}
 

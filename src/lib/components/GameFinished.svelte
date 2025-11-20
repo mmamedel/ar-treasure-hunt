@@ -1,11 +1,15 @@
 <script lang="ts">
+	import { setDBGameSessionFinished, updateDBTreasure } from '$lib/db/client';
+	import { getSession } from '$lib/stores/gameSessionPersisted';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import QRCode from 'qrcode';
+	import { onMount } from 'svelte';
 
 	let qrCode = $state('');
 	let qrCodeUrl = $state('');
 
 	const gameState = getGameState();
+	const session = getSession();
 
 	async function generateQR() {
 		// Generate QR code pointing to your app route
@@ -13,6 +17,36 @@
 		qrCodeUrl = url;
 		qrCode = await QRCode.toDataURL(url);
 	}
+
+	onMount(async () => {
+		await generateQR();
+
+		if (!session.current || session.current.sync) {
+			return;
+		}
+
+		if (!gameState.endTime) {
+			throw new Error('Game end time not set');
+		}
+
+		try {
+			await updateDBTreasure(
+				gameState.playerName,
+				gameState.treasures[gameState.currentTreasureIndex]
+			);
+
+			await setDBGameSessionFinished(
+				gameState.playerName,
+				gameState.startTime,
+				gameState.endTime,
+				gameState.treasures
+			);
+
+			session.current.sync = true;
+		} catch (error) {
+			console.error('Failed to sync treasure and/or session', error);
+		}
+	});
 
 	generateQR();
 </script>

@@ -1,5 +1,6 @@
 import { PersistedState } from 'runed';
 import { createGameState, type Treasure } from './gameState.svelte';
+import { createDBSession } from '$lib/db/client';
 
 const GAME_SSESION_KEY = 'GameSession';
 
@@ -17,6 +18,7 @@ export interface GameSession {
 	treasures: SessionTreasure[];
 	currentTreasureIndex: number;
 	isFinished: boolean;
+	sync: boolean;
 }
 
 export function getSession() {
@@ -27,7 +29,7 @@ export function loadSession() {
 	const session = getSession();
 
 	if (session.current?.playerName) {
-		// TODO: Sync local session to DB
+		// TODO: Sync local session to DB in case session creation has failed
 
 		return createGameState({
 			playerName: session.current.playerName,
@@ -46,70 +48,24 @@ export async function createSession(name: string, startTime: number, treasures: 
 	const allTreasures = treasures.map((treasure) => ({
 		id: treasure.id,
 		start: treasure.start,
-		end: treasure.capturedAt,
+		end: treasure.end,
 		found: treasure.found
 	}));
 
-	new PersistedState<GameSession | undefined>(GAME_SSESION_KEY, {
+	const session = new PersistedState<GameSession>(GAME_SSESION_KEY, {
 		playerName: name,
 		start: startTime,
 		treasures: allTreasures,
 		currentTreasureIndex: 0,
-		isFinished: false
+		isFinished: false,
+		sync: false
 	});
 
-	// Create Session in DB via API (server-side)
 	try {
-		const response = await fetch('/api/game-session', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				playerName: name,
-				startTime,
-				treasures,
-				currentTreasureIndex: 0,
-				isFinished: false
-			})
-		});
-
-		if (!response.ok) {
-			const error = await response.json();
-			console.error('Failed to create game session:', error);
-		}
+		await createDBSession(name, startTime, treasures);
+		session.current.sync = true;
 	} catch (error) {
-		console.error('Failed to create game session', error);
-	}
-}
-
-export async function setSessionCurrentTreasureIndex(index: number) {
-	const session = getSession();
-
-	if (session.current) {
-		session.current.currentTreasureIndex = index;
-
-		// Call API to update treasure index in DB
-		try {
-			const response = await fetch('/api/treasure/set-index', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					playerName: session.current.playerName,
-					index
-				})
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				console.error('Failed to set treasure index in DB:', error);
-			} else {
-				const result = await response.json();
-				console.log('Treasure index updated successfully:', result);
-			}
-		} catch (error) {
-			console.error('Failed to set treasure index in DB', error);
-		}
-	} else {
-		throw new Error('session was not defined when setting current treasure index');
+		console.error('Failed to create Session in DB', error);
 	}
 }
 
@@ -129,66 +85,8 @@ export async function updateSessionTreasures(treasure: Treasure) {
 		throw new Error('Treasure not found in the localStorage');
 	} else {
 		storedTreasure.start = treasure.start;
-		storedTreasure.end = treasure.capturedAt;
+		storedTreasure.end = treasure.end;
 		storedTreasure.found = treasure.found;
-
-		try {
-			const response = await fetch('/api/treasure/update', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					playerName: session.current.playerName,
-					treasureId: treasure.id,
-					start: treasure.start,
-					end: treasure.capturedAt
-				})
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				console.error('Failed to update treasure in DB:', error);
-			} else {
-				const result = await response.json();
-				console.log('Treasure updated successfully:', result);
-			}
-		} catch (error) {
-			console.error('Failed to update treasure in DB', error);
-		}
-	}
-}
-
-export async function setSessionGameFinished(endTime: number) {
-	const session = getSession();
-
-	if (session.current) {
-		session.current.isFinished = true;
-		session.current.end = endTime;
-
-		// Call API to update game session as completed
-		try {
-			const response = await fetch('/api/game-session/complete', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					playerName: session.current.playerName,
-					treasures: session.current.treasures,
-					startTime: session.current.start,
-					endTime
-				})
-			});
-
-			if (!response.ok) {
-				const error = await response.json();
-				console.error('Failed to complete game session:', error);
-			} else {
-				const result = await response.json();
-				console.log('Game session completed successfully:', result);
-			}
-		} catch (error) {
-			console.error('Failed to complete game session', error);
-		}
-	} else {
-		throw new Error('session was not defined when setting game finished');
 	}
 }
 

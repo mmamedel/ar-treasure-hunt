@@ -1,6 +1,11 @@
 <script lang="ts">
+	import { updateDBTreasure } from '$lib/db/client';
+	import { getSession } from '$lib/stores/gameSessionPersisted';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import { onMount } from 'svelte';
+
 	const gameState = getGameState();
+	const session = getSession();
 
 	let currentTreasure = $derived(gameState.treasures[gameState.currentTreasureIndex]);
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
@@ -10,6 +15,19 @@
 	function handleContinue() {
 		gameState.nextTreasure();
 	}
+
+	onMount(async () => {
+		if (!session.current || session.current.sync) {
+			return;
+		}
+
+		try {
+			await updateDBTreasure(gameState.playerName, currentTreasure);
+			session.current.sync = true;
+		} catch (error) {
+			console.error('Failed to update current treasure in db');
+		}
+	});
 </script>
 
 <div class="container">

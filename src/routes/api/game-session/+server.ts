@@ -7,7 +7,6 @@ interface CreateGameSessionRequest {
 	playerName: string;
 	startTime: number;
 	treasures: SessionTreasure[];
-	currentTreasureIndex?: number;
 	isFinished?: boolean;
 }
 
@@ -18,7 +17,7 @@ interface ErrorResponse {
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = (await request.json()) as CreateGameSessionRequest;
-		const { playerName, startTime, treasures, currentTreasureIndex = 0, isFinished = false } = body;
+		const { playerName, startTime, treasures, isFinished = false } = body;
 
 		// Validate input
 		if (!playerName || typeof playerName !== 'string') {
@@ -47,12 +46,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(errorResponse, { status: 400 });
 		}
 
-		// Validate optional currentTreasureIndex
-		if (currentTreasureIndex !== undefined && typeof currentTreasureIndex !== 'number') {
-			const errorResponse: ErrorResponse = { error: 'currentTreasureIndex must be a number' };
-			return json(errorResponse, { status: 400 });
-		}
-
 		// Validate optional isFinished
 		if (isFinished !== undefined && typeof isFinished !== 'boolean') {
 			const errorResponse: ErrorResponse = { error: 'isFinished must be a boolean' };
@@ -75,8 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
 							found: treasure.found
 						}))
 					}
-				},
-				currentTreasureIndex: currentTreasureIndex
+				}
 			}
 		});
 

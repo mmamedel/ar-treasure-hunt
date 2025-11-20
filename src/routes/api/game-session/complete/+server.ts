@@ -5,7 +5,7 @@ import type { SessionTreasure } from '$lib/stores/gameSessionPersisted';
 
 interface UpdateGameSessionRequest {
 	playerName: string;
-	treasures: SessionTreasure[];
+	treasures: SessionTreasure[]; // Only used for validating if the user has found all treasures
 	startTime: number;
 	endTime: number;
 }
