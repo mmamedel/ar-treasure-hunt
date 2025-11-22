@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-	<title>Ranking - AR Treasure Hunt</title>
+	<title>Ranking - Caça ao Tesouro</title>
 </svelte:head>
 
 <div class="container">
@@ -55,7 +55,7 @@
 		<div></div>
 		<button class="back-button" onclick={handleBack}>«</button>
 		<h1>🏆 Ranking</h1>
-		<p class="subtitle">Top 50 Jogadores Mais Rapidos</p>
+		<p class="subtitle">Top 50 Jogadores Mais Rápidos</p>
 	</div>
 
 	{#if playerInfo}

@@ -104,7 +104,7 @@
 
 <div class="container">
 	<div class="logo">🗺️</div>
-	<h1>Caça ao Tesouro AR</h1>
+	<h1>Caça ao Tesouro</h1>
 	<p class="subtitle">Digite seu nome para começar a aventura</p>
 
 	<div class="input-group">

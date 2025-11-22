@@ -30,7 +30,7 @@
 		"targetIndex": 0,
 		"model": {
 			"file": "blind.glb",
-			"scale": "1 1 1",
+			"scale": "0.6 0.6 0.6",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
@@ -46,9 +46,14 @@
 		"targetIndex": 0,
 		"model": {
 			"file": "vase.glb",
-			"scale": "0.1 0.1 0.1",
-			"rotation": "-90 0 0",
+			"scale": "0.6 0.6 0.6",
+			"rotation": "0 0 0",
 			"position": "0 0 0"
+		},
+		"animation": {
+			"type": "rotation",
+			"axis": "y",
+			"speed": 1
 		},
 		"found": false
 	},
@@ -66,6 +71,11 @@
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
+		"animation": {
+			"type": "rotation",
+			"axis": "y",
+			"speed": 1
+		},
 		"found": false
 	},
 	{
@@ -82,6 +92,11 @@
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
+		"animation": {
+			"type": "rotation",
+			"axis": "y",
+			"speed": 1
+		},
 		"found": false
 	},
 	{
@@ -94,7 +109,7 @@
 		"targetIndex": 0,
 		"model": {
 			"file": "old_torah_scroll.glb",
-			"scale": "0.5 0.5 0.5",
+			"scale": "0.15 0.15 0.15",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},

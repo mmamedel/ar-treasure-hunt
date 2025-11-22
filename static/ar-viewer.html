@@ -9,7 +9,7 @@
 		<meta name="mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<title>AR Treasure Hunt</title>
+		<title>Caça ao Tesouro</title>
 		<script type="importmap">
 			{
 				"imports": {
@@ -135,7 +135,6 @@
 	<body>
 		<div id="loading">
 			<div class="spinner"></div>
-			<p>Carregando AR...</p>
 		</div>
 
 		<div id="treasureInfo" style="display: none">
@@ -246,6 +245,20 @@
 				const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 				scene.add(light);
 
+				// Add ambient light for overall scene brightness
+				const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+				scene.add(ambientLight);
+
+				// Add directional light for better illumination
+				const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+				directionalLight.position.set(1, 2, 1);
+				scene.add(directionalLight);
+
+				// Add point light to illuminate the model
+				const pointLight = new THREE.PointLight(0xffffff, 1, 10);
+				pointLight.position.set(0, 1, 0.5);
+				scene.add(pointLight);
+
 				// Create anchor for the target
 				anchor = mindarThree.addAnchor(treasureConfig.targetIndex);
 
@@ -344,12 +357,6 @@
 
 					currentTreasure = gameSession.treasures[treasureIndex];
 
-					// Update UI with treasure info
-					document.getElementById('treasureName').textContent =
-						`${treasureConfig.emoji} ${treasureConfig.name}`;
-					document.getElementById('treasureClue').textContent = treasureConfig.clue;
-					document.getElementById('treasureInfo').style.display = 'block';
-
 					// Initialize AR scene with Three.js
 					await initARScene(treasureConfig);
 
@@ -364,6 +371,7 @@
 			}
 
 			function enableClickToContinue() {
+				document.getElementById('treasureInfo').style.display = 'block';
 				// Update UI to show treasure was found
 				document.getElementById('treasureInfo').innerHTML = `
 					<h2> Tesouro Encontrado!</h2>

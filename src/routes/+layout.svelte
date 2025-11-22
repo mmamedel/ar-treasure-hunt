@@ -7,8 +7,8 @@
 </script>
 
 <svelte:head>
-	<title>Caça ao Tesouro AR</title>
-	<meta name="description" content="Encontre tesouros escondidos no mundo real usando AR" />
+	<title>Caça ao Tesouro</title>
+	<meta name="description" content="Encontre tesouros escondidos no mundo real usando a câmera" />
 </svelte:head>
 
 <div class="app-container">

@@ -1,6 +1,6 @@
 {
-	"name": "Caça ao Tesouro AR",
-	"short_name": "Tesouro AR",
+	"name": "Caça ao Tesouro",
+	"short_name": "Tesouro",
 	"description": "Encontre tesouros escondidos no mundo real usando realidade aumentada",
 	"start_url": "/",
 	"scope": "/",
