@@ -27,6 +27,11 @@
 		goto('/leaderboard');
 		toggleMenu();
 	}
+
+	function handleCollection() {
+		goto('/collection');
+		toggleMenu();
+	}
 </script>
 
 <!-- Floating hamburger button -->
@@ -35,9 +40,11 @@
 <!-- Dropdown menu -->
 {#if isOpen}
 	<div class="menu">
-		<button on:click={handleClear} disabled={isClearing}> Reiniciar </button>
+		<button on:click={handleCollection}> 📦 Coleção </button>
 
-		<button on:click={handleLeaderboard}> Ranking </button>
+		<button on:click={handleLeaderboard}> 🏆 Ranking </button>
+
+		<button on:click={handleClear} disabled={isClearing}> 🔄 Reiniciar </button>
 	</div>
 {/if}
 

@@ -148,6 +148,7 @@
 			import * as THREE from 'three';
 			import { MindARThree } from 'mindar-image-three';
 			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 			let TREASURES_CONFIG = [];
 			let gameSession = null;
@@ -262,8 +263,13 @@
 				// Create anchor for the target
 				anchor = mindarThree.addAnchor(treasureConfig.targetIndex);
 
+				// Setup Draco decoder for compressed models
+				const dracoLoader = new DRACOLoader();
+				dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
+
 				// Load GLTF model
 				const loader = new GLTFLoader();
+				loader.setDRACOLoader(dracoLoader);
 				loader.load(
 					`models/${treasureConfig.model.file}`,
 					(gltf) => {
