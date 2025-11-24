@@ -49,44 +49,27 @@ self.addEventListener('fetch', (event) => {
 	if (event.request.method !== 'GET') return;
 
 	async function respond() {
-		const url = new URL(event.request.url);
 		const cache = await caches.open(CACHE);
 
-		// `build`/`files` can always be served from the cache
-		if (ASSETS.includes(url.pathname)) {
-			const response = await cache.match(url.pathname);
-
-			if (response) {
-				return response;
-			}
-		}
-
-		// for everything else, try the network first, but
-		// fall back to the cache if we're offline
 		try {
-			const response = await fetch(event.request);
+			// Try network first
+			const networkResponse = await fetch(event.request);
 
-			// if we're offline, fetch can return a value that is not a Response
-			// instead of throwing - and we can't pass this non-Response to respondWith
-			if (!(response instanceof Response)) {
-				throw new Error('invalid response from fetch');
+			// Update cache in background
+			async function updateCache() {
+				if (networkResponse.ok) {
+					await cache.put(event.request, networkResponse.clone());
+				}
 			}
+			event.waitUntil(updateCache());
 
-			if (response.status === 200) {
-				cache.put(event.request, response.clone());
-			}
-
-			return response;
+			return networkResponse;
 		} catch (err) {
-			const response = await cache.match(event.request);
+			// Offline fallback: serve cached version
+			const cached = await cache.match(event.request);
+			if (cached) return cached;
 
-			if (response) {
-				return response;
-			}
-
-			// if there's no cache, then just error out
-			// as there is nothing we can do to respond to this request
-			throw err;
+			throw err; // nothing to fallback to
 		}
 	}
 
