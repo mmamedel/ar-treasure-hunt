@@ -1,23 +1,35 @@
 <script lang="ts">
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	const gameState = getGameState();
+	let selectedTreasureId = $state<number | null>(null);
+
+	// Auto-select the last found treasure on mount
+	onMount(() => {
+		const foundTreasures = gameState.treasures.filter((t) => t.found);
+		if (foundTreasures.length > 0) {
+			// Select the last found treasure (highest id)
+			selectedTreasureId = foundTreasures[foundTreasures.length - 1].id;
+		}
+	});
 
 	function handleBack() {
 		goto('/');
 	}
 
-	function getTreasureImage(treasure: any): string {
-		// Return GIF path if found, otherwise show question mark
-		if (treasure.found) {
-			return `/gifs/treasure-${treasure.id}.gif`;
+	function selectTreasure(treasureId: number, found: boolean) {
+		if (found) {
+			selectedTreasureId = treasureId;
 		}
-		return '';
 	}
 
-	function getTreasureClass(found: boolean): string {
-		return found ? 'treasure-card found' : 'treasure-card locked';
+	function getTreasureClass(treasure: any): string {
+		const baseClass = treasure.found ? 'treasure-card found' : 'treasure-card locked';
+		const selectedClass = selectedTreasureId === treasure.id ? ' selected' : '';
+		return baseClass + selectedClass;
 	}
 </script>
 
@@ -28,7 +40,7 @@
 <div class="container">
 	<div class="header">
 		<button class="back-button" onclick={handleBack}>«</button>
-		<h1>📦 Minha Coleção</h1>
+		<h1>🧳 Minha Coleção</h1>
 		<p class="subtitle">
 			{gameState.treasures.filter((t) => t.found).length} de {gameState.treasures.length} Tesouros Encontrados
 		</p>
@@ -36,22 +48,40 @@
 
 	<div class="collection-grid">
 		{#each gameState.treasures as treasure (treasure.id)}
-			<div class={getTreasureClass(treasure.found)}>
+			<div
+				class={getTreasureClass(treasure)}
+				onclick={() => selectTreasure(treasure.id, treasure.found)}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						selectTreasure(treasure.id, treasure.found);
+					}
+				}}
+				role="button"
+				tabindex={treasure.found ? 0 : -1}
+			>
 				<div class="treasure-content">
 					{#if treasure.found}
-						<img
-							src={getTreasureImage(treasure)}
-							alt={treasure.name}
-							class="treasure-image"
-							onerror={(e) => {
-								const target = e.currentTarget as HTMLImageElement;
-								target.style.display = 'none';
-								const fallback = target.nextElementSibling as HTMLElement;
-								if (fallback) fallback.style.display = 'flex';
-							}}
-						/>
-						<div class="fallback-emoji" style="display: none;">
-							{treasure.emoji}
+						<div class="image-wrapper">
+							{#if selectedTreasureId === treasure.id}
+								<!-- Animated GIF - removed from DOM when not selected -->
+								<img
+									src="/gifs/treasure-{treasure.id}.gif"
+									alt=""
+									class="treasure-image gif"
+									in:fade={{ duration: 0 }}
+									out:fade={{ duration: 300 }}
+								/>
+							{:else}
+								<!-- Static PNG - fades in after GIF fades out -->
+								<img
+									src="/gifs/treasure-{treasure.id}-static.png"
+									alt=""
+									class="treasure-image static"
+									in:fade={{ duration: 300, delay: 300 }}
+									out:fade={{ duration: 0 }}
+								/>
+							{/if}
 						</div>
 					{:else}
 						<div class="question-mark">?</div>
@@ -125,9 +155,12 @@
 		border-radius: 16px;
 		overflow: hidden;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+		outline: 4px solid transparent;
+		outline-offset: 0px;
 		transition:
 			transform 0.3s ease,
-			box-shadow 0.3s ease;
+			box-shadow 0.3s ease,
+			outline-color 0.3s ease;
 		cursor: pointer;
 	}
 
@@ -146,31 +179,64 @@
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 	}
 
+	.treasure-card.selected {
+		outline-color: #ffd700;
+		box-shadow:
+			0 0 20px rgba(255, 215, 0, 0.6),
+			0 12px 32px rgba(0, 0, 0, 0.2);
+		transform: translateY(-8px) scale(1.02);
+		animation: selectedPulse 2s ease-in-out infinite;
+	}
+
+	.treasure-card.selected:hover {
+		transform: translateY(-8px) scale(1.02);
+	}
+
+	@keyframes selectedPulse {
+		0%,
+		100% {
+			box-shadow:
+				0 0 20px rgba(255, 215, 0, 0.6),
+				0 12px 32px rgba(0, 0, 0, 0.2);
+		}
+		50% {
+			box-shadow:
+				0 0 30px rgba(255, 215, 0, 0.8),
+				0 12px 32px rgba(0, 0, 0, 0.2);
+		}
+	}
+
 	.treasure-content {
 		width: 100%;
-		height: 200px;
+		height: 250px;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 		position: relative;
+		padding: 0;
 	}
 
 	.treasure-card.found .treasure-content {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		background: #1a1428;
 	}
 
-	.treasure-image {
+	.image-wrapper {
+		position: relative;
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
-	}
-
-	.fallback-emoji {
-		font-size: 5rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.treasure-image {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 16px;
 	}
 
 	.question-mark {
@@ -194,15 +260,11 @@
 		}
 
 		.treasure-content {
-			height: 150px;
+			height: 180px;
 		}
 
 		.question-mark {
 			font-size: 4rem;
-		}
-
-		.fallback-emoji {
-			font-size: 3.5rem;
 		}
 	}
 </style>
