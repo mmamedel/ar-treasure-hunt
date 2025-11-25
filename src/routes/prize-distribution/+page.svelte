@@ -30,17 +30,17 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				errorMessage = error.error || 'Failed to mark prize as delivered';
+				errorMessage = error.error || 'Falha ao marcar prêmio como entregue';
 				isMarking = false;
 				return;
 			}
 
 			const result = await response.json();
-			successMessage = result.message || 'Prize marked as delivered successfully!';
+			successMessage = result.message || 'Prêmio marcado como entregue com sucesso!';
 
 			// Update the local status
 			prizeStatusState.hasReceivedPrize = true;
-			prizeStatusState.message = 'This player has already received their prize.';
+			prizeStatusState.message = 'Este jogador já recebeu seu prêmio.';
 			prizeStatusState.eligibleForPrize = false;
 
 			isMarking = false;
@@ -50,46 +50,46 @@
 			}, 2000); */
 		} catch (error) {
 			console.error('Error marking prize as delivered:', error);
-			errorMessage = 'An error occurred. Please try again.';
+			errorMessage = 'Ocorreu um erro. Por favor, tente novamente.';
 			isMarking = false;
 		}
 	}
 </script>
 
 <svelte:head>
-	<title>Prize Distribution - Support Portal</title>
+	<title>Distribuição de Prêmios - Portal de Suporte</title>
 </svelte:head>
 
 <div class="container">
 	<div class="header">
-		<h1>Prize Distribution Check</h1>
-		<p class="subtitle">Support Personnel Portal</p>
+		<h1>Verificação de Distribuição de Prêmios</h1>
+		<p class="subtitle">Portal de Equipe de Suporte</p>
 	</div>
 
 	<div class="card">
 		<div class="player-info">
-			<h2>Player: {prizeStatusState.playerName}</h2>
+			<h2>Jogador: {prizeStatusState.playerName}</h2>
 		</div>
 
 		<div class="status-section">
 			<div class="status-grid">
 				<div class="status-item">
-					<span class="status-label">Game Status</span>
+					<span class="status-label">Status do Jogo</span>
 					<span
 						class={prizeStatusState.isFinished ? 'status-badge finished' : 'status-badge pending'}
 					>
-						{prizeStatusState.isFinished ? '✓ Finished' : '⏳ In Progress'}
+						{prizeStatusState.isFinished ? '✓ Finalizado' : '⏳ Em Andamento'}
 					</span>
 				</div>
 
 				<div class="status-item">
-					<span class="status-label">Prize Status</span>
+					<span class="status-label">Status do Prêmio</span>
 					<span
 						class={prizeStatusState.hasReceivedPrize
 							? 'status-badge received'
 							: 'status-badge pending'}
 					>
-						{prizeStatusState.hasReceivedPrize ? '✓ Received' : '⊘ Not Received'}
+						{prizeStatusState.hasReceivedPrize ? '✓ Recebido' : '⊘ Não Recebido'}
 					</span>
 				</div>
 			</div>
@@ -97,13 +97,13 @@
 			<div class="timing-info">
 				{#if prizeStatusState.startTime}
 					<p>
-						<strong>Started:</strong>
+						<strong>Iniciado:</strong>
 						{formatDate(prizeStatusState.startTime)}
 					</p>
 				{/if}
 				{#if prizeStatusState.endTime}
 					<p>
-						<strong>Finished:</strong>
+						<strong>Finalizado:</strong>
 						{formatDate(prizeStatusState.endTime)}
 					</p>
 				{/if}
@@ -148,9 +148,9 @@
 				<button class="btn-primary" onclick={markPrizeAsDelivered} disabled={isMarking}>
 					{#if isMarking}
 						<span class="spinner"></span>
-						Marking...
+						Marcando...
 					{:else}
-						✓ Mark Prize as Delivered
+						✓ Marcar Prêmio como Entregue
 					{/if}
 				</button>
 			</div>

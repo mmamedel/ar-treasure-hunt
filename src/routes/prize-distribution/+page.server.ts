@@ -16,11 +16,11 @@ export const load: PageServerLoad = async ({ url }) => {
 	const playerName = url.searchParams.get('playerName');
 
 	if (!playerName) {
-		throw error(400, 'playerName query parameter is required');
+		throw error(400, 'O parâmetro playerName é obrigatório');
 	}
 
 	if (typeof playerName !== 'string' || playerName.trim().length === 0) {
-		throw error(400, 'playerName must be a non-empty string');
+		throw error(400, 'playerName deve ser uma string não vazia');
 	}
 
 	try {
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ url }) => {
 				isFinished: false,
 				hasReceivedPrize: false,
 				eligibleForPrize: false,
-				message: 'Player not found in the system.',
+				message: 'Jogador não encontrado no sistema.',
 				startTime: undefined,
 				endTime: undefined
 			};
@@ -55,12 +55,12 @@ export const load: PageServerLoad = async ({ url }) => {
 		let message = '';
 
 		if (!gameSession.hasFinished) {
-			message = 'This player has not finished the game yet and is not eligible to receive a prize.';
+			message = 'Este jogador ainda não finalizou o jogo e não é elegível para receber um prêmio.';
 		} else if (gameSession.hasReceivedPrize) {
-			message = 'This player has already received their prize.';
+			message = 'Este jogador já recebeu seu prêmio.';
 		} else {
 			eligibleForPrize = true;
-			message = 'This player has completed the game and is eligible to receive a prize!';
+			message = 'Este jogador completou o jogo e está elegível para receber um prêmio!';
 		}
 
 		const prizeStatus: PrizeStatus = {
@@ -76,6 +76,6 @@ export const load: PageServerLoad = async ({ url }) => {
 		return { prizeStatus };
 	} catch (err) {
 		console.error('Error fetching game session:', err);
-		throw error(500, 'Failed to fetch player information');
+		throw error(500, 'Falha ao buscar informações do jogador');
 	}
 };

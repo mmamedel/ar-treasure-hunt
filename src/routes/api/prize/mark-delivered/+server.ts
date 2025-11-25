@@ -22,46 +22,52 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate input
 		if (!playerName || typeof playerName !== 'string') {
-			const errorResponse: ErrorResponse = { error: 'playerName is required and must be a string' };
+			const errorResponse: ErrorResponse = {
+				error: 'playerName é obrigatório e deve ser uma string'
+			};
 			return json(errorResponse, { status: 400 });
 		}
 
 		if (playerName.trim().length === 0) {
-			const errorResponse: ErrorResponse = { error: 'playerName cannot be empty' };
+			const errorResponse: ErrorResponse = { error: 'playerName não pode estar vazio' };
 			return json(errorResponse, { status: 400 });
 		}
 
 		// Find the game session
-		const gameSession = await (prisma.gameSession.findUnique as unknown as (args: {
-			where: { playerName: string };
-		}) => Promise<{ id: number; hasFinished: boolean; hasReceivedPrize: boolean } | null>)({
+		const gameSession = await (
+			prisma.gameSession.findUnique as unknown as (args: {
+				where: { playerName: string };
+			}) => Promise<{ id: number; hasFinished: boolean; hasReceivedPrize: boolean } | null>
+		)({
 			where: { playerName: playerName.trim() }
 		});
 
 		if (!gameSession) {
-			const errorResponse: ErrorResponse = { error: 'Game session not found' };
+			const errorResponse: ErrorResponse = { error: 'Sessão de jogo não encontrada' };
 			return json(errorResponse, { status: 404 });
 		}
 
 		// Check if game is finished
 		if (!gameSession.hasFinished) {
 			const errorResponse: ErrorResponse = {
-				error: 'Player has not finished the game yet'
+				error: 'Jogador ainda não finalizou o jogo'
 			};
 			return json(errorResponse, { status: 400 });
 		}
 
 		// Check if prize already received
 		if (gameSession.hasReceivedPrize) {
-			const errorResponse: ErrorResponse = { error: 'Prize has already been delivered to this player' };
+			const errorResponse: ErrorResponse = { error: 'Prêmio já foi entregue para este jogador' };
 			return json(errorResponse, { status: 400 });
 		}
 
 		// Update game session to mark prize as received
-		const updatedSession = await (prisma.gameSession.update as unknown as (args: {
-			where: { playerName: string };
-			data: { hasReceivedPrize: boolean };
-		}) => Promise<{ hasReceivedPrize: boolean }>)({
+		const updatedSession = await (
+			prisma.gameSession.update as unknown as (args: {
+				where: { playerName: string };
+				data: { hasReceivedPrize: boolean };
+			}) => Promise<{ hasReceivedPrize: boolean }>
+		)({
 			where: { playerName: playerName.trim() },
 			data: {
 				hasReceivedPrize: true
@@ -69,7 +75,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		const successResponse: SuccessResponse = {
-			message: 'Prize marked as delivered successfully',
+			message: 'Prêmio marcado como entregue com sucesso',
 			hasReceivedPrize: updatedSession.hasReceivedPrize
 		};
 
@@ -77,7 +83,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	} catch (error) {
 		console.error('Error marking prize as delivered:', error);
 
-		const errorResponse: ErrorResponse = { error: 'Failed to mark prize as delivered' };
+		const errorResponse: ErrorResponse = { error: 'Falha ao marcar prêmio como entregue' };
 		return json(errorResponse, { status: 500 });
 	}
 };
