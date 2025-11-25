@@ -180,10 +180,13 @@
 	.leaderboard-wrapper {
 		width: 100%;
 		max-width: 1000px;
+		max-height: 70vh;
 		background: white;
 		border-radius: 12px;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-		overflow: hidden;
+		overflow-y: auto;
+		overflow-x: auto;
+		scroll-behavior: smooth;
 	}
 
 	.leaderboard-table {
@@ -197,6 +200,7 @@
 		color: white;
 		position: sticky;
 		top: 0;
+		z-index: 10;
 	}
 
 	.leaderboard-table th {
@@ -313,6 +317,10 @@
 
 		.highlight-info h2 {
 			font-size: 1rem;
+		}
+
+		.leaderboard-wrapper {
+			max-height: 60vh;
 		}
 
 		.leaderboard-table {
