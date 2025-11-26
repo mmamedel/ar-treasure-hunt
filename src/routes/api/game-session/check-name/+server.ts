@@ -9,7 +9,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate input
 		if (!playerName || typeof playerName !== 'string') {
-			return json({ error: 'playerName is required and must be a string' }, { status: 400 });
+			return json(
+				{ error: 'Nome do jogador é obrigatório e deve ser uma string' },
+				{ status: 400 }
+			);
 		}
 
 		const trimmedName = playerName.trim();
@@ -19,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json(
 				{
 					available: false,
-					reason: 'Name must be between 2 and 20 characters'
+					reason: 'Nome deve ter entre 2 e 20 caracteres'
 				},
 				{ status: 200 }
 			);
@@ -34,10 +37,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json({
 			available,
-			reason: available ? 'Name is available' : 'Name is already taken'
+			reason: available ? 'Nome disponível' : 'Nome já está em uso'
 		});
 	} catch (error) {
 		console.error('Error checking player name:', error);
-		return json({ error: 'Failed to check player name validity' }, { status: 500 });
+		return json({ error: 'Falha ao verificar validade do nome' }, { status: 500 });
 	}
 };
