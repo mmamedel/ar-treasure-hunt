@@ -1,14 +1,14 @@
 [
 	{
 		"id": 0,
-		"emoji": "💧",
-		"name": "Piscina (Batismo de Jesus)",
-		"clue": "Um homem vestido de camelo chamou as pessoas para se arrependerem. Aqui ele mergulhou o maior de todos.",
-		"hint": "Procure onde a água é funda o bastante para descer e subir, como no Jordão.",
+		"emoji": "🎶",
+		"name": "Karaokê (Jesus e discípulos cantaram – Mateus 26:30)",
+		"clue": "Depois de uma refeição sagrada, eles levantaram a voz em harmonia.",
+		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas.",
 		"imageTarget": "/targets/1.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "dove-Optimized.glb",
+			"file": "Lyre_Harmony-Optimized.glb",
 			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
@@ -22,17 +22,22 @@
 	},
 	{
 		"id": 1,
-		"emoji": "👁️",
-		"name": "Lava-olho (cura do cego – João 9:6,7)",
-		"clue": "Um homem recebeu barro nos olhos e, depois de lavar, viu o mundo pela primeira vez.",
-		"hint": "Veja onde as pessoas limpam os olhos de verdade. Lá está a marca",
+		"emoji": "🏛️",
+		"name": "Mirante (tentação no alto monte – Mateus 4:8)",
+		"clue": "De um lugar alto, alguém viu todos os reinos da terra em um instante.",
+		"hint": "Olhe de onde se pode enxergar mais longe, lá você encontrará a marca.",
 		"imageTarget": "/targets/2.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "blind-Optimized.glb",
-			"scale": "0.6 0.6 0.6",
+			"file": "panthernon-Optimized.glb",
+			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
+		},
+		"animation": {
+			"type": "rotation",
+			"axis": "y",
+			"speed": 1
 		},
 		"found": false
 	},
@@ -59,35 +64,30 @@
 	},
 	{
 		"id": 3,
-		"emoji": "🏛️",
-		"name": "Mirante (tentação no alto monte – Mateus 4:8)",
-		"clue": "De um lugar alto, alguém viu todos os reinos da terra em um instante.",
-		"hint": "Olhe de onde se pode enxergar mais longe, lá você encontrará a marca.",
+		"emoji": "👁️",
+		"name": "Lava-olho (cura do cego – João 9:6,7)",
+		"clue": "Um homem recebeu barro nos olhos e, depois de lavar, viu o mundo pela primeira vez.",
+		"hint": "Veja onde as pessoas limpam os olhos de verdade. Lá está a marca",
 		"imageTarget": "/targets/4.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "panthernon-Optimized.glb",
-			"scale": "0.5 0.5 0.5",
+			"file": "blind-Optimized.glb",
+			"scale": "0.6 0.6 0.6",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
-		},
-		"animation": {
-			"type": "rotation",
-			"axis": "y",
-			"speed": 1
 		},
 		"found": false
 	},
 	{
 		"id": 4,
-		"emoji": "🎶",
-		"name": "Karaokê (Jesus e discípulos cantaram – Mateus 26:30)",
-		"clue": "Depois de uma refeição sagrada, eles levantaram a voz em harmonia.",
-		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas.",
+		"emoji": "💧",
+		"name": "Piscina (Batismo de Jesus)",
+		"clue": "Um homem vestido de camelo chamou as pessoas para se arrependerem. Aqui ele mergulhou o maior de todos.",
+		"hint": "Procure onde a água é funda o bastante para descer e subir, como no Jordão.",
 		"imageTarget": "/targets/5.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "Lyre_Harmony-Optimized.glb",
+			"file": "dove-Optimized.glb",
 			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
