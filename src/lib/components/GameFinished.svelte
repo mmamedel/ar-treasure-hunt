@@ -68,7 +68,7 @@
 	</div>
 
 	<div class="completion-message">
-		Mostre esse QRCode no quisque to jogo para receber seu prêmio
+		Mostre esse QRCode no quisque do jogo para receber seu prêmio
 	</div>
 	{#if qrCode}
 		<img src={qrCode} alt="QR Code" />

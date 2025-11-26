@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { clearGameSession } from '$lib/stores/gameSessionPersisted';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let isClearing = false;
 	let isOpen = false;
@@ -32,6 +33,20 @@
 		goto('/collection');
 		toggleMenu();
 	}
+
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as HTMLElement;
+		if (isOpen && !target.closest('.menu') && !target.closest('.hamburger')) {
+			isOpen = false;
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('click', handleClickOutside);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
+	});
 </script>
 
 <!-- Floating hamburger button -->
@@ -56,12 +71,12 @@
 		width: 3.5rem;
 		height: 3.5rem;
 		border-radius: 50%;
-		border: none;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
+		border: var(--border-width) solid var(--color-border);
+		background: var(--color-accent);
+		color: var(--color-primary);
 		font-size: 1.8rem;
 		cursor: pointer;
-		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+		box-shadow: 0 4px 12px rgba(208, 141, 61, 0.4);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -71,32 +86,38 @@
 
 	.hamburger:hover {
 		transform: scale(1.1);
-		box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+		box-shadow: 0 6px 20px rgba(208, 141, 61, 0.6);
 	}
 
 	.menu {
 		position: fixed;
 		bottom: 6.2rem;
 		right: 2rem;
-		background: white;
-		border-radius: 1rem;
-		padding: 0.8rem 0;
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-		width: 12rem;
+		background: rgba(242, 242, 242, 0.98);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: 0.5rem;
+		box-shadow: 0 8px 24px rgba(64, 57, 47, 0.2);
+		width: 13rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.3rem;
 		animation: fadeIn 0.2s ease-out;
 		z-index: 1000;
+		backdrop-filter: blur(10px);
 	}
 
 	.menu button {
-		background: none;
+		background: transparent;
 		border: none;
-		padding: 0.8rem 1rem;
+		border-radius: var(--radius-sm);
+		padding: 0.75rem 1rem;
 		text-align: left;
 		width: 100%;
-		font-size: 1rem;
+		font-family: var(--font-secondary);
+		font-size: 16px;
+		font-weight: 600;
+		color: var(--color-primary);
 		cursor: pointer;
 		transition:
 			background 0.15s,
@@ -104,7 +125,7 @@
 	}
 
 	.menu button:hover {
-		background: #f1f1f9;
+		background: var(--color-accent);
 	}
 
 	.menu button:active {

@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
 
 	const gameState = getGameState();
 	let selectedTreasureId = $state<number | null>(null);
@@ -36,6 +37,8 @@
 <svelte:head>
 	<title>Coleção - Caça ao Tesouro</title>
 </svelte:head>
+
+<DecorativeBorder />
 
 <div class="container">
 	<div class="header">
@@ -103,15 +106,15 @@
 
 	.container {
 		width: 100%;
-		min-height: 100vh;
+		min-height: calc(100vh - 3rem);
 		padding: 2rem;
-		margin-top: 1.5rem;
+		padding-top: 3.5rem;
 		overflow-x: hidden;
 	}
 
 	.header {
 		text-align: center;
-		color: white;
+		color: var(--color-primary);
 		margin-bottom: 2rem;
 	}
 
@@ -119,27 +122,40 @@
 		margin: 0;
 		font-size: 2.5rem;
 		font-weight: 700;
+		font-family: var(--font-primary);
 	}
 
 	.subtitle {
 		margin: 0.5rem 0 0 0;
 		font-size: 1rem;
-		opacity: 0.9;
+		color: var(--color-secondary);
+		font-family: var(--font-primary);
 	}
 
 	.back-button {
 		position: fixed;
 		top: 1rem;
 		left: 1.5rem;
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
-		border: none;
-		padding: 10px 20px;
-		border-radius: 20px;
-		font-size: 16px;
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 50%;
+		background: var(--color-accent);
+		color: var(--color-primary);
+		border: var(--border-width) solid var(--color-border);
+		font-size: 28px;
+		font-family: var(--font-primary);
 		cursor: pointer;
-		backdrop-filter: blur(10px);
 		z-index: 100;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(208, 141, 61, 0.4);
+		transition: all 0.3s ease;
+	}
+
+	.back-button:hover {
+		transform: scale(1.1);
+		box-shadow: 0 6px 20px rgba(208, 141, 61, 0.6);
 	}
 
 	.collection-grid {
@@ -219,7 +235,7 @@
 	}
 
 	.treasure-card.found .treasure-content {
-		background: #1a1428;
+		background: #1a1614;
 	}
 
 	.image-wrapper {

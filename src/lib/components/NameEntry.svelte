@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { Debounced } from 'runed';
+	import DecorativeBorder from './DecorativeBorder.svelte';
 
 	const gameState = getGameState();
 
@@ -102,9 +103,14 @@
 	}
 </script>
 
+<DecorativeBorder />
+
 <div class="container">
-	<div class="logo">🗺️</div>
-	<h1>Caça ao Tesouro</h1>
+	<div class="logo">
+		<img src="/images/design/map-scroll.png" alt="Treasure Map" />
+	</div>
+
+	<h1>CAÇA AO TESOURO</h1>
 	<p class="subtitle">Digite seu nome para começar a aventura</p>
 
 	<div class="input-group">
@@ -115,118 +121,162 @@
 			bind:value={playerName}
 			onkeypress={handleKeyPress}
 		/>
+		<p class="validation-message info-message">ⓘ Este nome aparecerá no placar</p>
 		{#if validationMessage && !isValid && playerName.trim().length > 0}
 			<p
 				class="validation-message"
 				class:error={!isValid && playerName.trim().length > 0}
 				class:pending={isChecking}
 			>
-				{validationMessage}
+				ⓘ {validationMessage}
 			</p>
 		{/if}
 	</div>
 
 	<button class="button" disabled={!isValid || !hasCheckedCurrentName} onclick={handleSubmit}>
-		{'Começar Aventura'}
+		COMEÇAR AVENTURA
 	</button>
-
-	<p class="info">💡 Este nome aparecerá no placar</p>
 </div>
 
 <style>
+	:global(body) {
+		overflow: hidden !important;
+	}
+
 	.container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
-		width: 100%;
-		max-width: 400px;
-		text-align: center;
-		margin: 0 auto;
+		align-items: center;
+		padding: 20px;
+		padding-top: 60px;
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 
 	.logo {
-		width: 120px;
-		height: 120px;
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 50%;
-		margin: 0 auto 30px;
+		width: 130px;
+		height: 130px;
+		margin: 80px auto 20px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 48px;
+		flex-shrink: 0;
+	}
+
+	.logo img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 	}
 
 	h1 {
-		font-size: 28px;
-		margin-bottom: 10px;
+		font-family: var(--font-primary);
+		font-size: 24px;
+		color: var(--color-primary);
+		margin-bottom: 6px;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		width: 100%;
+		max-width: 380px;
+		text-align: center;
 	}
 
 	.subtitle {
-		font-size: 16px;
-		opacity: 0.9;
-		margin-bottom: 40px;
+		font-family: var(--font-primary);
+		font-size: 14px;
+		color: var(--color-primary);
+		margin-bottom: 24px;
+		width: 100%;
+		max-width: 380px;
+		text-align: center;
 	}
 
 	.input-group {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 2rem;
+		margin-bottom: 1rem;
+		width: 100%;
+		max-width: 380px;
 	}
 
 	input {
 		width: 100%;
-		padding: 15px 0px;
-		font-size: 18px;
-		border: none;
-		border-radius: 10px;
-		background: rgba(255, 255, 255, 0.95);
-		color: #333;
-		text-align: center;
+		padding: 18px 20px;
+		font-family: var(--font-primary);
+		font-size: 16px;
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+		background: transparent;
+		color: var(--color-primary);
+		text-align: left;
+		box-sizing: border-box;
 	}
 
 	input::placeholder {
-		color: #999;
+		color: var(--color-primary);
+		opacity: 0.6;
+	}
+
+	input:focus {
+		outline: none;
+		border-color: var(--color-accent);
 	}
 
 	.validation-message {
+		font-family: var(--font-primary);
 		font-size: 14px;
-		margin: 0.5rem 0 0 0;
-		color: #4caf50;
+		margin: 8px 0 0 0;
+		color: var(--color-secondary);
+		text-align: left;
+		padding-left: 4px;
 	}
 
 	.validation-message.error {
-		color: #ff6b6b;
+		color: #d06243;
 	}
 
 	.validation-message.pending {
-		color: #ffa500;
+		color: var(--color-accent);
+	}
+
+	.validation-message.info-message {
+		color: var(--color-secondary);
 	}
 
 	.button {
-		width: 100%;
+		width: 258px;
 		padding: 15px 30px;
-		font-size: 18px;
-		font-weight: 600;
-		background: #4caf50;
-		color: white;
+		font-family: var(--font-primary);
+		font-size: 16px;
+		font-weight: normal;
+		background: var(--color-accent);
+		color: var(--color-primary);
 		border: none;
-		border-radius: 10px;
+		border-radius: var(--radius-full);
 		cursor: pointer;
-		transition: transform 0.2s;
+		transition:
+			transform 0.2s,
+			opacity 0.2s;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin: 0 auto;
 	}
 
 	.button:hover:not(:disabled) {
-		transform: scale(1.05);
+		transform: scale(1.02);
+		opacity: 0.9;
 	}
 
 	.button:disabled {
-		background: #ccc;
+		opacity: 0.5;
 		cursor: not-allowed;
 		transform: none;
-	}
-
-	.info {
-		margin-top: 30px;
-		font-size: 14px;
-		opacity: 0.8;
 	}
 </style>

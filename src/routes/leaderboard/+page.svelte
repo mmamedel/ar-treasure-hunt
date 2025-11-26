@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { goto } from '$app/navigation';
+	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
 
 	let { data } = $props();
 
@@ -49,6 +50,8 @@
 <svelte:head>
 	<title>Ranking - Caça ao Tesouro</title>
 </svelte:head>
+
+<DecorativeBorder />
 
 <div class="container">
 	<div class="header">
@@ -114,30 +117,35 @@
 <style>
 	.container {
 		width: 100%;
-		min-height: 100vh;
+		height: 100vh;
 		padding: 2rem;
-		margin-top: 1.5rem;
+		padding-top: 5rem;
+		padding-bottom: 2rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: 1.5rem;
+		box-sizing: border-box;
 	}
 
 	.header {
 		text-align: center;
-		color: white;
-		margin-bottom: 2rem;
+		color: var(--color-primary);
+		margin-bottom: 0;
 	}
 
 	.header h1 {
 		margin: 0;
 		font-size: 2.5rem;
 		font-weight: 700;
+		font-family: var(--font-primary);
 	}
 
 	.subtitle {
 		margin: 0.5rem 0 0 0;
 		font-size: 1rem;
-		opacity: 0.9;
+		color: var(--color-secondary);
+		font-family: var(--font-primary);
 	}
 
 	.player-highlight {
@@ -148,7 +156,7 @@
 		background: white;
 		border-radius: 12px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-		border-left: 5px solid #667eea;
+		border-left: 5px solid var(--color-accent);
 	}
 
 	.highlight-content {
@@ -161,7 +169,8 @@
 	.highlight-rank {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #667eea;
+		color: var(--color-accent);
+		font-family: var(--font-secondary);
 		min-width: 80px;
 	}
 
@@ -193,11 +202,13 @@
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 0.95rem;
+		font-family: var(--font-secondary);
 	}
 
 	.leaderboard-table thead {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
+		background: var(--color-accent);
+		color: var(--color-primary);
+		font-family: var(--font-secondary);
 		position: sticky;
 		top: 0;
 		z-index: 10;
@@ -220,12 +231,12 @@
 	}
 
 	.leaderboard-table tbody tr.highlighted {
-		background-color: #fff3cd;
+		background-color: #f5e6d3;
 		font-weight: 600;
 	}
 
 	.leaderboard-table tbody tr.highlighted:hover {
-		background-color: #ffe69c;
+		background-color: #ead5b8;
 	}
 
 	.leaderboard-table td {
@@ -248,7 +259,7 @@
 
 	.rank-number {
 		font-weight: 700;
-		color: #667eea;
+		color: var(--color-accent);
 	}
 
 	.name-col {
@@ -279,7 +290,7 @@
 
 	.duration {
 		font-weight: 600;
-		color: #667eea;
+		color: var(--color-accent);
 	}
 
 	@media (max-width: 1200px) {
@@ -354,13 +365,24 @@
 		position: fixed;
 		top: 1rem;
 		left: 1.5rem;
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
-		border: none;
-		padding: 10px 20px;
-		border-radius: 20px;
-		font-size: 16px;
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 50%;
+		background: var(--color-accent);
+		color: var(--color-primary);
+		border: var(--border-width) solid var(--color-border);
+		font-size: 28px;
+		font-family: var(--font-primary);
 		cursor: pointer;
-		backdrop-filter: blur(10px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(208, 141, 61, 0.4);
+		transition: all 0.3s ease;
+	}
+
+	.back-button:hover {
+		transform: scale(1.1);
+		box-shadow: 0 6px 20px rgba(208, 141, 61, 0.6);
 	}
 </style>
