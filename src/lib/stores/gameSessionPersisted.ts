@@ -19,6 +19,7 @@ export interface GameSession {
 	currentTreasureIndex: number;
 	isFinished: boolean;
 	sync: boolean;
+	reverse?: boolean; // Optional for backward compatibility with old sessions
 }
 
 export function getSession() {
@@ -37,14 +38,20 @@ export function loadSession() {
 			endTime: session.current.end,
 			currentTreasureIndex: session.current.currentTreasureIndex,
 			treasuresData: session.current.treasures,
-			isFinished: session.current.isFinished
+			isFinished: session.current.isFinished,
+			reverse: session.current.reverse ?? false // Default to false for backward compatibility
 		});
 	} else {
 		return createGameState();
 	}
 }
 
-export async function createSession(name: string, startTime: number, treasures: Treasure[]) {
+export async function createSession(
+	name: string,
+	startTime: number,
+	treasures: Treasure[],
+	reverse: boolean
+) {
 	const allTreasures = treasures.map((treasure) => ({
 		id: treasure.id,
 		start: treasure.start,
@@ -58,7 +65,8 @@ export async function createSession(name: string, startTime: number, treasures: 
 		treasures: allTreasures,
 		currentTreasureIndex: 0,
 		isFinished: false,
-		sync: false
+		sync: false,
+		reverse
 	});
 
 	try {

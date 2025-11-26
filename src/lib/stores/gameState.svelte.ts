@@ -15,6 +15,7 @@ export interface GameStateProps {
 	isFinished: boolean;
 	currentTreasureIndex: number;
 	treasuresData: SessionTreasure[];
+	reverse?: boolean;
 }
 
 export interface Treasure {
@@ -47,6 +48,7 @@ export class GameState {
 	elapsedTimeCodeClock = $state('00:00');
 	isGameActive: boolean;
 	isOnline = $state(true);
+	reverse: boolean = false; // If true, treasure order is: first + reversed rest (e.g., 1,6,5,4,3,2)
 	unsubscribeOnlineStatus: (() => void) | null = null;
 
 	private timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -55,6 +57,9 @@ export class GameState {
 		this.playerName = $state(props?.playerName || '');
 		this.startTime = $state(props?.startTime || 0);
 		this.endTime = $state(props?.endTime);
+
+		// Set reverse: use saved value if available, otherwise randomly choose
+		this.reverse = props?.reverse !== undefined ? props.reverse : Math.random() < 0.5;
 
 		let elapsedTime = 0;
 		if ((props?.isFinished, props?.endTime)) {
@@ -65,13 +70,21 @@ export class GameState {
 		this.currentTreasureIndex = $state(props?.currentTreasureIndex || 0);
 		this.isGameActive = $state(!!props || false);
 
-		// Update treasures infomation based on what was stored in local storage
-		for (const treasure of this.treasures) {
-			const storedTreasure = props?.treasuresData.find((data) => data.id === treasure.id);
-
-			treasure.start = storedTreasure?.start;
-			treasure.end = storedTreasure?.end;
-			treasure.found = storedTreasure?.found || false;
+		// Restore treasures in the correct order from session
+		if (props?.treasuresData) {
+			// Reconstruct treasures array in the same order as stored in session
+			this.treasures = props.treasuresData.map((storedTreasure) => {
+				const fullTreasure = initialTreasures.find((t) => t.id === storedTreasure.id);
+				if (!fullTreasure) {
+					throw new Error(`Treasure with id ${storedTreasure.id} not found`);
+				}
+				return {
+					...fullTreasure,
+					start: storedTreasure.start,
+					end: storedTreasure.end,
+					found: storedTreasure.found
+				};
+			});
 		}
 
 		// Start/stop the timer based on game active state
@@ -124,15 +137,37 @@ export class GameState {
 		this.playerName = name;
 	}
 
+	setTreasureOrder(reverse: boolean) {
+		this.reverse = reverse;
+
+		// Reset treasures to initial state
+		this.treasures = [...initialTreasures].map((t) => ({
+			...t,
+			found: false,
+			start: undefined,
+			end: undefined
+		}));
+
+		if (reverse) {
+			// Keep first treasure, reverse the rest: [0, 5, 4, 3, 2, 1]
+			const first = this.treasures[0];
+			const rest = this.treasures.slice(1).reverse();
+			this.treasures = [first, ...rest];
+		}
+	}
+
 	startGame(playerName: string) {
 		this.playerName = playerName;
 		this.startTime = Date.now();
 		this.elapsedTimeClock = 0;
 		this.isGameActive = true;
 
+		// Apply treasure order based on reverse flag
+		this.setTreasureOrder(this.reverse);
+
 		this.treasures[this.currentTreasureIndex].start = this.startTime;
 
-		createSession(this.playerName, this.startTime, this.treasures);
+		createSession(this.playerName, this.startTime, this.treasures, this.reverse);
 	}
 
 	nextTreasure() {
