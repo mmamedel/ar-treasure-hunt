@@ -352,16 +352,22 @@
 						return;
 					}
 
-					// Get current treasure
+					// Get current treasure from session
 					const treasureIndex = gameSession.currentTreasureIndex;
-					const treasureConfig = TREASURES_CONFIG[treasureIndex];
+					currentTreasure = gameSession.treasures[treasureIndex];
 
-					if (!treasureConfig) {
-						showError('Tesouro não encontrado!');
+					if (!currentTreasure) {
+						showError('Tesouro não encontrado na sessão!');
 						return;
 					}
 
-					currentTreasure = gameSession.treasures[treasureIndex];
+					// Find matching treasure config by ID (supports randomized order)
+					const treasureConfig = TREASURES_CONFIG.find((t) => t.id === currentTreasure.id);
+
+					if (!treasureConfig) {
+						showError('Configuração do tesouro não encontrada!');
+						return;
+					}
 
 					// Initialize AR scene with Three.js
 					await initARScene(treasureConfig);
@@ -401,8 +407,9 @@
 				// Update treasures array in session
 				gameSession.treasures[gameSession.currentTreasureIndex] = currentTreasure;
 
-				// Check if this is the last treasure
-				if (gameSession.currentTreasureIndex >= gameSession.treasures.length - 1) {
+				// Check if all treasures have been found
+				const allTreasuresFound = gameSession.treasures.every((treasure) => treasure.found);
+				if (allTreasuresFound) {
 					gameSession.end = now;
 					gameSession.isFinished = true;
 					console.log('Game completed! All treasures found.');
