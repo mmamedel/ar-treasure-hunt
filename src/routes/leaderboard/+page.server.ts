@@ -12,7 +12,7 @@ export interface LeaderboardEntry {
 }
 
 export interface LeaderboardData {
-	top50: LeaderboardEntry[];
+	top100: LeaderboardEntry[];
 }
 
 function formatDuration(milliseconds: number): string {
@@ -44,11 +44,11 @@ export const load: PageServerLoad = async () => {
 		)({
 			where: { hasFinished: true },
 			orderBy: { durationMs: 'asc' },
-			take: 50
+			take: 100
 		});
 
 		// Filter only those with duration (should be all finished sessions)
-		const top50 = allFinishedSessions
+		const top100 = allFinishedSessions
 			.filter((session) => session.durationMs !== null && session.end !== null)
 			.map((session, index) => ({
 				rank: index + 1,
@@ -60,7 +60,7 @@ export const load: PageServerLoad = async () => {
 			}));
 
 		const leaderboardData: LeaderboardData = {
-			top50
+			top100
 		};
 
 		return leaderboardData;

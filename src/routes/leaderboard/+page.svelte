@@ -4,26 +4,26 @@
 
 	let { data } = $props();
 
-	const { top50 } = data;
+	const { top100 } = data;
 
 	// Load player info from gameState
 	const gameState = getGameState();
 	const playerName = gameState?.playerName;
 
-	// Find player in top 50 and calculate rank
+	// Find player in top 100 and calculate rank
 	let playerInfo = $derived.by(() => {
 		if (!playerName) return undefined;
 
-		const playerInTop50 = top50.find(
+		const playerInTop100 = top100.find(
 			(entry) => entry.playerName.toLowerCase() === playerName.toLowerCase()
 		);
 
-		if (playerInTop50) {
+		if (playerInTop100) {
 			return {
-				playerName: playerInTop50.playerName,
-				rank: playerInTop50.rank,
-				duration: playerInTop50.duration,
-				durationFormatted: playerInTop50.durationFormatted
+				playerName: playerInTop100.playerName,
+				rank: playerInTop100.rank,
+				duration: playerInTop100.duration,
+				durationFormatted: playerInTop100.durationFormatted
 			};
 		}
 
@@ -55,7 +55,7 @@
 		<div></div>
 		<button class="back-button" onclick={handleBack}>«</button>
 		<h1>🏆 Ranking</h1>
-		<p class="subtitle">Top 50 Jogadores Mais Rápidos</p>
+		<p class="subtitle">Top 100 Jogadores Mais Rápidos</p>
 	</div>
 
 	{#if playerInfo}
@@ -82,7 +82,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each top50 as entry (entry.rank)}
+				{#each top100 as entry (entry.rank)}
 					<tr class={playerInfo?.playerName === entry.playerName ? 'highlighted' : ''}>
 						<td class="rank-col">
 							<div class="rank-cell">
