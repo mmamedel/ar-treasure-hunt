@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
+	import { clearGameSession } from '$lib/stores/gameSessionPersisted';
 
 	let { data } = $props();
 
@@ -22,6 +23,9 @@
 	// Treasure statistics
 	let treasureStats = $state<any[]>([]);
 	let isLoadingStats = $state(false);
+
+	// Restart functionality
+	let isClearing = $state(false);
 
 	$effect(() => {
 		if (data.config) {
@@ -157,6 +161,22 @@
 		}
 	}
 
+	function handleRestart() {
+		if (confirm('Isso vai limpar toda a sessão de jogo armazenada localmente. Tem certeza?')) {
+			isClearing = true;
+			try {
+				clearGameSession();
+				// Force full page refresh and redirect to home page
+				window.location.href = '/';
+			} catch (err) {
+				console.error('Error clearing session:', err);
+				error = 'Erro ao limpar sessão';
+				message = '';
+				isClearing = false;
+			}
+		}
+	}
+
 	async function handleSearchSessions() {
 		if (!searchQuery.trim()) {
 			searchError = 'Digite um nome para buscar';
@@ -272,7 +292,12 @@
 	<div class="header">
 		<h1>⚙️ ADMIN</h1>
 		<p class="subtitle">Configuração do Jogo</p>
-		<button class="logout-button" onclick={handleLogout}>Sair</button>
+		<div class="header-buttons">
+			<button class="restart-button" onclick={handleRestart} disabled={isClearing}>
+				{isClearing ? '🔄...' : '🔄 Reiniciar Jogo'}
+			</button>
+			<button class="logout-button" onclick={handleLogout}>Sair</button>
+		</div>
 	</div>
 
 	<div class="status-card" style="border-color: {getStatusColor(gameStatus)}">
@@ -452,14 +477,19 @@
 		margin: 0.5rem 0 0 0;
 	}
 
-	.logout-button {
+	.header-buttons {
 		position: absolute;
 		top: 0;
 		right: 0;
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.restart-button,
+	.logout-button {
 		padding: 0.5rem 1rem;
 		font-family: var(--font-secondary);
 		font-size: 0.9rem;
-		background: var(--color-secondary);
 		color: white;
 		border: none;
 		border-radius: var(--radius-md);
@@ -467,6 +497,20 @@
 		transition: opacity 0.2s;
 	}
 
+	.restart-button {
+		background: #d06243;
+	}
+
+	.restart-button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.logout-button {
+		background: var(--color-secondary);
+	}
+
+	.restart-button:hover:not(:disabled),
 	.logout-button:hover {
 		opacity: 0.8;
 	}
@@ -831,9 +875,15 @@
 			font-size: 0.9rem;
 		}
 
-		.logout-button {
+		.header-buttons {
 			position: static;
 			margin-top: 0.75rem;
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.restart-button,
+		.logout-button {
 			width: 100%;
 			padding: 0.6rem 0.75rem;
 			font-size: 0.85rem;

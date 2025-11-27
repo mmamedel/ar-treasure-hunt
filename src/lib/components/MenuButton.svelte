@@ -62,8 +62,6 @@
 		{/if}
 
 		<button onclick={handleLeaderboard}> 🏆 Ranking </button>
-
-		<button onclick={handleClear} disabled={isClearing}> 🔄 Reiniciar </button>
 	</div>
 {/if}
 
