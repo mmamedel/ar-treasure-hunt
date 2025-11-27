@@ -1,142 +1,366 @@
-# AR Treasure Hunt Game 🎮
+# Jogo de Caça ao Tesouro em AR 🎮
 
-A location-based augmented reality treasure hunt game built with **Svelte 5**, **TypeScript**, and **AR.js**. Players use their phone camera to find and collect virtual treasures hidden in the real world.
+Um jogo de caça ao tesouro em realidade aumentada baseado em reconhecimento de imagens, desenvolvido com **Svelte 5**, **TypeScript** e **MindAR**. Os jogadores usam a câmera do celular para encontrar marcadores físicos e coletar tesouros virtuais escondidos no mundo real.
 
-## 🚀 Features
+## 🚀 Funcionalidades
 
-- **Location-based AR** - Treasures appear based on GPS coordinates
-- **Real-time camera feed** - Uses device camera for AR experience  
-- **TypeScript** - Full type safety with TypeScript
-- **Svelte 5 State Runes** - Modern state management with `$state` and `$derived`
-- **Responsive UI** - Mobile-first design optimized for phones
-- **Game mechanics** - Score tracking, inventory, level progression
+- **AR Baseada em Imagens** - Tesouros aparecem ao detectar marcadores específicos com a câmera
+- **Feed de Câmera em Tempo Real** - Usa a câmera do dispositivo para experiência AR
+- **TypeScript** - Segurança de tipos completa com TypeScript
+- **Svelte 5 State Runes** - Gerenciamento de estado moderno com `$state` e `$derived`
+- **Interface Responsiva** - Design mobile-first otimizado para celulares
+- **Mecânicas de Jogo** - Sistema de pistas, dicas temporizadas, rastreamento de progresso
+- **Modelos 3D Animados** - Cada tesouro possui um modelo 3D único com animações personalizadas
+- **PWA** - Progressive Web App com suporte offline
 
-## 🛠️ Tech Stack
+## 🛠️ Stack Tecnológico
 
 - **Framework**: Svelte 5 + SvelteKit
-- **Language**: TypeScript
-- **AR Library**: AR.js (location-based AR)
-- **Package Manager**: pnpm
-- **Deployment**: Vercel
+- **Linguagem**: TypeScript
+- **Biblioteca AR**: MindAR (reconhecimento de imagens)
+- **Renderização 3D**: Three.js
+- **Banco de Dados**: Prisma + PostgreSQL
+- **Gerenciador de Pacotes**: pnpm
+- **Deploy**: Vercel
 
-## 📱 Prerequisites
+## 📱 Pré-requisitos
 
-The app requires:
-- A device with GPS capabilities
-- Camera access permissions
-- Location access permissions
-- Modern mobile browser (Chrome/Safari recommended)
+O aplicativo requer:
 
-## 🏗️ Installation
+- Dispositivo com câmera
+- Permissão de acesso à câmera
+- Navegador mobile moderno (Chrome/Safari recomendados)
+- Marcadores impressos para reconhecimento AR (localizados em `/static/targets/`)
+
+## 🏗️ Instalação
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
+# Clone o repositório
+git clone <url-do-seu-repo>
 cd ar-treasure-hunt
 
-# Install dependencies with pnpm
+# Instale as dependências com pnpm
 pnpm install
 
-# Start development server
+# Configure o banco de dados (opcional para desenvolvimento local)
+# Crie um arquivo .env com DATABASE_URL
+
+# Execute as migrações do Prisma
+pnpm prisma migrate dev
+
+# Inicie o servidor de desenvolvimento
 pnpm dev
 ```
 
-## 🎮 How to Play
+## 🎮 Como Jogar
 
-1. **Grant Permissions** - Allow camera and location access when prompted
-2. **Start Game** - Click "Start Adventure" to begin
-3. **Find Treasures** - Move around to discover nearby treasures (within 100m)
-4. **Collect** - Get close to treasures (within 10m) to collect them
-5. **Win** - Collect 10 treasures to complete the game!
+1. **Digite seu Nome** - Insira seu nome para iniciar uma nova partida
+2. **Leia a Pista** - Cada tesouro possui uma pista que indica onde o marcador está escondido
+3. **Use a Dica (Opcional)** - Após 5 minutos, uma dica adicional fica disponível
+4. **Abra a Câmera** - Clique em "ABRIR CÂMERA" para ativar o modo AR
+5. **Encontre o Marcador** - Aponte a câmera para o marcador físico indicado pela pista
+6. **Colete o Tesouro** - Quando o marcador for detectado, o modelo 3D aparecerá. Toque na tela para coletar
+7. **Continue a Aventura** - Colete todos os tesouros para completar o jogo!
 
-## 🚀 Deployment to Vercel
+## 🚀 Deploy para Vercel
 
-The app is configured for easy deployment to Vercel:
+O aplicativo está configurado para fácil deploy na Vercel:
 
-### Option 1: Deploy via Git
+### Opção 1: Deploy via Git
 
-1. Push your code to GitHub/GitLab/Bitbucket
-2. Import the repository in [Vercel Dashboard](https://vercel.com/new)
-3. Vercel will auto-detect SvelteKit and configure build settings
-4. Deploy!
+1. Faça push do seu código para GitHub/GitLab/Bitbucket
+2. Importe o repositório no [Painel da Vercel](https://vercel.com/new)
+3. A Vercel detectará automaticamente o SvelteKit e configurará as opções de build
+4. Adicione a variável de ambiente `DATABASE_URL` nas configurações do projeto
+5. Deploy!
 
-### Option 2: Deploy via CLI
+### Opção 2: Deploy via CLI
 
 ```bash
-# Install Vercel CLI
+# Instale a CLI da Vercel
 pnpm i -g vercel
 
-# Deploy (follow prompts)
+# Deploy (siga as instruções)
 vercel
 
-# Deploy to production
+# Deploy para produção
 vercel --prod
 ```
 
-## 📁 Project Structure
+### Variáveis de Ambiente Necessárias
+
+Configure as seguintes variáveis de ambiente na Vercel:
+
+- `DATABASE_URL` - String de conexão do PostgreSQL (recomendado: Vercel Postgres)
+
+## 📁 Estrutura do Projeto
 
 ```
 ar-treasure-hunt/
 ├── src/
 │   ├── lib/
 │   │   ├── components/
-│   │   │   ├── ARScene.svelte      # AR camera and tracking
-│   │   │   ├── GameUI.svelte       # Game interface overlay
-│   │   │   └── TreasureManager.svelte # Treasure detection logic
+│   │   │   ├── ClueScreen.svelte       # Tela de pistas
+│   │   │   ├── NameEntry.svelte        # Entrada do nome do jogador
+│   │   │   ├── GameFinished.svelte     # Tela de conclusão
+│   │   │   ├── CaptureSuccess.svelte   # Animação de sucesso
+│   │   │   └── ...                     # Outros componentes UI
 │   │   └── stores/
-│   │       └── gameState.svelte.ts # Svelte 5 state management
+│   │       └── gameState.svelte.ts     # Gerenciamento de estado (Svelte 5 runes)
 │   └── routes/
-│       └── +page.svelte            # Main game page
-├── static/                         # Static assets
-├── vercel.json                     # Vercel configuration
+│       ├── +page.svelte                # Página principal do jogo
+│       └── api/                        # API routes (Prisma)
+├── static/
+│   ├── ar-viewer.html                  # Visualizador AR (MindAR + Three.js)
+│   ├── models/                         # Modelos 3D (.glb)
+│   ├── targets/                        # Marcadores de imagem para AR
+│   └── treasures.json                  # Configuração dos tesouros
+├── prisma/
+│   └── schema.prisma                   # Schema do banco de dados
+├── vercel.json                         # Configuração da Vercel
 └── package.json
 ```
 
-## 🔧 Configuration
+## 🔧 Configuração
 
-### Environment Variables
+### Configuração dos Tesouros
 
-No environment variables required for basic functionality.
+Os tesouros são configurados no arquivo `/static/treasures.json`. Cada tesouro contém:
 
-### Vercel Settings
+- **id**: Identificador único
+- **clue**: Pista principal
+- **hint**: Dica adicional (disponível após 5 minutos)
+- **imageTarget**: Caminho para o arquivo `.mind` (marcador compilado)
+- **targetIndex**: Índice do alvo no arquivo `.mind`
+- **model**: Configurações do modelo 3D (arquivo, escala, rotação, posição)
+- **animation**: Configurações de animação (rotação, balanço, pulsação, etc.)
 
-The `vercel.json` file is pre-configured with:
-- Build command: `pnpm build`
+### Criação de Novos Marcadores
+
+Para adicionar novos tesouros:
+
+1. Acesse [MindAR Image Tracking Compiler](https://hiukim.github.io/mind-ar-js-doc/tools/compile)
+2. Faça upload das suas imagens de marcadores
+3. Baixe o arquivo `.mind` gerado
+4. Adicione à pasta `/static/targets/`
+5. Configure no `treasures.json`
+
+### Configurações da Vercel
+
+O arquivo `vercel.json` está pré-configurado com:
+
+- Build command: `pnpm vercel-build` (inclui migração do Prisma)
 - Output directory: `build`
 - Framework: `svelte-kit`
 
-## 🐛 Known Issues
+## 📝 Notas de Desenvolvimento
 
-- Minor accessibility warnings in modals (non-blocking)
-- Video element missing captions track (AR camera feed)
-- Some unused CSS selectors to be cleaned up
+### Gerenciamento de Estado
 
-## 📝 Development Notes
+O aplicativo usa as novas state runes do Svelte 5:
 
-### State Management
-The app uses Svelte 5's new state runes instead of stores:
-- `$state()` for reactive state
-- `$derived()` for computed values
-- Direct property access instead of `$` prefix
+- `$state()` para estado reativo
+- `$derived()` para valores computados
+- Acesso direto a propriedades (sem prefixo `$`)
 
-### TypeScript Migration
-All components are fully typed with:
-- Interface definitions for `Treasure` and `PlayerLocation`
-- Type-safe event handlers
-- Proper TypeScript class for game state
+### Arquitetura AR
 
-## 📄 License
+- **Frontend (SvelteKit)**: Interface do jogo e lógica de progressão
+- **AR Viewer (HTML estático)**: Visualizador AR separado usando MindAR + Three.js
+- **Comunicação**: Via `localStorage` para compartilhar estado do jogo
+- **Modelos 3D**: GLB/GLTF com suporte a compressão Draco
 
-MIT
+### TypeScript
 
-## 🤝 Contributing
+Todos os componentes são totalmente tipados com:
 
-Contributions welcome! Please ensure:
-- Code follows TypeScript best practices
-- Components use Svelte 5 state runes
-- Mobile-first responsive design
-- Accessibility considerations
+- Definições de interface para `Treasure`, `GameSession`, etc.
+- Event handlers type-safe
+- Classes TypeScript adequadas para gerenciamento de estado
 
----
+## 💡 Dicas para Futuros Eventos
 
-Built with ❤️ using Svelte 5 and TypeScript
+### Design de Marcadores AR
+
+Para criar marcadores que funcionem bem com MindAR:
+
+- **Alto Contraste**: Use imagens com boa distinção entre áreas claras e escuras
+- **Detalhes Únicos**: Evite padrões repetitivos ou simétricos
+- **Tamanho Mínimo**: Marcadores impressos devem ter pelo menos 10x10cm
+- **Qualidade**: Imprima em alta resolução (300 DPI ou superior)
+- **Evite Reflexos**: Use papel fosco em vez de brilhante
+- **Teste de Rastreamento**: Use o [MindAR Compiler](https://hiukim.github.io/mind-ar-js-doc/tools/compile) para ver a pontuação de rastreabilidade (ideal: > 50)
+
+### Testando sem Marcadores Físicos
+
+Durante o desenvolvimento, você pode testar exibindo marcadores na tela:
+
+1. Abra a imagem do marcador em outra tela/dispositivo
+2. Aponte a câmera do dispositivo de teste para a tela
+3. Ajuste o brilho da tela para melhor detecção
+4. Alternativamente, use o navegador desktop com webcam
+
+### Otimização de Modelos 3D
+
+Para garantir boa performance em dispositivos móveis:
+
+- **Tamanho do Arquivo**: Mantenha modelos abaixo de 5MB
+- **Polígonos**: Limite a 50k triângulos por modelo
+- **Texturas**: Use texturas comprimidas (máx 2048x2048)
+- **Formato**: Prefira GLB com compressão Draco
+- **Ferramentas**: Use [glTF Transform](https://gltf-transform.dev/) para otimizar
+- **Teste em Dispositivos Reais**: Performance varia significativamente entre dispositivos
+
+### Ajustando Dificuldade do Jogo
+
+Você pode customizar a experiência alterando:
+
+```typescript
+// Em ClueScreen.svelte - Linha 17
+const HINT_DELAY_MS = 5 * 60 * 1000; // Altere para ajustar tempo até dica
+
+// Em treasures.json
+// Adicione mais ou menos tesouros
+// Ajuste complexidade das pistas
+```
+
+### Posicionamento de Marcadores no Local
+
+Dicas para posicionar marcadores no espaço físico:
+
+- **Iluminação**: Evite luz direta do sol ou sombras muito escuras
+- **Altura**: Posicione na altura do peito (mais confortável para câmera)
+- **Acessibilidade**: Garanta que todos os jogadores possam alcançar
+- **Proteção**: Use plástico/laminação para proteger de água/danos
+- **Visibilidade**: Marcadores não devem ser muito óbvios (parte do desafio!)
+- **Backup**: Tenha cópias extras de cada marcador
+
+### Troubleshooting Comum
+
+**Marcador não é detectado:**
+
+- Verifique iluminação do ambiente
+- Limpe a lente da câmera
+- Certifique-se que o marcador está completamente visível
+- Tente diferentes distâncias (20cm - 1m é ideal)
+
+**Modelo 3D não aparece:**
+
+- Verifique console do navegador para erros
+- Confirme que o caminho do modelo está correto em `treasures.json`
+- Teste se o modelo carrega acessando diretamente: `/models/seu-modelo.glb`
+
+**Performance ruim:**
+
+- Reduza complexidade dos modelos 3D
+- Simplifique animações
+- Teste em dispositivo com especificações similares ao público-alvo
+
+### Personalizando o Tema
+
+Para adaptar para diferentes eventos:
+
+- **Cores**: Modifique variáveis CSS em `src/routes/+layout.svelte`
+- **Fontes**: Atualize `@font-face` no layout
+- **Imagens de Fundo**: Substitua arquivos em `/static/images/design/`
+- **Pistas e Dicas**: Edite diretamente em `treasures.json`
+- **Áudio**: Adicione efeitos sonoros em `/static/audio/`
+
+### Gerenciamento de Dados do Evento
+
+O jogo usa Prisma + PostgreSQL para persistência de dados:
+
+**Preparação pré-evento:**
+
+```bash
+# Limpar dados de testes anteriores
+pnpm prisma studio  # Interface visual para gerenciar dados
+
+# Ou via CLI
+pnpm prisma db push  # Sincronizar schema
+```
+
+**Durante o evento:**
+
+- Dados de sessão são armazenados em `localStorage` (lado do cliente)
+- Dados persistentes vão para o banco via API routes
+- Monitore o banco para analytics em tempo real
+
+**Pós-evento:**
+
+```bash
+# Exportar resultados
+pnpm prisma studio  # Exportar dados como CSV
+
+# Backup do banco
+# Use ferramentas da Vercel ou pg_dump
+```
+
+**Dica**: Crie uma rota admin (`/admin`) para visualizar estatísticas do evento em tempo real (tempo médio, tesouros mais difíceis, etc.)
+
+### Checklist Pré-Evento
+
+**1 Semana Antes:**
+
+- [ ] Todos os marcadores criados e testados no MindAR Compiler
+- [ ] Modelos 3D otimizados e testados em dispositivos reais
+- [ ] Pistas e dicas escritas e revisadas
+- [ ] Marcadores impressos (+ cópias extras)
+- [ ] Locais físicos identificados e mapeados
+- [ ] Teste completo do fluxo do jogo end-to-end
+
+**1 Dia Antes:**
+
+- [ ] Deploy final em produção
+- [ ] Variáveis de ambiente configuradas
+- [ ] Banco de dados limpo e pronto
+- [ ] Marcadores laminados/protegidos
+- [ ] Verificar iluminação dos locais no horário do evento
+- [ ] Testar conexão de internet nos locais
+
+**No Dia do Evento:**
+
+- [ ] Posicionar todos os marcadores 1h antes
+- [ ] Testar cada marcador in-loco
+- [ ] URL do jogo facilmente acessível (QR code?)
+- [ ] Dispositivo de backup para demonstração
+- [ ] Suporte técnico disponível
+
+**Materiais Úteis para o Evento:**
+
+- Fita adesiva/blu-tack para fixar marcadores
+- Panos para limpar lentes de câmera
+- Bateria portátil para dispositivos
+- Lista impressa com localizações dos marcadores
+
+### Referência Rápida - Arquivos Importantes
+
+**Configuração do Jogo:**
+
+- `static/treasures.json` - Configuração de todos os tesouros (pistas, dicas, modelos)
+- `src/lib/stores/gameState.svelte.ts` - Lógica do estado do jogo
+- `src/lib/components/ClueScreen.svelte:17` - Tempo até dica disponível
+
+**Aparência e Tema:**
+
+- `src/routes/+layout.svelte` - Variáveis CSS globais, fontes
+- `static/images/design/` - Imagens de fundo e decoração
+- `src/lib/components/DecorativeBorder.svelte` - Bordas decorativas
+
+**Experiência AR:**
+
+- `static/ar-viewer.html` - Visualizador AR completo
+- `static/targets/` - Marcadores compilados (.mind)
+- `static/models/` - Modelos 3D (.glb)
+
+**Banco de Dados:**
+
+- `prisma/schema.prisma` - Schema do banco
+- `src/routes/api/` - Endpoints da API
+
+## 🎯 Recursos Adicionais
+
+- [Documentação do MindAR](https://hiukim.github.io/mind-ar-js-doc/)
+- [Documentação do Three.js](https://threejs.org/docs/)
+- [Documentação do Svelte 5](https://svelte.dev/docs/svelte/overview)
+- [Modelos 3D Gratuitos](https://sketchfab.com/feed)

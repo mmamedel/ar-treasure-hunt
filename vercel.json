@@ -3,5 +3,5 @@
 	"outputDirectory": "build",
 	"framework": "sveltekit",
 	"installCommand": "pnpm install",
-	"regions": ["iad1"]
+	"regions": ["gru1"]
 }
