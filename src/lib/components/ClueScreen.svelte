@@ -122,7 +122,7 @@
 
 			<div class="instructions">
 				<p>Encontre o local indicado pela pista,</p>
-				<p>procure pelo marcador Kenji no local.</p>
+				<p>procure pelo marcador no local.</p>
 			</div>
 
 			<div class="treasure-count">

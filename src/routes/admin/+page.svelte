@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
-	import { clearGameSession } from '$lib/stores/gameSessionPersisted';
 
 	let { data } = $props();
 
@@ -23,9 +22,6 @@
 	// Treasure statistics
 	let treasureStats = $state<any[]>([]);
 	let isLoadingStats = $state(false);
-
-	// Restart functionality
-	let isClearing = $state(false);
 
 	$effect(() => {
 		if (data.config) {
@@ -163,17 +159,8 @@
 
 	function handleRestart() {
 		if (confirm('Isso vai limpar toda a sessão de jogo armazenada localmente. Tem certeza?')) {
-			isClearing = true;
-			try {
-				clearGameSession();
-				// Force full page refresh and redirect to home page
-				window.location.href = '/';
-			} catch (err) {
-				console.error('Error clearing session:', err);
-				error = 'Erro ao limpar sessão';
-				message = '';
-				isClearing = false;
-			}
+			// Navigate to restart route which will clear session and redirect
+			goto('/restart');
 		}
 	}
 
@@ -293,9 +280,7 @@
 		<h1>⚙️ ADMIN</h1>
 		<p class="subtitle">Configuração do Jogo</p>
 		<div class="header-buttons">
-			<button class="restart-button" onclick={handleRestart} disabled={isClearing}>
-				{isClearing ? '🔄...' : '🔄 Reiniciar Jogo'}
-			</button>
+			<button class="restart-button" onclick={handleRestart}> 🔄 Reiniciar Jogo </button>
 			<button class="logout-button" onclick={handleLogout}>Sair</button>
 		</div>
 	</div>
