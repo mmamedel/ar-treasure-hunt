@@ -23,17 +23,25 @@
 	let treasureStats = $state<any[]>([]);
 	let isLoadingStats = $state(false);
 
+	// Convert UTC ISO string to local datetime-local format
+	function toLocalDatetimeString(isoString: string): string {
+		const date = new Date(isoString);
+		const offset = date.getTimezoneOffset() * 60000;
+		const localDate = new Date(date.getTime() - offset);
+		return localDate.toISOString().slice(0, 16);
+	}
+
 	$effect(() => {
 		if (data.config) {
-			// Convert ISO strings to datetime-local format
-			startTime = data.config.startTime.slice(0, 16);
-			endTime = data.config.endTime.slice(0, 16);
+			// Convert UTC times to local time for datetime-local input
+			startTime = toLocalDatetimeString(data.config.startTime);
+			endTime = toLocalDatetimeString(data.config.endTime);
 		} else {
 			// Set defaults: start now, end in 24 hours
 			const now = new Date();
 			const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-			startTime = now.toISOString().slice(0, 16);
-			endTime = tomorrow.toISOString().slice(0, 16);
+			startTime = toLocalDatetimeString(now.toISOString());
+			endTime = toLocalDatetimeString(tomorrow.toISOString());
 		}
 
 		checkGameStatus();
