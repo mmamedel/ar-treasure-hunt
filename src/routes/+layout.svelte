@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadSession } from '$lib/stores/gameSessionPersisted';
 	import MenuButton from '$lib/components/MenuButton.svelte';
+	import RotatePrompt from '$lib/components/RotatePrompt.svelte';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -31,6 +32,8 @@
 	<title>Caça ao Tesouro</title>
 	<meta name="description" content="Encontre tesouros escondidos no mundo real usando a câmera" />
 </svelte:head>
+
+<RotatePrompt />
 
 <div class="app-container">
 	{@render children()}
@@ -67,6 +70,7 @@
 	:global(html) {
 		background: #b5905f;
 		height: 100%;
+		overflow-x: hidden;
 	}
 
 	:global(body) {
@@ -81,6 +85,7 @@
 		background-size: cover;
 		background-position: center;
 		background-attachment: fixed;
+		overflow-x: hidden;
 	}
 
 	.app-container {
