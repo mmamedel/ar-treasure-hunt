@@ -19,6 +19,10 @@
 	let editingSessionId = $state<number | null>(null);
 	let editingNameOverride = $state('');
 
+	// Treasure statistics
+	let treasureStats = $state<any[]>([]);
+	let isLoadingStats = $state(false);
+
 	$effect(() => {
 		if (data.config) {
 			// Convert ISO strings to datetime-local format
@@ -33,6 +37,7 @@
 		}
 
 		checkGameStatus();
+		loadTreasureStats();
 	});
 
 	async function checkGameStatus() {
@@ -42,6 +47,22 @@
 			gameStatus = data.exists ? data.status : 'no_config';
 		} catch (err) {
 			gameStatus = 'no_config';
+		}
+	}
+
+	async function loadTreasureStats() {
+		isLoadingStats = true;
+		try {
+			const response = await fetch('/api/admin/treasure-stats');
+			const data = await response.json();
+
+			if (response.ok) {
+				treasureStats = data.stats;
+			}
+		} catch (err) {
+			console.error('Error loading treasure stats:', err);
+		} finally {
+			isLoadingStats = false;
 		}
 	}
 
@@ -291,14 +312,40 @@
 		</div>
 	</div>
 
-	<div class="info-card">
-		<h3>📋 Informações</h3>
-		<ul>
-			<li><strong>Antes do Início:</strong> Mostra contador regressivo</li>
-			<li><strong>Ativo:</strong> Jogadores podem entrar e jogar</li>
-			<li><strong>Finalizado:</strong> Mostra mensagem de agradecimento</li>
-			<li><strong>Sem Configuração:</strong> Jogo sempre disponível</li>
-		</ul>
+	<div class="form-card stats-card">
+		<h3>📊 Estatísticas dos Tesouros</h3>
+		<p class="stats-info">Tempo médio, mínimo e máximo para encontrar cada tesouro</p>
+
+		{#if isLoadingStats}
+			<p class="loading-text">Carregando estatísticas...</p>
+		{:else if treasureStats.length === 0}
+			<p class="no-data-text">Nenhum tesouro encontrado ainda</p>
+		{:else}
+			<div class="stats-table-container">
+				<table class="stats-table">
+					<thead>
+						<tr>
+							<th>Tesouro</th>
+							<th>Tentativas</th>
+							<th>Média</th>
+							<th>Mínimo</th>
+							<th>Máximo</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each treasureStats as stat}
+							<tr>
+								<td class="treasure-emoji">{stat.emoji}</td>
+								<td>{stat.count}</td>
+								<td>{stat.averageFormatted}</td>
+								<td class="min-time">{stat.minFormatted}</td>
+								<td class="max-time">{stat.maxFormatted}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
 	</div>
 
 	<div class="form-card sessions-card">
@@ -566,36 +613,6 @@
 		border-radius: var(--radius-sm);
 	}
 
-	.info-card {
-		width: 100%;
-		max-width: 600px;
-		background: rgba(255, 255, 255, 0.8);
-		border: var(--border-width) solid var(--color-border);
-		border-radius: var(--radius-md);
-		padding: 1.5rem;
-		box-sizing: border-box;
-	}
-
-	.info-card h3 {
-		font-family: var(--font-primary);
-		font-size: 1.2rem;
-		color: var(--color-primary);
-		margin: 0 0 1rem 0;
-	}
-
-	.info-card ul {
-		font-family: var(--font-secondary);
-		font-size: 0.9rem;
-		color: var(--color-primary);
-		margin: 0;
-		padding-left: 1.5rem;
-		line-height: 1.8;
-	}
-
-	.info-card li {
-		margin-bottom: 0.5rem;
-	}
-
 	/* Session management styles */
 	.sessions-card h3 {
 		font-family: var(--font-primary);
@@ -723,6 +740,82 @@
 		font-size: 14px;
 	}
 
+	/* Treasure statistics styles */
+	.stats-card h3 {
+		font-family: var(--font-primary);
+		font-size: 1.3rem;
+		color: var(--color-primary);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.stats-info {
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin: 0 0 1.5rem 0;
+	}
+
+	.loading-text,
+	.no-data-text {
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		color: var(--color-secondary);
+		text-align: center;
+		padding: 2rem 0;
+		margin: 0;
+	}
+
+	.stats-table-container {
+		overflow-x: auto;
+		margin-top: 1rem;
+	}
+
+	.stats-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-family: var(--font-secondary);
+	}
+
+	.stats-table thead {
+		background: var(--color-accent);
+	}
+
+	.stats-table th {
+		padding: 12px;
+		text-align: left;
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--color-primary);
+		border: 2px solid var(--color-border);
+	}
+
+	.stats-table td {
+		padding: 10px 12px;
+		font-size: 0.9rem;
+		color: var(--color-primary);
+		border: 2px solid var(--color-border);
+		background: rgba(255, 255, 255, 0.5);
+	}
+
+	.stats-table tbody tr:hover {
+		background: rgba(208, 141, 61, 0.2);
+	}
+
+	.stats-table .treasure-emoji {
+		font-size: 1.5rem;
+		text-align: center;
+	}
+
+	.stats-table .min-time {
+		color: #5e928a;
+		font-weight: 600;
+	}
+
+	.stats-table .max-time {
+		color: #d06243;
+		font-weight: 600;
+	}
+
 	@media (max-width: 768px) {
 		.container {
 			padding: 0.5rem;
@@ -800,24 +893,22 @@
 			margin: 0.75rem 0;
 		}
 
-		.info-card {
-			padding: 0.75rem;
-			box-sizing: border-box;
-		}
-
-		.info-card h3 {
-			font-size: 1rem;
-			margin-bottom: 0.75rem;
-		}
-
-		.info-card ul {
+		.stats-table th,
+		.stats-table td {
+			padding: 8px;
 			font-size: 0.8rem;
-			padding-left: 1.25rem;
-			line-height: 1.6;
 		}
 
-		.info-card li {
-			margin-bottom: 0.4rem;
+		.stats-table th:first-child,
+		.stats-table td:first-child {
+			position: sticky;
+			left: 0;
+			background: var(--color-accent);
+			z-index: 1;
+		}
+
+		.stats-table td:first-child {
+			background: rgba(255, 255, 255, 0.95);
 		}
 	}
 
@@ -830,8 +921,7 @@
 			}
 
 			.form-card,
-			.status-card,
-			.info-card {
+			.status-card {
 				padding: 0.5rem;
 			}
 
