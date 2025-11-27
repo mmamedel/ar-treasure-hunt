@@ -286,11 +286,6 @@
 <div class="container">
 	<div class="header">
 		<h1>⚙️ ADMIN</h1>
-		<p class="subtitle">Configuração do Jogo</p>
-		<div class="header-buttons">
-			<button class="restart-button" onclick={handleRestart}> 🔄 Reiniciar Jogo </button>
-			<button class="logout-button" onclick={handleLogout}>Sair</button>
-		</div>
 	</div>
 
 	<div class="status-card" style="border-color: {getStatusColor(gameStatus)}">
@@ -374,7 +369,7 @@
 			<div class="search-input-group">
 				<input
 					type="text"
-					placeholder="Buscar por nome original ou modificado..."
+					placeholder="Nome original ou modificado"
 					bind:value={searchQuery}
 					disabled={isSearching}
 					onkeydown={(e) => e.key === 'Enter' && handleSearchSessions()}
@@ -432,6 +427,11 @@
 			</div>
 		{/if}
 	</div>
+
+	<div class="footer-buttons">
+		<button class="restart-button" onclick={handleRestart}> 🔄 Reiniciar Jogo </button>
+		<button class="logout-button" onclick={handleLogout}>Sair</button>
+	</div>
 </div>
 
 <style>
@@ -463,31 +463,26 @@
 		margin: 0;
 	}
 
-	.subtitle {
-		font-family: var(--font-secondary);
-		font-size: 1rem;
-		color: var(--color-secondary);
-		margin: 0.5rem 0 0 0;
-	}
-
-	.header-buttons {
-		position: absolute;
-		top: 0;
-		right: 0;
+	.footer-buttons {
+		width: 100%;
+		max-width: 600px;
 		display: flex;
-		gap: 0.5rem;
+		gap: 1rem;
+		margin-bottom: 2rem;
 	}
 
 	.restart-button,
 	.logout-button {
-		padding: 0.5rem 1rem;
+		flex: 1;
+		padding: 0.75rem 1.5rem;
 		font-family: var(--font-secondary);
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 		color: white;
 		border: none;
 		border-radius: var(--radius-md);
 		cursor: pointer;
 		transition: opacity 0.2s;
+		font-weight: 600;
 	}
 
 	.restart-button {
@@ -864,15 +859,9 @@
 			font-size: 1.75rem;
 		}
 
-		.subtitle {
-			font-size: 0.9rem;
-		}
-
-		.header-buttons {
-			position: static;
-			margin-top: 0.75rem;
+		.footer-buttons {
 			flex-direction: column;
-			width: 100%;
+			gap: 0.5rem;
 		}
 
 		.restart-button,
