@@ -30,7 +30,7 @@ function formatDuration(milliseconds: number): string {
 	}
 }
 
-export const load: PageServerLoad = async () => {
+async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
 	try {
 		// Get all finished game sessions sorted by durationMs (ascending)
 		const allFinishedSessions = await (
@@ -59,13 +59,16 @@ export const load: PageServerLoad = async () => {
 				durationFormatted: formatDuration(session.durationMs!)
 			}));
 
-		const leaderboardData: LeaderboardData = {
-			top100
-		};
-
-		return leaderboardData;
+		return top100;
 	} catch (err) {
 		console.error('Error fetching leaderboard:', err);
 		throw error(500, 'Failed to fetch leaderboard data');
 	}
+}
+
+export const load: PageServerLoad = async () => {
+	return {
+		// Return the promise directly - SvelteKit will stream it
+		top100: fetchLeaderboard()
+	};
 };

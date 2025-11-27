@@ -2,17 +2,16 @@
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { goto } from '$app/navigation';
 	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
+	import type { LeaderboardEntry } from './+page.server';
 
 	let { data } = $props();
-
-	const { top100 } = data;
 
 	// Load player info from gameState
 	const gameState = getGameState();
 	const playerName = gameState?.playerName;
 
 	// Find player in top 100 and calculate rank
-	let playerInfo = $derived.by(() => {
+	function getPlayerInfo(top100: LeaderboardEntry[]) {
 		if (!playerName) return undefined;
 
 		const playerInTop100 = top100.find(
@@ -29,7 +28,7 @@
 		}
 
 		return undefined;
-	});
+	}
 
 	function formatDate(date: Date): string {
 		return new Date(date).toLocaleString();
@@ -61,57 +60,104 @@
 		<p class="subtitle">Top 100 Jogadores Mais Rápidos</p>
 	</div>
 
-	{#if playerInfo}
-		<div class="player-highlight">
-			<div class="highlight-content">
-				<div class="highlight-rank">#{playerInfo.rank}</div>
-				<div class="highlight-info">
-					<h2>{playerInfo.playerName}</h2>
-					<p class="highlight-duration">{playerInfo.durationFormatted}</p>
+	{#await data.top100}
+		<!-- Loading skeleton -->
+		<div class="leaderboard-wrapper">
+			<table class="leaderboard-table">
+				<thead>
+					<tr>
+						<th class="rank-col">Rank</th>
+						<th class="name-col">Nome</th>
+						<th class="start-col">Início</th>
+						<th class="end-col">Fim</th>
+						<th class="duration-col">Tempo de Jogo</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each Array(10) as _, i}
+						<tr class="skeleton-row">
+							<td class="rank-col">
+								<div class="skeleton-item skeleton-rank"></div>
+							</td>
+							<td class="name-col">
+								<div class="skeleton-item skeleton-name"></div>
+							</td>
+							<td class="start-col">
+								<div class="skeleton-item skeleton-date"></div>
+							</td>
+							<td class="end-col">
+								<div class="skeleton-item skeleton-date"></div>
+							</td>
+							<td class="duration-col">
+								<div class="skeleton-item skeleton-duration"></div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{:then top100}
+		<!-- Loaded data -->
+		{@const playerInfo = getPlayerInfo(top100)}
+
+		{#if playerInfo}
+			<div class="player-highlight">
+				<div class="highlight-content">
+					<div class="highlight-rank">#{playerInfo.rank}</div>
+					<div class="highlight-info">
+						<h2>{playerInfo.playerName}</h2>
+						<p class="highlight-duration">{playerInfo.durationFormatted}</p>
+					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
 
-	<div class="leaderboard-wrapper">
-		<table class="leaderboard-table">
-			<thead>
-				<tr>
-					<th class="rank-col">Rank</th>
-					<th class="name-col">Nome</th>
-					<th class="start-col">Início</th>
-					<th class="end-col">Fim</th>
-					<th class="duration-col">Tempo de Jogo</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each top100 as entry (entry.rank)}
-					<tr class={playerInfo?.playerName === entry.playerName ? 'highlighted' : ''}>
-						<td class="rank-col">
-							<div class="rank-cell">
-								{#if entry.rank <= 3}
-									<span class="medal">{getMedalEmoji(entry.rank)}</span>
-								{/if}
-								<span class="rank-number">#{entry.rank}</span>
-							</div>
-						</td>
-						<td class="name-col">
-							<span class="player-name">{entry.playerName}</span>
-						</td>
-						<td class="start-col">
-							<span class="timestamp">{formatDate(entry.startTime)}</span>
-						</td>
-						<td class="end-col">
-							<span class="timestamp">{formatDate(entry.endTime)}</span>
-						</td>
-						<td class="duration-col">
-							<span class="duration">{entry.durationFormatted}</span>
-						</td>
+		<div class="leaderboard-wrapper">
+			<table class="leaderboard-table">
+				<thead>
+					<tr>
+						<th class="rank-col">Rank</th>
+						<th class="name-col">Nome</th>
+						<th class="start-col">Início</th>
+						<th class="end-col">Fim</th>
+						<th class="duration-col">Tempo de Jogo</th>
 					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+				</thead>
+				<tbody>
+					{#each top100 as entry (entry.rank)}
+						<tr class={playerInfo?.playerName === entry.playerName ? 'highlighted' : ''}>
+							<td class="rank-col">
+								<div class="rank-cell">
+									{#if entry.rank <= 3}
+										<span class="medal">{getMedalEmoji(entry.rank)}</span>
+									{/if}
+									<span class="rank-number">#{entry.rank}</span>
+								</div>
+							</td>
+							<td class="name-col">
+								<span class="player-name">{entry.playerName}</span>
+							</td>
+							<td class="start-col">
+								<span class="timestamp">{formatDate(entry.startTime)}</span>
+							</td>
+							<td class="end-col">
+								<span class="timestamp">{formatDate(entry.endTime)}</span>
+							</td>
+							<td class="duration-col">
+								<span class="duration">{entry.durationFormatted}</span>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{:catch error}
+		<!-- Error state -->
+		<div class="error-message">
+			<p>❌ Erro ao carregar ranking</p>
+			<p class="error-detail">{error.message}</p>
+		</div>
+	{/await}
 </div>
 
 <style>
@@ -388,5 +434,69 @@
 	.back-button:hover {
 		transform: scale(1.1);
 		box-shadow: 0 6px 20px rgba(208, 141, 61, 0.6);
+	}
+
+	/* Skeleton loader styles */
+	.skeleton-row {
+		background: rgba(255, 255, 255, 0.6);
+	}
+
+	.skeleton-item {
+		background: linear-gradient(
+			90deg,
+			rgba(208, 141, 61, 0.1) 0%,
+			rgba(208, 141, 61, 0.2) 50%,
+			rgba(208, 141, 61, 0.1) 100%
+		);
+		background-size: 200% 100%;
+		animation: skeleton-loading 1.5s ease-in-out infinite;
+		border-radius: 4px;
+		height: 16px;
+	}
+
+	.skeleton-rank {
+		width: 50px;
+		margin: 0 auto;
+	}
+
+	.skeleton-name {
+		width: 80%;
+		max-width: 150px;
+	}
+
+	.skeleton-date {
+		width: 90%;
+		max-width: 120px;
+	}
+
+	.skeleton-duration {
+		width: 70px;
+		margin: 0 auto;
+	}
+
+	@keyframes skeleton-loading {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
+
+	/* Error message styles */
+	.error-message {
+		text-align: center;
+		padding: 2rem;
+		color: var(--color-primary);
+	}
+
+	.error-message p {
+		margin: 0.5rem 0;
+		font-family: var(--font-secondary);
+	}
+
+	.error-detail {
+		font-size: 0.9rem;
+		color: var(--color-secondary);
 	}
 </style>
