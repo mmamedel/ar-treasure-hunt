@@ -3,6 +3,7 @@
 	import MenuButton from '$lib/components/MenuButton.svelte';
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let { children } = $props();
 	loadSession();
@@ -21,7 +22,8 @@
 		}
 	});
 
-	let showMenu = $derived(gameConfigStatus !== 'before_start');
+	let isAdminRoute = $derived($page.url.pathname.startsWith('/admin'));
+	let showMenu = $derived(gameConfigStatus !== 'before_start' && !isAdminRoute);
 	let hasGameSession = $derived(gameState.isGameActive);
 </script>
 

@@ -39,7 +39,13 @@ async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
 				orderBy: { durationMs: 'asc' };
 				take: number;
 			}) => Promise<
-				Array<{ playerName: string; start: Date; end: Date | null; durationMs: number | null }>
+				Array<{
+					playerName: string;
+					nameOverride: string | null;
+					start: Date;
+					end: Date | null;
+					durationMs: number | null;
+				}>
 			>
 		)({
 			where: { hasFinished: true },
@@ -52,7 +58,7 @@ async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
 			.filter((session) => session.durationMs !== null && session.end !== null)
 			.map((session, index) => ({
 				rank: index + 1,
-				playerName: session.playerName,
+				playerName: session.nameOverride ?? session.playerName,
 				startTime: session.start,
 				endTime: session.end!,
 				duration: session.durationMs!,

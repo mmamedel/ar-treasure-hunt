@@ -11,6 +11,14 @@
 	let isSubmitting = $state(false);
 	let gameStatus = $state<'loading' | 'before_start' | 'active' | 'ended' | 'no_config'>('loading');
 
+	// Session management
+	let searchQuery = $state('');
+	let sessions = $state<any[]>([]);
+	let isSearching = $state(false);
+	let searchError = $state('');
+	let editingSessionId = $state<number | null>(null);
+	let editingNameOverride = $state('');
+
 	$effect(() => {
 		if (data.config) {
 			// Convert ISO strings to datetime-local format
@@ -128,6 +136,80 @@
 		}
 	}
 
+	async function handleSearchSessions() {
+		if (!searchQuery.trim()) {
+			searchError = 'Digite um nome para buscar';
+			return;
+		}
+
+		isSearching = true;
+		searchError = '';
+		sessions = [];
+
+		try {
+			const response = await fetch(
+				`/api/admin/sessions/search?q=${encodeURIComponent(searchQuery)}`
+			);
+			const data = await response.json();
+
+			if (response.ok) {
+				sessions = data.sessions;
+				if (sessions.length === 0) {
+					searchError = 'Nenhuma sessão encontrada';
+				}
+			} else {
+				searchError = data.error || 'Erro ao buscar sessões';
+			}
+		} catch (err) {
+			searchError = 'Erro ao buscar sessões';
+		} finally {
+			isSearching = false;
+		}
+	}
+
+	function startEditSession(session: any) {
+		editingSessionId = session.id;
+		editingNameOverride = session.nameOverride ?? '';
+	}
+
+	function cancelEdit() {
+		editingSessionId = null;
+		editingNameOverride = '';
+	}
+
+	async function saveNameOverride(sessionId: number) {
+		try {
+			const response = await fetch(`/api/admin/sessions/${sessionId}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					nameOverride: editingNameOverride.trim() || null
+				})
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				// Update the session in the list
+				sessions = sessions.map((s) =>
+					s.id === sessionId
+						? {
+								...s,
+								nameOverride: data.session.nameOverride,
+								displayName: data.session.displayName
+							}
+						: s
+				);
+				editingSessionId = null;
+				editingNameOverride = '';
+			} else {
+				alert(data.error || 'Erro ao atualizar nome');
+			}
+		} catch (err) {
+			alert('Erro ao atualizar nome');
+		}
+	}
+
 	function getStatusLabel(status: string) {
 		switch (status) {
 			case 'before_start':
@@ -217,6 +299,73 @@
 			<li><strong>Finalizado:</strong> Mostra mensagem de agradecimento</li>
 			<li><strong>Sem Configuração:</strong> Jogo sempre disponível</li>
 		</ul>
+	</div>
+
+	<div class="form-card sessions-card">
+		<h3>👤 Gerenciar Nomes de Jogadores</h3>
+		<p class="session-info">Busque e modifique nomes inadequados que aparecem no ranking</p>
+
+		<div class="search-section">
+			<div class="search-input-group">
+				<input
+					type="text"
+					placeholder="Digite o nome do jogador..."
+					bind:value={searchQuery}
+					disabled={isSearching}
+					onkeydown={(e) => e.key === 'Enter' && handleSearchSessions()}
+				/>
+				<button class="button search-button" onclick={handleSearchSessions} disabled={isSearching}>
+					{isSearching ? '🔍...' : '🔍 Buscar'}
+				</button>
+			</div>
+
+			{#if searchError}
+				<p class="error-message">{searchError}</p>
+			{/if}
+		</div>
+
+		{#if sessions.length > 0}
+			<div class="sessions-list">
+				<h4>Resultados ({sessions.length})</h4>
+				{#each sessions as session}
+					<div class="session-item">
+						<div class="session-info-row">
+							<strong>Nome Original:</strong>
+							{session.playerName}
+						</div>
+
+						{#if editingSessionId === session.id}
+							<div class="edit-section">
+								<label for="override-{session.id}">Nome para Exibição:</label>
+								<input
+									type="text"
+									id="override-{session.id}"
+									bind:value={editingNameOverride}
+									placeholder="Deixe vazio para usar nome original"
+								/>
+								<div class="edit-buttons">
+									<button class="button small" onclick={() => saveNameOverride(session.id)}>
+										✓ Salvar
+									</button>
+									<button class="button secondary small" onclick={cancelEdit}>✗ Cancelar</button>
+								</div>
+							</div>
+						{:else}
+							<div class="session-info-row">
+								<strong>Exibido como:</strong>
+								<span class:overridden={session.nameOverride}>{session.displayName}</span>
+								{#if session.nameOverride}
+									<span class="badge">modificado</span>
+								{/if}
+							</div>
+							<button class="button secondary small" onclick={() => startEditSession(session)}>
+								✏️ Editar
+							</button>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -447,10 +596,137 @@
 		margin-bottom: 0.5rem;
 	}
 
+	/* Session management styles */
+	.sessions-card h3 {
+		font-family: var(--font-primary);
+		font-size: 1.3rem;
+		color: var(--color-primary);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.session-info {
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin: 0 0 1.5rem 0;
+	}
+
+	.search-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.search-input-group {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.search-input-group input {
+		flex: 1;
+		padding: 10px 14px;
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		background: #f2f2f2;
+		color: var(--color-primary);
+		border: 2px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		box-sizing: border-box;
+	}
+
+	.search-button {
+		white-space: nowrap;
+		padding: 10px 20px !important;
+	}
+
+	.sessions-list {
+		margin-top: 1rem;
+	}
+
+	.sessions-list h4 {
+		font-family: var(--font-secondary);
+		font-size: 1rem;
+		color: var(--color-primary);
+		margin: 0 0 1rem 0;
+	}
+
+	.session-item {
+		background: rgba(255, 255, 255, 0.5);
+		border: 2px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: 1rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.session-info-row {
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		color: var(--color-primary);
+		margin-bottom: 0.5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.session-info-row strong {
+		font-weight: 600;
+	}
+
+	.session-info-row .overridden {
+		color: var(--color-accent);
+		font-weight: 600;
+	}
+
+	.badge {
+		display: inline-block;
+		background: var(--color-accent);
+		color: var(--color-primary);
+		padding: 2px 8px;
+		border-radius: 12px;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+
+	.edit-section {
+		margin-top: 0.75rem;
+	}
+
+	.edit-section label {
+		display: block;
+		font-family: var(--font-secondary);
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--color-primary);
+		margin-bottom: 0.4rem;
+	}
+
+	.edit-section input {
+		width: 100%;
+		padding: 10px 14px;
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		background: white;
+		color: var(--color-primary);
+		border: 2px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		box-sizing: border-box;
+		margin-bottom: 0.75rem;
+	}
+
+	.edit-buttons {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.button.small {
+		padding: 8px 16px;
+		font-size: 14px;
+	}
+
 	@media (max-width: 768px) {
 		.container {
 			padding: 0.5rem;
-			padding-top: 3.5rem;
+			padding-top: 4rem;
 			gap: 1rem;
 		}
 
@@ -550,7 +826,7 @@
 		@media (max-width: 768px) {
 			.container {
 				padding: 0.4rem;
-				padding-top: 3.5rem;
+				padding-top: 4rem;
 			}
 
 			.form-card,
