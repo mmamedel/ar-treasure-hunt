@@ -11,13 +11,23 @@ export const GET: RequestHandler = withAdminApiPermission(async ({ url }) => {
 			return json({ error: 'Query parameter "q" is required' }, { status: 400 });
 		}
 
-		// Search for sessions where playerName contains the query (case-insensitive)
+		// Search for sessions where playerName OR nameOverride contains the query (case-insensitive)
 		const sessions = await prisma.gameSession.findMany({
 			where: {
-				playerName: {
-					contains: query,
-					mode: 'insensitive'
-				}
+				OR: [
+					{
+						playerName: {
+							contains: query,
+							mode: 'insensitive'
+						}
+					},
+					{
+						nameOverride: {
+							contains: query,
+							mode: 'insensitive'
+						}
+					}
+				]
 			},
 			orderBy: {
 				start: 'desc'

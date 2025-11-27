@@ -356,7 +356,7 @@
 			<div class="search-input-group">
 				<input
 					type="text"
-					placeholder="Digite o nome do jogador..."
+					placeholder="Buscar por nome original ou modificado..."
 					bind:value={searchQuery}
 					disabled={isSearching}
 					onkeydown={(e) => e.key === 'Enter' && handleSearchSessions()}
