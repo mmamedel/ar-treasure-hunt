@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { loadSession } from '$lib/stores/gameSessionPersisted';
 	import MenuButton from '$lib/components/MenuButton.svelte';
+	import { getGameState } from '$lib/stores/gameState.svelte';
 
 	let { children } = $props();
 	loadSession();
+
+	const gameState = getGameState();
+	let showMenu = $derived(gameState.isGameActive);
 </script>
 
 <svelte:head>
@@ -13,7 +17,9 @@
 
 <div class="app-container">
 	{@render children()}
-	<MenuButton />
+	{#if showMenu}
+		<MenuButton />
+	{/if}
 </div>
 
 <style>
@@ -42,7 +48,7 @@
 	}
 
 	:global(html) {
-		background: var(--color-bg);
+		background: #b5905f;
 		height: 100%;
 	}
 
@@ -53,7 +59,8 @@
 		min-height: 100vh;
 		color: var(--color-primary);
 		overscroll-behavior-y: contain;
-		background-image: url('/images/design/background.png');
+		background-color: #b5905f;
+		background-image: url('/images/design/background2.png');
 		background-size: cover;
 		background-position: center;
 		background-attachment: fixed;

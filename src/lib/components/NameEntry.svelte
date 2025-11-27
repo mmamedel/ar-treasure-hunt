@@ -139,25 +139,18 @@
 </div>
 
 <style>
-	:global(body) {
-		overflow: hidden !important;
-	}
-
 	.container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		position: relative;
 		width: 100%;
-		height: 100vh;
+		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		padding: 20px;
 		padding-top: 60px;
 		box-sizing: border-box;
-		overflow: hidden;
+		overflow-x: hidden;
+		overscroll-behavior-y: contain;
 	}
 
 	.logo {

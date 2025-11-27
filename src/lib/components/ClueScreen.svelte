@@ -139,25 +139,19 @@
 
 <style>
 	.screen-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		position: relative;
 		width: 100%;
+		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 		padding: 20px;
 		padding-top: 60px;
 		box-sizing: border-box;
 		overflow-y: auto;
+		overscroll-behavior-y: contain;
 	}
 
 	.timer-badge {
-		position: absolute;
-		top: 77px;
-		left: 50%;
-		transform: translateX(-50%);
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -169,7 +163,8 @@
 		font-size: 20px;
 		font-weight: 600;
 		color: var(--color-primary);
-		z-index: 20;
+		margin: 1rem auto;
+		width: fit-content;
 	}
 
 	.timer-badge svg {
@@ -185,7 +180,7 @@
 		max-width: 400px;
 		margin: 0 auto;
 		width: 100%;
-		padding: 100px 10px 20px;
+		padding: 10px 10px 20px;
 		box-sizing: border-box;
 	}
 

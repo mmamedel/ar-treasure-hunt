@@ -76,13 +76,10 @@
 
 <style>
 	.container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		position: relative;
 		width: 100%;
 		max-width: 400px;
+		min-height: 100vh;
 		margin: 0 auto;
 		padding: 20px;
 		padding-top: 80px;
@@ -93,6 +90,7 @@
 		align-items: center;
 		box-sizing: border-box;
 		overflow-y: auto;
+		overscroll-behavior-y: contain;
 	}
 
 	.treasure-chest {

@@ -126,12 +126,15 @@
 		align-items: center;
 		gap: 1.5rem;
 		box-sizing: border-box;
+		overflow-y: auto;
+		overscroll-behavior-y: contain;
 	}
 
 	.header {
 		text-align: center;
 		color: var(--color-primary);
 		margin-bottom: 0;
+		margin-top: 4rem;
 	}
 
 	.header h1 {
@@ -151,7 +154,7 @@
 	.player-highlight {
 		width: 100%;
 		max-width: 1000px;
-		margin-bottom: 2rem;
+		margin-top: 2rem;
 		padding: 0.5rem 0;
 		background: white;
 		border-radius: 12px;
@@ -363,7 +366,7 @@
 
 	.back-button {
 		position: fixed;
-		top: 1rem;
+		top: 3rem;
 		left: 1.5rem;
 		width: 3.5rem;
 		height: 3.5rem;
@@ -374,6 +377,7 @@
 		font-size: 28px;
 		font-family: var(--font-primary);
 		cursor: pointer;
+		z-index: 100;
 		display: flex;
 		align-items: center;
 		justify-content: center;

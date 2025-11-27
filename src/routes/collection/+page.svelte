@@ -110,12 +110,14 @@
 		padding: 2rem;
 		padding-top: 3.5rem;
 		overflow-x: hidden;
+		overscroll-behavior-y: contain;
 	}
 
 	.header {
 		text-align: center;
 		color: var(--color-primary);
 		margin-bottom: 2rem;
+		margin-top: 4rem;
 	}
 
 	.header h1 {
@@ -134,7 +136,7 @@
 
 	.back-button {
 		position: fixed;
-		top: 1rem;
+		top: 3rem;
 		left: 1.5rem;
 		width: 3.5rem;
 		height: 3.5rem;
