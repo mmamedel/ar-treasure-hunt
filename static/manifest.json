@@ -12,7 +12,7 @@
 	"screenshots": [
 		{
 			"src": "/favicon.png",
-			"sizes": "128x128",
+			"sizes": "96x96",
 			"type": "image/png",
 			"form_factor": "narrow"
 		}
@@ -40,7 +40,7 @@
 			"icons": [
 				{
 					"src": "/favicon.png",
-					"sizes": "128x128",
+					"sizes": "96x96",
 					"type": "image/png"
 				}
 			]

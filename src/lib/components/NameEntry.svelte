@@ -2,6 +2,7 @@
 	import { getGameState } from '$lib/stores/gameState.svelte';
 	import { Debounced } from 'runed';
 	import DecorativeBorder from './DecorativeBorder.svelte';
+	import { onMount } from 'svelte';
 
 	const gameState = getGameState();
 
@@ -11,6 +12,12 @@
 	let validationMessage = $state('');
 	let hasCheckedCurrentName = $state(false);
 	let lastCheckedName = $state('');
+
+	// Game config state
+	let gameStatus = $state<'loading' | 'no_config' | 'before_start' | 'active' | 'ended'>('loading');
+	let timeUntilStart = $state<number | null>(null);
+	let countdown = $state({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+	let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 	$effect(() => {
 		playerName;
@@ -101,6 +108,66 @@
 			handleSubmit();
 		}
 	}
+
+	function updateCountdown(milliseconds: number) {
+		const totalSeconds = Math.floor(milliseconds / 1000);
+		const hours = Math.floor(totalSeconds / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		const seconds = totalSeconds % 60;
+
+		countdown = { days: 0, hours, minutes, seconds };
+	}
+
+	async function checkGameConfig() {
+		try {
+			const response = await fetch('/api/game-config');
+			const data = await response.json();
+
+			if (!data.exists) {
+				gameStatus = 'no_config';
+				return;
+			}
+
+			gameStatus = data.status;
+
+			if (data.status === 'before_start' && data.timeUntilStart) {
+				timeUntilStart = data.timeUntilStart;
+				updateCountdown(data.timeUntilStart);
+
+				// Clear any existing interval
+				if (countdownInterval) {
+					clearInterval(countdownInterval);
+				}
+
+				// Update countdown every second
+				countdownInterval = setInterval(() => {
+					if (timeUntilStart && timeUntilStart > 0) {
+						timeUntilStart -= 1000;
+						updateCountdown(timeUntilStart);
+
+						// When countdown reaches 0, check config again
+						if (timeUntilStart <= 0) {
+							checkGameConfig();
+						}
+					}
+				}, 1000);
+			}
+		} catch (error) {
+			console.error('Erro ao buscar configuração do jogo:', error);
+			// If no config, allow game to proceed
+			gameStatus = 'no_config';
+		}
+	}
+
+	onMount(() => {
+		checkGameConfig();
+
+		return () => {
+			if (countdownInterval) {
+				clearInterval(countdownInterval);
+			}
+		};
+	});
 </script>
 
 <DecorativeBorder />
@@ -111,31 +178,63 @@
 	</div>
 
 	<h1>CAÇA AO TESOURO</h1>
-	<p class="subtitle">Digite seu nome para começar a aventura</p>
 
-	<div class="input-group">
-		<input
-			type="text"
-			placeholder="Seu nome"
-			maxlength="20"
-			bind:value={playerName}
-			onkeypress={handleKeyPress}
-		/>
-		<p class="validation-message info-message">ⓘ Este nome aparecerá no placar</p>
-		{#if validationMessage && !isValid && playerName.trim().length > 0}
-			<p
-				class="validation-message"
-				class:error={!isValid && playerName.trim().length > 0}
-				class:pending={isChecking}
-			>
-				ⓘ {validationMessage}
-			</p>
-		{/if}
-	</div>
+	{#if gameStatus === 'loading'}
+		<p class="subtitle">Carregando...</p>
+	{:else if gameStatus === 'before_start'}
+		<div class="countdown-container">
+			<p class="countdown-message">O jogo começará em:</p>
+			<div class="countdown-display">
+				<div class="countdown-item">
+					<span class="countdown-number">{countdown.hours.toString().padStart(2, '0')}</span>
+					<span class="countdown-label">horas</span>
+				</div>
+				<div class="countdown-separator">:</div>
+				<div class="countdown-item">
+					<span class="countdown-number">{countdown.minutes.toString().padStart(2, '0')}</span>
+					<span class="countdown-label">minutos</span>
+				</div>
+				<div class="countdown-separator">:</div>
+				<div class="countdown-item">
+					<span class="countdown-number">{countdown.seconds.toString().padStart(2, '0')}</span>
+					<span class="countdown-label">segundos</span>
+				</div>
+			</div>
+		</div>
+	{:else if gameStatus === 'ended'}
+		<p class="subtitle game-ended">O jogo já terminou!</p>
+		<div class="thank-you-message">
+			<p>🏆</p>
+			<p>Obrigado a todos que participaram!</p>
+			<p class="thank-you-sub">Foi uma aventura incrível!</p>
+		</div>
+	{:else if gameStatus === 'active' || gameStatus === 'no_config'}
+		<p class="subtitle">Digite seu nome para começar a aventura</p>
 
-	<button class="button" disabled={!isValid || !hasCheckedCurrentName} onclick={handleSubmit}>
-		COMEÇAR AVENTURA
-	</button>
+		<div class="input-group">
+			<input
+				type="text"
+				placeholder="Seu nome"
+				maxlength="20"
+				bind:value={playerName}
+				onkeypress={handleKeyPress}
+			/>
+			<p class="validation-message info-message">ⓘ Este nome aparecerá no placar</p>
+			{#if validationMessage && !isValid && playerName.trim().length > 0}
+				<p
+					class="validation-message"
+					class:error={!isValid && playerName.trim().length > 0}
+					class:pending={isChecking}
+				>
+					ⓘ {validationMessage}
+				</p>
+			{/if}
+		</div>
+
+		<button class="button" disabled={!isValid || !hasCheckedCurrentName} onclick={handleSubmit}>
+			COMEÇAR AVENTURA
+		</button>
+	{/if}
 </div>
 
 <style>
@@ -271,5 +370,128 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 		transform: none;
+	}
+
+	/* Countdown styles */
+	.countdown-container {
+		width: 100%;
+		max-width: 600px;
+		margin: 2rem auto;
+		text-align: center;
+		padding: 0 1rem;
+	}
+
+	.countdown-message {
+		font-family: var(--font-secondary);
+		font-size: 1.3rem;
+		color: var(--color-primary);
+		margin-bottom: 2rem;
+		font-weight: 500;
+	}
+
+	.countdown-display {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.25rem;
+		flex-wrap: nowrap;
+	}
+
+	.countdown-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 0.25rem;
+		min-width: 60px;
+	}
+
+	.countdown-number {
+		font-family: var(--font-primary);
+		font-size: 3.5rem;
+		font-weight: bold;
+		color: var(--color-primary);
+		line-height: 1;
+	}
+
+	.countdown-label {
+		font-family: var(--font-secondary);
+		font-size: 0.75rem;
+		color: var(--color-primary);
+		margin-top: 0.25rem;
+		font-weight: 500;
+	}
+
+	.countdown-separator {
+		font-family: var(--font-primary);
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: var(--color-primary);
+		margin: 0 0.25rem;
+		align-self: center;
+		padding-bottom: 1.25rem;
+	}
+
+	/* Thank you message styles */
+	.game-ended {
+		font-size: 1.5rem;
+		color: #d06243;
+	}
+
+	.thank-you-message {
+		text-align: center;
+		margin: 0.5rem auto 2rem;
+		max-width: 400px;
+	}
+
+	.thank-you-message p {
+		font-family: var(--font-secondary);
+		font-size: 1.5rem;
+		color: var(--color-primary);
+		margin: 1rem 0;
+	}
+
+	.thank-you-message p:first-child {
+		font-size: 4rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.thank-you-sub {
+		font-size: 1.1rem !important;
+		color: var(--color-secondary) !important;
+	}
+
+	@media (max-width: 768px) {
+		.countdown-container {
+			padding: 0 0.5rem;
+		}
+
+		.countdown-message {
+			font-size: 1.1rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.countdown-display {
+			gap: 0.15rem;
+		}
+
+		.countdown-item {
+			min-width: 50px;
+			padding: 0.15rem;
+		}
+
+		.countdown-number {
+			font-size: 2.5rem;
+		}
+
+		.countdown-label {
+			font-size: 0.65rem;
+		}
+
+		.countdown-separator {
+			font-size: 2rem;
+			margin: 0 0.15rem;
+			padding-bottom: 0.75rem;
+		}
 	}
 </style>

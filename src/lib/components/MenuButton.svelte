@@ -3,8 +3,10 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
-	let isClearing = false;
-	let isOpen = false;
+	let { hasGameSession = false }: { hasGameSession?: boolean } = $props();
+
+	let isClearing = $state(false);
+	let isOpen = $state(false);
 
 	async function handleClear() {
 		toggleMenu();
@@ -50,16 +52,18 @@
 </script>
 
 <!-- Floating hamburger button -->
-<button class="hamburger" on:click={toggleMenu} title="Menu"> ☰ </button>
+<button class="hamburger" onclick={toggleMenu} title="Menu"> ☰ </button>
 
 <!-- Dropdown menu -->
 {#if isOpen}
 	<div class="menu">
-		<button on:click={handleCollection}> 📦 Coleção </button>
+		{#if hasGameSession}
+			<button onclick={handleCollection}> 📦 Coleção </button>
+		{/if}
 
-		<button on:click={handleLeaderboard}> 🏆 Ranking </button>
+		<button onclick={handleLeaderboard}> 🏆 Ranking </button>
 
-		<button on:click={handleClear} disabled={isClearing}> 🔄 Reiniciar </button>
+		<button onclick={handleClear} disabled={isClearing}> 🔄 Reiniciar </button>
 	</div>
 {/if}
 

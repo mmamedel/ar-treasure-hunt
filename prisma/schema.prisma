@@ -27,3 +27,11 @@ model Treasure {
   end            DateTime?
   found          Boolean     @default(false)
 }
+
+model GameConfig {
+  id        Int      @id @default(1)
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

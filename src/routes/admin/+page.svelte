@@ -1,0 +1,574 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import DecorativeBorder from '$lib/components/DecorativeBorder.svelte';
+
+	let { data } = $props();
+
+	let startTime = $state('');
+	let endTime = $state('');
+	let message = $state('');
+	let error = $state('');
+	let isSubmitting = $state(false);
+	let gameStatus = $state<'loading' | 'before_start' | 'active' | 'ended' | 'no_config'>('loading');
+
+	$effect(() => {
+		if (data.config) {
+			// Convert ISO strings to datetime-local format
+			startTime = data.config.startTime.slice(0, 16);
+			endTime = data.config.endTime.slice(0, 16);
+		} else {
+			// Set defaults: start now, end in 24 hours
+			const now = new Date();
+			const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+			startTime = now.toISOString().slice(0, 16);
+			endTime = tomorrow.toISOString().slice(0, 16);
+		}
+
+		checkGameStatus();
+	});
+
+	async function checkGameStatus() {
+		try {
+			const response = await fetch('/api/game-config');
+			const data = await response.json();
+			gameStatus = data.exists ? data.status : 'no_config';
+		} catch (err) {
+			gameStatus = 'no_config';
+		}
+	}
+
+	async function handleSave() {
+		error = '';
+		message = '';
+
+		if (!startTime || !endTime) {
+			error = 'Preencha ambas as datas';
+			return;
+		}
+
+		const start = new Date(startTime);
+		const end = new Date(endTime);
+
+		if (start >= end) {
+			error = 'Data de início deve ser anterior à data de fim';
+			return;
+		}
+
+		isSubmitting = true;
+
+		try {
+			const response = await fetch('/api/admin/game-config', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					startTime: start.toISOString(),
+					endTime: end.toISOString()
+				})
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				message = '✅ Configuração salva com sucesso!';
+				await checkGameStatus();
+			} else {
+				error = data.error || 'Erro ao salvar configuração';
+			}
+		} catch (err) {
+			error = 'Erro ao salvar configuração';
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	async function handleDelete() {
+		if (!confirm('Tem certeza que deseja remover a configuração? O jogo ficará sempre ativo.')) {
+			return;
+		}
+
+		isSubmitting = true;
+		error = '';
+		message = '';
+
+		try {
+			const response = await fetch('/api/admin/game-config', {
+				method: 'DELETE'
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				message = '✅ Configuração removida com sucesso!';
+				// Set defaults
+				const now = new Date();
+				const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+				startTime = now.toISOString().slice(0, 16);
+				endTime = tomorrow.toISOString().slice(0, 16);
+				await checkGameStatus();
+			} else {
+				error = data.error || 'Erro ao remover configuração';
+			}
+		} catch (err) {
+			error = 'Erro ao remover configuração';
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	async function handleLogout() {
+		try {
+			await fetch('/api/admin/logout', {
+				method: 'POST'
+			});
+		} catch (err) {
+			console.error('Error logging out:', err);
+		} finally {
+			// Always redirect even if logout fails
+			goto('/admin/login');
+		}
+	}
+
+	function getStatusLabel(status: string) {
+		switch (status) {
+			case 'before_start':
+				return '⏳ Aguardando início';
+			case 'active':
+				return '✅ Ativo';
+			case 'ended':
+				return '🏁 Finalizado';
+			case 'no_config':
+				return '⚠️ Sem configuração (sempre ativo)';
+			default:
+				return '...';
+		}
+	}
+
+	function getStatusColor(status: string) {
+		switch (status) {
+			case 'before_start':
+				return '#d08d3d';
+			case 'active':
+				return '#5e928a';
+			case 'ended':
+				return '#d06243';
+			case 'no_config':
+				return '#656565';
+			default:
+				return '#656565';
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>Admin - Caça ao Tesouro</title>
+</svelte:head>
+
+<DecorativeBorder />
+
+<div class="container">
+	<div class="header">
+		<h1>⚙️ ADMIN</h1>
+		<p class="subtitle">Configuração do Jogo</p>
+		<button class="logout-button" onclick={handleLogout}>Sair</button>
+	</div>
+
+	<div class="status-card" style="border-color: {getStatusColor(gameStatus)}">
+		<p class="status-label">Status do Jogo:</p>
+		<p class="status-value" style="color: {getStatusColor(gameStatus)}">
+			{getStatusLabel(gameStatus)}
+		</p>
+	</div>
+
+	<div class="form-card">
+		<div class="form-group">
+			<label for="start-time">Data e Hora de Início</label>
+			<input type="datetime-local" id="start-time" bind:value={startTime} disabled={isSubmitting} />
+		</div>
+
+		<div class="form-group">
+			<label for="end-time">Data e Hora de Fim</label>
+			<input type="datetime-local" id="end-time" bind:value={endTime} disabled={isSubmitting} />
+		</div>
+
+		{#if message}
+			<p class="success-message">{message}</p>
+		{/if}
+
+		{#if error}
+			<p class="error-message">⚠️ {error}</p>
+		{/if}
+
+		<div class="button-group">
+			<button class="button primary" onclick={handleSave} disabled={isSubmitting}>
+				{isSubmitting ? 'SALVANDO...' : 'SALVAR CONFIGURAÇÃO'}
+			</button>
+
+			<button class="button secondary" onclick={handleDelete} disabled={isSubmitting}>
+				REMOVER CONFIGURAÇÃO
+			</button>
+		</div>
+	</div>
+
+	<div class="info-card">
+		<h3>📋 Informações</h3>
+		<ul>
+			<li><strong>Antes do Início:</strong> Mostra contador regressivo</li>
+			<li><strong>Ativo:</strong> Jogadores podem entrar e jogar</li>
+			<li><strong>Finalizado:</strong> Mostra mensagem de agradecimento</li>
+			<li><strong>Sem Configuração:</strong> Jogo sempre disponível</li>
+		</ul>
+	</div>
+</div>
+
+<style>
+	.container {
+		width: 100%;
+		min-height: 100vh;
+		padding: 2rem;
+		padding-top: 5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2rem;
+		box-sizing: border-box;
+		overflow-y: auto;
+		overscroll-behavior-y: contain;
+	}
+
+	.header {
+		text-align: center;
+		position: relative;
+		width: 100%;
+		max-width: 600px;
+	}
+
+	.header h1 {
+		font-family: var(--font-primary);
+		font-size: 2.5rem;
+		color: var(--color-primary);
+		margin: 0;
+	}
+
+	.subtitle {
+		font-family: var(--font-secondary);
+		font-size: 1rem;
+		color: var(--color-secondary);
+		margin: 0.5rem 0 0 0;
+	}
+
+	.logout-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 0.5rem 1rem;
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		background: var(--color-secondary);
+		color: white;
+		border: none;
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+
+	.logout-button:hover {
+		opacity: 0.8;
+	}
+
+	.status-card {
+		width: 100%;
+		max-width: 600px;
+		background: white;
+		border: 3px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: 1.5rem;
+		text-align: center;
+		box-sizing: border-box;
+	}
+
+	.status-label {
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.status-value {
+		font-family: var(--font-primary);
+		font-size: 1.5rem;
+		font-weight: bold;
+		margin: 0;
+	}
+
+	.form-card {
+		width: 100%;
+		max-width: 600px;
+		background: white;
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: 2rem;
+		box-sizing: border-box;
+	}
+
+	.form-group {
+		margin-bottom: 1.5rem;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	.form-group label {
+		display: block;
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--color-primary);
+		margin-bottom: 0.5rem;
+	}
+
+	.form-group input {
+		width: 100%;
+		padding: 10px 14px;
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		background: #f2f2f2;
+		color: var(--color-primary);
+		border: 2px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		box-sizing: border-box;
+		transition: border-color 0.3s;
+		-webkit-appearance: none;
+		appearance: none;
+		max-width: 100%;
+	}
+
+	.form-group input:focus {
+		outline: none;
+		border-color: var(--color-accent);
+	}
+
+	.form-group input:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.button-group {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	.button {
+		width: 100%;
+		padding: 15px 30px;
+		font-family: var(--font-primary);
+		font-size: 16px;
+		font-weight: normal;
+		border: none;
+		border-radius: var(--radius-full);
+		cursor: pointer;
+		transition:
+			transform 0.2s,
+			opacity 0.2s;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.button.primary {
+		background: var(--color-accent);
+		color: var(--color-primary);
+	}
+
+	.button.secondary {
+		background: var(--color-secondary);
+		color: white;
+	}
+
+	.button:hover:not(:disabled) {
+		transform: scale(1.02);
+		opacity: 0.9;
+	}
+
+	.button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.success-message {
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		color: #5e928a;
+		text-align: center;
+		margin: 1rem 0;
+		padding: 0.75rem;
+		background: rgba(94, 146, 138, 0.1);
+		border-radius: var(--radius-sm);
+	}
+
+	.error-message {
+		font-family: var(--font-secondary);
+		font-size: 0.95rem;
+		color: #d06243;
+		text-align: center;
+		margin: 1rem 0;
+		padding: 0.75rem;
+		background: rgba(208, 98, 67, 0.1);
+		border-radius: var(--radius-sm);
+	}
+
+	.info-card {
+		width: 100%;
+		max-width: 600px;
+		background: rgba(255, 255, 255, 0.8);
+		border: var(--border-width) solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: 1.5rem;
+		box-sizing: border-box;
+	}
+
+	.info-card h3 {
+		font-family: var(--font-primary);
+		font-size: 1.2rem;
+		color: var(--color-primary);
+		margin: 0 0 1rem 0;
+	}
+
+	.info-card ul {
+		font-family: var(--font-secondary);
+		font-size: 0.9rem;
+		color: var(--color-primary);
+		margin: 0;
+		padding-left: 1.5rem;
+		line-height: 1.8;
+	}
+
+	.info-card li {
+		margin-bottom: 0.5rem;
+	}
+
+	@media (max-width: 768px) {
+		.container {
+			padding: 0.5rem;
+			padding-top: 3.5rem;
+			gap: 1rem;
+		}
+
+		.header h1 {
+			font-size: 1.75rem;
+		}
+
+		.subtitle {
+			font-size: 0.9rem;
+		}
+
+		.logout-button {
+			position: static;
+			margin-top: 0.75rem;
+			width: 100%;
+			padding: 0.6rem 0.75rem;
+			font-size: 0.85rem;
+		}
+
+		.status-card {
+			padding: 0.75rem;
+			box-sizing: border-box;
+		}
+
+		.status-label {
+			font-size: 0.8rem;
+		}
+
+		.status-value {
+			font-size: 1.25rem;
+		}
+
+		.form-card {
+			padding: 0.5rem;
+			box-sizing: border-box;
+		}
+
+		.form-group {
+			margin-bottom: 0.75rem;
+		}
+
+		.form-group label {
+			font-size: 0.8rem;
+			margin-bottom: 0.3rem;
+		}
+
+		.form-group input {
+			padding: 6px 8px;
+			font-size: 0.75rem;
+			box-sizing: border-box;
+			-webkit-appearance: none;
+			appearance: none;
+			max-width: 100%;
+			min-height: 0;
+		}
+
+		.button-group {
+			margin-top: 1.25rem;
+			gap: 0.75rem;
+		}
+
+		.button {
+			padding: 12px 20px;
+			font-size: 14px;
+		}
+
+		.success-message,
+		.error-message {
+			font-size: 0.85rem;
+			padding: 0.6rem;
+			margin: 0.75rem 0;
+		}
+
+		.info-card {
+			padding: 0.75rem;
+			box-sizing: border-box;
+		}
+
+		.info-card h3 {
+			font-size: 1rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.info-card ul {
+			font-size: 0.8rem;
+			padding-left: 1.25rem;
+			line-height: 1.6;
+		}
+
+		.info-card li {
+			margin-bottom: 0.4rem;
+		}
+	}
+
+	/* iOS Safari specific fixes */
+	@supports (-webkit-touch-callout: none) {
+		@media (max-width: 768px) {
+			.container {
+				padding: 0.4rem;
+				padding-top: 3.5rem;
+			}
+
+			.form-card,
+			.status-card,
+			.info-card {
+				padding: 0.5rem;
+			}
+
+			.form-group input {
+				padding: 5px 7px;
+				font-size: 14px;
+				min-height: 38px;
+			}
+
+			.form-group input[type='datetime-local'] {
+				min-width: 0;
+				width: 100%;
+			}
+		}
+	}
+</style>

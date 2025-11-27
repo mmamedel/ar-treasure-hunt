@@ -2,12 +2,27 @@
 	import { loadSession } from '$lib/stores/gameSessionPersisted';
 	import MenuButton from '$lib/components/MenuButton.svelte';
 	import { getGameState } from '$lib/stores/gameState.svelte';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 	loadSession();
 
 	const gameState = getGameState();
-	let showMenu = $derived(gameState.isGameActive);
+	let gameConfigStatus = $state<string>('loading');
+
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/game-config');
+			const data = await response.json();
+			gameConfigStatus = data.status || 'no_config';
+		} catch (error) {
+			console.error('Error fetching game config:', error);
+			gameConfigStatus = 'no_config';
+		}
+	});
+
+	let showMenu = $derived(gameConfigStatus !== 'before_start');
+	let hasGameSession = $derived(gameState.isGameActive);
 </script>
 
 <svelte:head>
@@ -18,7 +33,7 @@
 <div class="app-container">
 	{@render children()}
 	{#if showMenu}
-		<MenuButton />
+		<MenuButton {hasGameSession} />
 	{/if}
 </div>
 
