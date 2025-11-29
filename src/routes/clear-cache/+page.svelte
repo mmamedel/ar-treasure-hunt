@@ -1,8 +1,13 @@
 <script>
-	import { clearGameSession } from '$lib/stores/gameSessionPersisted';
+	import { clearGameSession, getSession } from '$lib/stores/gameSessionPersisted';
 	import { onMount } from 'svelte';
 
 	function gameClear() {
+		const session = getSession();
+		if (!session.current?.playerName) {
+			return;
+		}
+
 		if (confirm('Todo seu progresso vai ser perdido. Tem certeza que deseja continuar?')) {
 			try {
 				clearGameSession();
