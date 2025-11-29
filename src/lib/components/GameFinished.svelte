@@ -6,7 +6,6 @@
 	import { onMount } from 'svelte';
 
 	let qrCode = $state('');
-	let qrCodeUrl = $state('');
 
 	const gameState = getGameState();
 	const session = getSession();
@@ -14,7 +13,6 @@
 	async function generateQR() {
 		// Generate QR code pointing to your app route
 		const url = `${window.location.origin}/prize-distribution?playerName=${gameState.playerName}`;
-		qrCodeUrl = url;
 		qrCode = await QRCode.toDataURL(url);
 	}
 
@@ -73,7 +71,6 @@
 	{#if qrCode}
 		<img src={qrCode} alt="QR Code" />
 	{/if}
-	<a href={qrCodeUrl}>Link</a>
 </div>
 
 <style>
