@@ -2,9 +2,9 @@
 	{
 		"id": 0,
 		"emoji": "🎶",
-		"name": "Karaokê (Jesus e discípulos cantaram – Mateus 26:30)",
+		"name": "Karaokê",
 		"clue": "Depois de uma refeição sagrada, eles levantaram a voz em harmonia.",
-		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas.",
+		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas",
 		"imageTarget": "/targets/karaoke.mind",
 		"targetIndex": 0,
 		"model": {
@@ -23,9 +23,9 @@
 	{
 		"id": 1,
 		"emoji": "🏛️",
-		"name": "Mirante (tentação no alto monte – Mateus 4:8)",
-		"clue": "De um lugar alto, alguém viu todos os reinos da terra em um instante.",
-		"hint": "Olhe de onde se pode enxergar mais longe, lá você encontrará a marca.",
+		"name": "Mirante",
+		"clue": "De um lugar, alguém viu todos os reinos da terra.",
+		"hint": "Vá aonde se pode enxergar mais longe, lá você encontrará a marca",
 		"imageTarget": "/targets/mirante.mind",
 		"targetIndex": 0,
 		"model": {
@@ -44,9 +44,9 @@
 	{
 		"id": 2,
 		"emoji": "🏺",
-		"name": " Torneira (samaritana no poço – João 4:6-15)",
+		"name": " Torneira",
 		"clue": "Uma mulher foi buscar água e encontrou algo melhor: água que dá vida eterna.",
-		"hint": "Procure onde a água jorra facilmente, como num pequeno poço moderno",
+		"hint": "Procure um lugar onde as pessoas possam pegar água facilmente, como em num pequeno poço moderno",
 		"imageTarget": "/targets/vaso.mind",
 		"targetIndex": 0,
 		"model": {
@@ -65,9 +65,9 @@
 	{
 		"id": 3,
 		"emoji": "👁️",
-		"name": "Lava-olho (cura do cego – João 9:6,7)",
+		"name": "Lava-olho",
 		"clue": "Um homem recebeu barro nos olhos e, depois de lavar, viu o mundo pela primeira vez.",
-		"hint": "Veja onde as pessoas limpam os olhos de verdade. Lá está a marca",
+		"hint": "Veja onde as pessoas limpam os olhos em situações de emergência. Lá está a marca",
 		"imageTarget": "/targets/lava-olho.mind",
 		"targetIndex": 0,
 		"model": {
@@ -81,9 +81,9 @@
 	{
 		"id": 4,
 		"emoji": "💧",
-		"name": "Piscina (Batismo de Jesus)",
-		"clue": "Um homem vestido de camelo chamou as pessoas para se arrependerem. Aqui ele mergulhou o maior de todos.",
-		"hint": "Procure onde a água é funda o bastante para descer e subir, como no Jordão.",
+		"name": "Piscina",
+		"clue": "Um homem vestido com pele de camelo chamou as pessoas para se arrependerem. Aqui ele batizou o maior de todos.",
+		"hint": "Procure onde a água é funda o bastante para batizar uma pessoa, como no rio Jordão",
 		"imageTarget": "/targets/piscina.mind",
 		"targetIndex": 0,
 		"model": {
@@ -102,9 +102,9 @@
 	{
 		"id": 5,
 		"emoji": "📜",
-		"name": "Auditório (Jesus na sinagoga – Lucas 4:16-21)",
-		"clue": "Ele abriu o rolo e leu palavras sobre boas novas para todos.",
-		"hint": "Veja onde as pessoas se reúnem para ouvir alguém falar em público. Lá está a marca.",
+		"name": "Auditório",
+		"clue": "Ele abriu o rolo e ensinou sobre as boas novas a todos.",
+		"hint": "Veja onde as pessoas se reúnem para ouvir alguém falar em público. Lá está a marca",
 		"imageTarget": "/targets/rolo.mind",
 		"targetIndex": 0,
 		"model": {
