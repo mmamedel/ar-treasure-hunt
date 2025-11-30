@@ -1,0 +1,802 @@
+[
+	{
+		"rank": 1,
+		"playerName": "Jeová em 1° lugar",
+		"startTime": "2025-11-29T16:57:38.598Z",
+		"endTime": "2025-11-29T16:58:36.343Z",
+		"duration": 57745,
+		"durationFormatted": "57s"
+	},
+	{
+		"rank": 2,
+		"playerName": "Equipe flash",
+		"startTime": "2025-11-29T15:05:04.391Z",
+		"endTime": "2025-11-29T15:13:39.675Z",
+		"duration": 515284,
+		"durationFormatted": "8m 35s"
+	},
+	{
+		"rank": 3,
+		"playerName": "Bulla e Thiago",
+		"startTime": "2025-11-29T21:10:14.420Z",
+		"endTime": "2025-11-29T21:21:02.827Z",
+		"duration": 648407,
+		"durationFormatted": "10m 48s"
+	},
+	{
+		"rank": 4,
+		"playerName": "יהוה.",
+		"startTime": "2025-11-29T15:01:41.504Z",
+		"endTime": "2025-11-29T15:12:38.028Z",
+		"duration": 656524,
+		"durationFormatted": "10m 56s"
+	},
+	{
+		"rank": 5,
+		"playerName": "Heitor Gonçalves",
+		"startTime": "2025-11-29T14:29:54.699Z",
+		"endTime": "2025-11-29T14:41:48.041Z",
+		"duration": 713342,
+		"durationFormatted": "11m 53s"
+	},
+	{
+		"rank": 6,
+		"playerName": "Lucas (Barril)",
+		"startTime": "2025-11-29T14:29:56.607Z",
+		"endTime": "2025-11-29T14:43:00.381Z",
+		"duration": 783774,
+		"durationFormatted": "13m 3s"
+	},
+	{
+		"rank": 7,
+		"playerName": "Marcos Bulla Jr",
+		"startTime": "2025-11-29T12:30:41.498Z",
+		"endTime": "2025-11-29T12:44:27.973Z",
+		"duration": 826475,
+		"durationFormatted": "13m 46s"
+	},
+	{
+		"rank": 8,
+		"playerName": "Carlos Manoel Lopes!",
+		"startTime": "2025-11-29T20:37:06.474Z",
+		"endTime": "2025-11-29T20:51:19.733Z",
+		"duration": 853259,
+		"durationFormatted": "14m 13s"
+	},
+	{
+		"rank": 9,
+		"playerName": "Dayse Lima",
+		"startTime": "2025-11-29T11:53:04.335Z",
+		"endTime": "2025-11-29T12:08:47.421Z",
+		"duration": 943086,
+		"durationFormatted": "15m 43s"
+	},
+	{
+		"rank": 10,
+		"playerName": "Robert Rocha Sanches",
+		"startTime": "2025-11-29T14:17:58.334Z",
+		"endTime": "2025-11-29T14:33:42.506Z",
+		"duration": 944172,
+		"durationFormatted": "15m 44s"
+	},
+	{
+		"rank": 11,
+		"playerName": "Matheus Almeida",
+		"startTime": "2025-11-29T12:00:04.218Z",
+		"endTime": "2025-11-29T12:17:34.308Z",
+		"duration": 1050090,
+		"durationFormatted": "17m 30s"
+	},
+	{
+		"rank": 12,
+		"playerName": "Camila rocchi",
+		"startTime": "2025-11-29T11:50:50.508Z",
+		"endTime": "2025-11-29T12:09:04.718Z",
+		"duration": 1094210,
+		"durationFormatted": "18m 14s"
+	},
+	{
+		"rank": 13,
+		"playerName": "Guilherme Paes",
+		"startTime": "2025-11-29T11:50:07.768Z",
+		"endTime": "2025-11-29T12:08:52.640Z",
+		"duration": 1124872,
+		"durationFormatted": "18m 44s"
+	},
+	{
+		"rank": 14,
+		"playerName": "Marcelo Rocchi",
+		"startTime": "2025-11-29T11:50:07.285Z",
+		"endTime": "2025-11-29T12:08:57.638Z",
+		"duration": 1130353,
+		"durationFormatted": "18m 50s"
+	},
+	{
+		"rank": 15,
+		"playerName": "Marquinho",
+		"startTime": "2025-11-29T16:51:50.704Z",
+		"endTime": "2025-11-29T17:11:04.694Z",
+		"duration": 1153990,
+		"durationFormatted": "19m 13s"
+	},
+	{
+		"rank": 16,
+		"playerName": "Wirllem Ferreira",
+		"startTime": "2025-11-29T11:55:08.840Z",
+		"endTime": "2025-11-29T12:14:36.170Z",
+		"duration": 1167330,
+		"durationFormatted": "19m 27s"
+	},
+	{
+		"rank": 17,
+		"playerName": "Victor hugo",
+		"startTime": "2025-11-29T11:50:05.183Z",
+		"endTime": "2025-11-29T12:09:39.260Z",
+		"duration": 1174077,
+		"durationFormatted": "19m 34s"
+	},
+	{
+		"rank": 18,
+		"playerName": "Yara Segreto",
+		"startTime": "2025-11-29T12:17:54.135Z",
+		"endTime": "2025-11-29T12:37:47.947Z",
+		"duration": 1193812,
+		"durationFormatted": "19m 53s"
+	},
+	{
+		"rank": 19,
+		"playerName": "Pedro Pinto",
+		"startTime": "2025-11-29T11:54:31.219Z",
+		"endTime": "2025-11-29T12:14:31.601Z",
+		"duration": 1200382,
+		"durationFormatted": "20m 0s"
+	},
+	{
+		"rank": 20,
+		"playerName": "Leandra",
+		"startTime": "2025-11-29T11:50:05.744Z",
+		"endTime": "2025-11-29T12:10:38.794Z",
+		"duration": 1233050,
+		"durationFormatted": "20m 33s"
+	},
+	{
+		"rank": 21,
+		"playerName": "Thiago Bryan",
+		"startTime": "2025-11-29T13:18:54.314Z",
+		"endTime": "2025-11-29T13:40:01.718Z",
+		"duration": 1267404,
+		"durationFormatted": "21m 7s"
+	},
+	{
+		"rank": 22,
+		"playerName": "Matheus Saggin",
+		"startTime": "2025-11-29T13:18:39.551Z",
+		"endTime": "2025-11-29T13:39:59.611Z",
+		"duration": 1280060,
+		"durationFormatted": "21m 20s"
+	},
+	{
+		"rank": 23,
+		"playerName": "Gabriel",
+		"startTime": "2025-11-29T16:42:50.707Z",
+		"endTime": "2025-11-29T17:04:33.744Z",
+		"duration": 1303037,
+		"durationFormatted": "21m 43s"
+	},
+	{
+		"rank": 24,
+		"playerName": "Karla Prando",
+		"startTime": "2025-11-29T11:50:11.076Z",
+		"endTime": "2025-11-29T12:12:05.525Z",
+		"duration": 1314449,
+		"durationFormatted": "21m 54s"
+	},
+	{
+		"rank": 25,
+		"playerName": "sistemáticos e GJ",
+		"startTime": "2025-11-29T13:29:09.553Z",
+		"endTime": "2025-11-29T13:51:43.535Z",
+		"duration": 1353982,
+		"durationFormatted": "22m 33s"
+	},
+	{
+		"rank": 26,
+		"playerName": "Pedro Mercuroo",
+		"startTime": "2025-11-29T12:14:51.705Z",
+		"endTime": "2025-11-29T12:38:32.001Z",
+		"duration": 1420296,
+		"durationFormatted": "23m 40s"
+	},
+	{
+		"rank": 27,
+		"playerName": "Tamiris",
+		"startTime": "2025-11-29T13:42:35.845Z",
+		"endTime": "2025-11-29T14:07:10.291Z",
+		"duration": 1474446,
+		"durationFormatted": "24m 34s"
+	},
+	{
+		"rank": 28,
+		"playerName": "Geovana Garcia",
+		"startTime": "2025-11-29T12:20:01.196Z",
+		"endTime": "2025-11-29T12:44:53.142Z",
+		"duration": 1491946,
+		"durationFormatted": "24m 51s"
+	},
+	{
+		"rank": 29,
+		"playerName": "Ana Luiza Machado",
+		"startTime": "2025-11-29T13:06:23.088Z",
+		"endTime": "2025-11-29T13:31:18.984Z",
+		"duration": 1495896,
+		"durationFormatted": "24m 55s"
+	},
+	{
+		"rank": 30,
+		"playerName": "Luís Fernando Costa",
+		"startTime": "2025-11-29T11:51:45.554Z",
+		"endTime": "2025-11-29T12:16:59.069Z",
+		"duration": 1513515,
+		"durationFormatted": "25m 13s"
+	},
+	{
+		"rank": 31,
+		"playerName": "Lucas V",
+		"startTime": "2025-11-29T12:04:52.932Z",
+		"endTime": "2025-11-29T12:30:42.838Z",
+		"duration": 1549906,
+		"durationFormatted": "25m 49s"
+	},
+	{
+		"rank": 32,
+		"playerName": "Andrews e Rhuana",
+		"startTime": "2025-11-29T11:53:32.973Z",
+		"endTime": "2025-11-29T12:19:27.827Z",
+		"duration": 1554854,
+		"durationFormatted": "25m 54s"
+	},
+	{
+		"rank": 33,
+		"playerName": "Carol Dias",
+		"startTime": "2025-11-29T12:03:38.771Z",
+		"endTime": "2025-11-29T12:29:37.704Z",
+		"duration": 1558933,
+		"durationFormatted": "25m 58s"
+	},
+	{
+		"rank": 34,
+		"playerName": "Carol Batalha Bulla",
+		"startTime": "2025-11-29T12:30:36.741Z",
+		"endTime": "2025-11-29T12:57:39.370Z",
+		"duration": 1622629,
+		"durationFormatted": "27m 2s"
+	},
+	{
+		"rank": 35,
+		"playerName": "Karoline Calbo",
+		"startTime": "2025-11-29T11:50:59.952Z",
+		"endTime": "2025-11-29T12:18:03.742Z",
+		"duration": 1623790,
+		"durationFormatted": "27m 3s"
+	},
+	{
+		"rank": 36,
+		"playerName": "Julia Ellen",
+		"startTime": "2025-11-29T14:32:47.767Z",
+		"endTime": "2025-11-29T15:00:20.481Z",
+		"duration": 1652714,
+		"durationFormatted": "27m 32s"
+	},
+	{
+		"rank": 37,
+		"playerName": "Bianca Rascov",
+		"startTime": "2025-11-29T12:01:55.284Z",
+		"endTime": "2025-11-29T12:29:33.936Z",
+		"duration": 1658652,
+		"durationFormatted": "27m 38s"
+	},
+	{
+		"rank": 38,
+		"playerName": "Hede",
+		"startTime": "2025-11-29T12:12:33.657Z",
+		"endTime": "2025-11-29T12:40:19.319Z",
+		"duration": 1665662,
+		"durationFormatted": "27m 45s"
+	},
+	{
+		"rank": 39,
+		"playerName": "Nicolas Willians",
+		"startTime": "2025-11-29T12:01:01.397Z",
+		"endTime": "2025-11-29T12:28:49.913Z",
+		"duration": 1668516,
+		"durationFormatted": "27m 48s"
+	},
+	{
+		"rank": 40,
+		"playerName": "Paulo Roberto",
+		"startTime": "2025-11-29T12:01:42.278Z",
+		"endTime": "2025-11-29T12:29:32.826Z",
+		"duration": 1670548,
+		"durationFormatted": "27m 50s"
+	},
+	{
+		"rank": 41,
+		"playerName": "Aline Santos",
+		"startTime": "2025-11-29T11:50:12.790Z",
+		"endTime": "2025-11-29T12:18:18.430Z",
+		"duration": 1685640,
+		"durationFormatted": "28m 5s"
+	},
+	{
+		"rank": 42,
+		"playerName": "Skrzek",
+		"startTime": "2025-11-29T13:12:18.220Z",
+		"endTime": "2025-11-29T13:40:45.543Z",
+		"duration": 1707323,
+		"durationFormatted": "28m 27s"
+	},
+	{
+		"rank": 43,
+		"playerName": "Mário e Bia",
+		"startTime": "2025-11-29T12:06:31.479Z",
+		"endTime": "2025-11-29T12:35:17.295Z",
+		"duration": 1725816,
+		"durationFormatted": "28m 45s"
+	},
+	{
+		"rank": 44,
+		"playerName": "Sara",
+		"startTime": "2025-11-29T12:04:45.099Z",
+		"endTime": "2025-11-29T12:33:45.120Z",
+		"duration": 1740021,
+		"durationFormatted": "29m 0s"
+	},
+	{
+		"rank": 45,
+		"playerName": "Savio",
+		"startTime": "2025-11-29T13:00:29.791Z",
+		"endTime": "2025-11-29T13:29:36.606Z",
+		"duration": 1746815,
+		"durationFormatted": "29m 6s"
+	},
+	{
+		"rank": 46,
+		"playerName": "Maristela",
+		"startTime": "2025-11-29T13:48:12.289Z",
+		"endTime": "2025-11-29T14:17:42.863Z",
+		"duration": 1770574,
+		"durationFormatted": "29m 30s"
+	},
+	{
+		"rank": 47,
+		"playerName": "Josielem Terra",
+		"startTime": "2025-11-29T12:03:53.496Z",
+		"endTime": "2025-11-29T12:33:32.197Z",
+		"duration": 1778701,
+		"durationFormatted": "29m 38s"
+	},
+	{
+		"rank": 48,
+		"playerName": "Tássio Terra",
+		"startTime": "2025-11-29T12:04:16.252Z",
+		"endTime": "2025-11-29T12:33:59.062Z",
+		"duration": 1782810,
+		"durationFormatted": "29m 42s"
+	},
+	{
+		"rank": 49,
+		"playerName": "Jefferson Parison",
+		"startTime": "2025-11-29T11:58:29.083Z",
+		"endTime": "2025-11-29T12:28:25.489Z",
+		"duration": 1796406,
+		"durationFormatted": "29m 56s"
+	},
+	{
+		"rank": 50,
+		"playerName": "Douglas Nomizo",
+		"startTime": "2025-11-29T13:47:19.353Z",
+		"endTime": "2025-11-29T14:17:31.540Z",
+		"duration": 1812187,
+		"durationFormatted": "30m 12s"
+	},
+	{
+		"rank": 51,
+		"playerName": "Cleide",
+		"startTime": "2025-11-29T12:59:39.952Z",
+		"endTime": "2025-11-29T13:30:12.732Z",
+		"duration": 1832780,
+		"durationFormatted": "30m 32s"
+	},
+	{
+		"rank": 52,
+		"playerName": "Vagner e Fernanda",
+		"startTime": "2025-11-29T13:45:45.032Z",
+		"endTime": "2025-11-29T14:16:26.332Z",
+		"duration": 1841300,
+		"durationFormatted": "30m 41s"
+	},
+	{
+		"rank": 53,
+		"playerName": "lucas Silva",
+		"startTime": "2025-11-29T19:26:17.253Z",
+		"endTime": "2025-11-29T19:57:13.467Z",
+		"duration": 1856214,
+		"durationFormatted": "30m 56s"
+	},
+	{
+		"rank": 54,
+		"playerName": "Renata Brito",
+		"startTime": "2025-11-29T11:58:02.652Z",
+		"endTime": "2025-11-29T12:28:59.354Z",
+		"duration": 1856702,
+		"durationFormatted": "30m 56s"
+	},
+	{
+		"rank": 55,
+		"playerName": "Pholiana e Elenilson",
+		"startTime": "2025-11-29T12:04:25.518Z",
+		"endTime": "2025-11-29T12:35:28.325Z",
+		"duration": 1862807,
+		"durationFormatted": "31m 2s"
+	},
+	{
+		"rank": 56,
+		"playerName": "Carlos Manoel Lopes",
+		"startTime": "2025-11-29T12:04:48.138Z",
+		"endTime": "2025-11-29T12:35:58.128Z",
+		"duration": 1869990,
+		"durationFormatted": "31m 9s"
+	},
+	{
+		"rank": 57,
+		"playerName": "Henrique Carvalho",
+		"startTime": "2025-11-29T13:14:11.921Z",
+		"endTime": "2025-11-29T13:45:46.333Z",
+		"duration": 1894412,
+		"durationFormatted": "31m 34s"
+	},
+	{
+		"rank": 58,
+		"playerName": "Isabela Domingues",
+		"startTime": "2025-11-29T13:13:43.692Z",
+		"endTime": "2025-11-29T13:45:20.730Z",
+		"duration": 1897038,
+		"durationFormatted": "31m 37s"
+	},
+	{
+		"rank": 59,
+		"playerName": "Juan Brito",
+		"startTime": "2025-11-29T11:58:12.013Z",
+		"endTime": "2025-11-29T12:29:51.572Z",
+		"duration": 1899559,
+		"durationFormatted": "31m 39s"
+	},
+	{
+		"rank": 60,
+		"playerName": "Fernanda prates",
+		"startTime": "2025-11-29T11:50:41.988Z",
+		"endTime": "2025-11-29T12:22:39.939Z",
+		"duration": 1917951,
+		"durationFormatted": "31m 57s"
+	},
+	{
+		"rank": 61,
+		"playerName": "Juliana Lima",
+		"startTime": "2025-11-29T11:50:08.319Z",
+		"endTime": "2025-11-29T12:22:24.968Z",
+		"duration": 1936649,
+		"durationFormatted": "32m 16s"
+	},
+	{
+		"rank": 62,
+		"playerName": "Raphael Albergaria",
+		"startTime": "2025-11-29T13:14:23.578Z",
+		"endTime": "2025-11-29T13:46:40.706Z",
+		"duration": 1937128,
+		"durationFormatted": "32m 17s"
+	},
+	{
+		"rank": 63,
+		"playerName": "Thayani",
+		"startTime": "2025-11-29T12:32:32.827Z",
+		"endTime": "2025-11-29T13:05:18.533Z",
+		"duration": 1965706,
+		"durationFormatted": "32m 45s"
+	},
+	{
+		"rank": 64,
+		"playerName": "Valeska",
+		"startTime": "2025-11-29T13:13:04.135Z",
+		"endTime": "2025-11-29T13:45:49.968Z",
+		"duration": 1965833,
+		"durationFormatted": "32m 45s"
+	},
+	{
+		"rank": 65,
+		"playerName": "Musa do verao",
+		"startTime": "2025-11-29T12:18:33.193Z",
+		"endTime": "2025-11-29T12:51:23.990Z",
+		"duration": 1970797,
+		"durationFormatted": "32m 50s"
+	},
+	{
+		"rank": 66,
+		"playerName": "Fernando Matos",
+		"startTime": "2025-11-29T13:36:28.987Z",
+		"endTime": "2025-11-29T14:09:21.612Z",
+		"duration": 1972625,
+		"durationFormatted": "32m 52s"
+	},
+	{
+		"rank": 67,
+		"playerName": "Kenji Iso",
+		"startTime": "2025-11-29T14:00:27.382Z",
+		"endTime": "2025-11-29T14:33:30.901Z",
+		"duration": 1983519,
+		"durationFormatted": "33m 3s"
+	},
+	{
+		"rank": 68,
+		"playerName": "Fabiano Rubinho",
+		"startTime": "2025-11-29T11:52:01.033Z",
+		"endTime": "2025-11-29T12:25:08.372Z",
+		"duration": 1987339,
+		"durationFormatted": "33m 7s"
+	},
+	{
+		"rank": 69,
+		"playerName": "Dani Lima",
+		"startTime": "2025-11-29T12:02:43.496Z",
+		"endTime": "2025-11-29T12:36:05.172Z",
+		"duration": 2001676,
+		"durationFormatted": "33m 21s"
+	},
+	{
+		"rank": 70,
+		"playerName": "Cristiane",
+		"startTime": "2025-11-29T13:19:09.485Z",
+		"endTime": "2025-11-29T13:52:42.542Z",
+		"duration": 2013057,
+		"durationFormatted": "33m 33s"
+	},
+	{
+		"rank": 71,
+		"playerName": "Gabriel Pinheiro",
+		"startTime": "2025-11-29T12:15:20.835Z",
+		"endTime": "2025-11-29T12:48:58.988Z",
+		"duration": 2018153,
+		"durationFormatted": "33m 38s"
+	},
+	{
+		"rank": 72,
+		"playerName": "Douglas Alves",
+		"startTime": "2025-11-29T12:09:22.335Z",
+		"endTime": "2025-11-29T12:43:10.407Z",
+		"duration": 2028072,
+		"durationFormatted": "33m 48s"
+	},
+	{
+		"rank": 73,
+		"playerName": "Joicy",
+		"startTime": "2025-11-29T12:01:03.783Z",
+		"endTime": "2025-11-29T12:34:55.506Z",
+		"duration": 2031723,
+		"durationFormatted": "33m 51s"
+	},
+	{
+		"rank": 74,
+		"playerName": "Maísa Fróes",
+		"startTime": "2025-11-29T12:11:28.394Z",
+		"endTime": "2025-11-29T12:45:22.659Z",
+		"duration": 2034265,
+		"durationFormatted": "33m 54s"
+	},
+	{
+		"rank": 75,
+		"playerName": "Jaqueline",
+		"startTime": "2025-11-29T11:59:44.877Z",
+		"endTime": "2025-11-29T12:34:01.955Z",
+		"duration": 2057078,
+		"durationFormatted": "34m 17s"
+	},
+	{
+		"rank": 76,
+		"playerName": "Natanael e Bianca",
+		"startTime": "2025-11-29T12:11:35.500Z",
+		"endTime": "2025-11-29T12:46:01.140Z",
+		"duration": 2065640,
+		"durationFormatted": "34m 25s"
+	},
+	{
+		"rank": 77,
+		"playerName": "Maicon Fernandes",
+		"startTime": "2025-11-29T11:50:09.691Z",
+		"endTime": "2025-11-29T12:24:41.360Z",
+		"duration": 2071669,
+		"durationFormatted": "34m 31s"
+	},
+	{
+		"rank": 78,
+		"playerName": "Thays barbosa",
+		"startTime": "2025-11-29T11:50:41.342Z",
+		"endTime": "2025-11-29T12:25:25.541Z",
+		"duration": 2084199,
+		"durationFormatted": "34m 44s"
+	},
+	{
+		"rank": 79,
+		"playerName": "Hudson Santos",
+		"startTime": "2025-11-29T11:50:52.445Z",
+		"endTime": "2025-11-29T12:25:44.015Z",
+		"duration": 2091570,
+		"durationFormatted": "34m 51s"
+	},
+	{
+		"rank": 80,
+		"playerName": "Jaqueline SilvSantos",
+		"startTime": "2025-11-29T11:53:32.695Z",
+		"endTime": "2025-11-29T12:28:36.294Z",
+		"duration": 2103599,
+		"durationFormatted": "35m 3s"
+	},
+	{
+		"rank": 81,
+		"playerName": "Barbara lins",
+		"startTime": "2025-11-29T11:53:29.974Z",
+		"endTime": "2025-11-29T12:28:43.827Z",
+		"duration": 2113853,
+		"durationFormatted": "35m 13s"
+	},
+	{
+		"rank": 82,
+		"playerName": "Andressa Fernandes",
+		"startTime": "2025-11-29T11:50:11.830Z",
+		"endTime": "2025-11-29T12:25:26.162Z",
+		"duration": 2114332,
+		"durationFormatted": "35m 14s"
+	},
+	{
+		"rank": 83,
+		"playerName": "Paula Santos",
+		"startTime": "2025-11-29T11:50:08.621Z",
+		"endTime": "2025-11-29T12:25:32.012Z",
+		"duration": 2123391,
+		"durationFormatted": "35m 23s"
+	},
+	{
+		"rank": 84,
+		"playerName": "Mayara",
+		"startTime": "2025-11-29T12:01:25.682Z",
+		"endTime": "2025-11-29T12:36:49.823Z",
+		"duration": 2124141,
+		"durationFormatted": "35m 24s"
+	},
+	{
+		"rank": 85,
+		"playerName": "Geo e Felipe",
+		"startTime": "2025-11-29T13:46:52.721Z",
+		"endTime": "2025-11-29T14:22:20.727Z",
+		"duration": 2128006,
+		"durationFormatted": "35m 28s"
+	},
+	{
+		"rank": 86,
+		"playerName": "Dilson",
+		"startTime": "2025-11-29T12:10:50.787Z",
+		"endTime": "2025-11-29T12:46:18.910Z",
+		"duration": 2128123,
+		"durationFormatted": "35m 28s"
+	},
+	{
+		"rank": 87,
+		"playerName": "DvD",
+		"startTime": "2025-11-29T11:50:08.405Z",
+		"endTime": "2025-11-29T12:25:54.609Z",
+		"duration": 2146204,
+		"durationFormatted": "35m 46s"
+	},
+	{
+		"rank": 88,
+		"playerName": "Augusto Rodrigues",
+		"startTime": "2025-11-29T11:50:16.090Z",
+		"endTime": "2025-11-29T12:26:12.802Z",
+		"duration": 2156712,
+		"durationFormatted": "35m 56s"
+	},
+	{
+		"rank": 89,
+		"playerName": "Vinicius Delgado",
+		"startTime": "2025-11-29T12:31:04.413Z",
+		"endTime": "2025-11-29T13:07:05.775Z",
+		"duration": 2161362,
+		"durationFormatted": "36m 1s"
+	},
+	{
+		"rank": 90,
+		"playerName": "Renata Pereira",
+		"startTime": "2025-11-29T11:50:12.990Z",
+		"endTime": "2025-11-29T12:26:16.095Z",
+		"duration": 2163105,
+		"durationFormatted": "36m 3s"
+	},
+	{
+		"rank": 91,
+		"playerName": "Franklin&Jennifer",
+		"startTime": "2025-11-29T11:52:44.947Z",
+		"endTime": "2025-11-29T12:28:53.316Z",
+		"duration": 2168369,
+		"durationFormatted": "36m 8s"
+	},
+	{
+		"rank": 92,
+		"playerName": "Andre Scruph",
+		"startTime": "2025-11-29T12:03:43.170Z",
+		"endTime": "2025-11-29T12:40:10.631Z",
+		"duration": 2187461,
+		"durationFormatted": "36m 27s"
+	},
+	{
+		"rank": 93,
+		"playerName": "Bianca ferreira",
+		"startTime": "2025-11-29T12:11:49.184Z",
+		"endTime": "2025-11-29T12:48:28.179Z",
+		"duration": 2198995,
+		"durationFormatted": "36m 38s"
+	},
+	{
+		"rank": 94,
+		"playerName": "Gabriel Lucas",
+		"startTime": "2025-11-29T12:19:22.562Z",
+		"endTime": "2025-11-29T12:56:22.027Z",
+		"duration": 2219465,
+		"durationFormatted": "36m 59s"
+	},
+	{
+		"rank": 95,
+		"playerName": "Tamiris Weirich",
+		"startTime": "2025-11-29T13:15:30.685Z",
+		"endTime": "2025-11-29T13:52:32.273Z",
+		"duration": 2221588,
+		"durationFormatted": "37m 1s"
+	},
+	{
+		"rank": 96,
+		"playerName": "Caroline Albergaria",
+		"startTime": "2025-11-29T13:12:30.348Z",
+		"endTime": "2025-11-29T13:49:40.695Z",
+		"duration": 2230347,
+		"durationFormatted": "37m 10s"
+	},
+	{
+		"rank": 97,
+		"playerName": "Neriane",
+		"startTime": "2025-11-29T12:16:13.588Z",
+		"endTime": "2025-11-29T12:53:31.068Z",
+		"duration": 2237480,
+		"durationFormatted": "37m 17s"
+	},
+	{
+		"rank": 98,
+		"playerName": "Edivam Castro",
+		"startTime": "2025-11-29T14:08:20.577Z",
+		"endTime": "2025-11-29T14:45:48.372Z",
+		"duration": 2247795,
+		"durationFormatted": "37m 27s"
+	},
+	{
+		"rank": 99,
+		"playerName": "Lucas e Doug",
+		"startTime": "2025-11-29T12:07:53.845Z",
+		"endTime": "2025-11-29T12:45:28.058Z",
+		"duration": 2254213,
+		"durationFormatted": "37m 34s"
+	},
+	{
+		"rank": 100,
+		"playerName": "Thamires",
+		"startTime": "2025-11-29T11:51:12.040Z",
+		"endTime": "2025-11-29T12:28:54.525Z",
+		"duration": 2262485,
+		"durationFormatted": "37m 42s"
+	}
+]
