@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
-import staticLeaderboardData from '$lib/data/leaderboard-static.json';
+import { error } from '@sveltejs/kit';
+import prisma from '$lib/prisma';
 
 export interface LeaderboardEntry {
 	rank: number;
@@ -14,6 +15,12 @@ export interface LeaderboardData {
 	top100: LeaderboardEntry[];
 }
 
+// STATIC LEADERBOARD - preserved for future reuse
+// To use frozen data instead of the live database, uncomment loadStaticLeaderboard()
+// (and its import) and switch the load() function back to it.
+/*
+import staticLeaderboardData from '$lib/data/leaderboard-static.json';
+
 function loadStaticLeaderboard(): LeaderboardEntry[] {
 	// Convert the static JSON data to match the LeaderboardEntry interface
 	return staticLeaderboardData.map((entry: any) => ({
@@ -25,12 +32,7 @@ function loadStaticLeaderboard(): LeaderboardEntry[] {
 		durationFormatted: entry.durationFormatted
 	}));
 }
-
-// ORIGINAL DATABASE CODE - preserved for future treasure hunts
-// Uncomment this function and comment out loadStaticLeaderboard() to restore database functionality
-/*
-import { error } from '@sveltejs/kit';
-import prisma from '$lib/prisma';
+*/
 
 function formatDuration(milliseconds: number): string {
 	const totalSeconds = Math.floor(milliseconds / 1000);
@@ -88,11 +90,10 @@ async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
 		throw error(500, 'Failed to fetch leaderboard data');
 	}
 }
-*/
 
 export const load: PageServerLoad = async () => {
 	return {
-		// Return the static leaderboard data
-		top100: loadStaticLeaderboard()
+		// Live database-backed leaderboard
+		top100: await fetchLeaderboard()
 	};
 };
