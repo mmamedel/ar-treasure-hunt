@@ -269,46 +269,47 @@
 				// Create anchor for the target
 				anchor = mindarThree.addAnchor(treasureConfig.targetIndex);
 
-				// Setup Draco decoder for compressed models
-				const dracoLoader = new DRACOLoader();
-				dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
+				// --- 3D model display (disabled) ---
+				// // Setup Draco decoder for compressed models
+				// const dracoLoader = new DRACOLoader();
+				// dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
 
-				// Load GLTF model
-				const loader = new GLTFLoader();
-				loader.setDRACOLoader(dracoLoader);
-				loader.load(
-					`models/${treasureConfig.model.file}`,
-					(gltf) => {
-						model = gltf.scene;
+				// // Load GLTF model
+				// const loader = new GLTFLoader();
+				// loader.setDRACOLoader(dracoLoader);
+				// loader.load(
+				// 	`models/${treasureConfig.model.file}`,
+				// 	(gltf) => {
+				// 		model = gltf.scene;
 
-						// Apply scale, rotation, position from config
-						const scale = parseVector3(treasureConfig.model.scale);
-						model.scale.set(scale[0], scale[1], scale[2]);
+				// 		// Apply scale, rotation, position from config
+				// 		const scale = parseVector3(treasureConfig.model.scale);
+				// 		model.scale.set(scale[0], scale[1], scale[2]);
 
-						const rotation = parseVector3(treasureConfig.model.rotation);
-						model.rotation.set(
-							THREE.MathUtils.degToRad(rotation[0]),
-							THREE.MathUtils.degToRad(rotation[1]),
-							THREE.MathUtils.degToRad(rotation[2])
-						);
+				// 		const rotation = parseVector3(treasureConfig.model.rotation);
+				// 		model.rotation.set(
+				// 			THREE.MathUtils.degToRad(rotation[0]),
+				// 			THREE.MathUtils.degToRad(rotation[1]),
+				// 			THREE.MathUtils.degToRad(rotation[2])
+				// 		);
 
-						const position = parseVector3(treasureConfig.model.position);
-						model.position.set(position[0], position[1], position[2]);
+				// 		const position = parseVector3(treasureConfig.model.position);
+				// 		model.position.set(position[0], position[1], position[2]);
 
-						// Store animation config if present
-						animationConfig = treasureConfig.animation || null;
+				// 		// Store animation config if present
+				// 		animationConfig = treasureConfig.animation || null;
 
-						// Add model to anchor
-						anchor.group.add(model);
+				// 		// Add model to anchor
+				// 		anchor.group.add(model);
 
-						console.log('Model loaded successfully');
-					},
-					undefined,
-					(error) => {
-						console.error('Error loading model:', error);
-						showError('Erro ao carregar modelo 3D');
-					}
-				);
+				// 		console.log('Model loaded successfully');
+				// 	},
+				// 	undefined,
+				// 	(error) => {
+				// 		console.error('Error loading model:', error);
+				// 		showError('Erro ao carregar modelo 3D');
+				// 	}
+				// );
 
 				// Setup target found/lost events
 				anchor.onTargetFound = () => {
@@ -327,10 +328,10 @@
 
 				// Start render loop
 				renderer.setAnimationLoop(() => {
-					// Apply animation if configured and model is loaded
-					if (model && animationConfig) {
-						applyAnimation(model, animationConfig);
-					}
+					// 3D model animation (disabled)
+					// if (model && animationConfig) {
+					// 	applyAnimation(model, animationConfig);
+					// }
 					renderer.render(scene, camera);
 				});
 

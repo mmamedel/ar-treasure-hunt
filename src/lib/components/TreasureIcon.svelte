@@ -5,26 +5,31 @@
 
 	let { treasureId }: Props = $props();
 
+	// Icon related to each clue's object
 	const iconMap: Record<number, string> = {
-		0: '/images/emojis/musical-notes.svg',
-		1: '/images/emojis/classical-building.svg',
-		2: '/images/emojis/amphora.svg',
-		3: '/images/emojis/eye.svg',
-		4: '/images/emojis/droplet.svg',
-		5: '/images/emojis/scroll.svg'
+		0: '🛝', // Balanço
+		1: '🍖', // Churrasqueira
+		2: '💡', // Poste de luz
+		3: '🔥', // Fogão a lenha
+		4: '🏡', // Varanda
+		5: '🪴', // Vaso azul
+		6: '🍋', // Pé de limão
+		7: '🧊' // Freezer
 	};
 
-	const iconSrc = $derived(iconMap[treasureId] || '');
+	const icon = $derived(iconMap[treasureId] || '❓');
 </script>
 
-<img src={iconSrc} alt="" class="treasure-icon" />
+<span class="treasure-icon" aria-hidden="true">{icon}</span>
 
 <style>
 	.treasure-icon {
-		width: 70%;
-		height: 70%;
-		object-fit: contain;
-		filter: brightness(0) saturate(100%) invert(18%) sepia(13%) saturate(959%) hue-rotate(349deg)
-			brightness(95%) contrast(93%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		font-size: 30px;
+		line-height: 1;
 	}
 </style>

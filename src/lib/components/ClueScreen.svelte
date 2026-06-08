@@ -10,47 +10,48 @@
 	let treasureNumber = $derived(gameState.currentTreasureIndex + 1);
 	let totalTreasures = $derived(gameState.treasures.length);
 
-	let showHint = $state(false);
-	let hintAvailable = $state(false);
-	let timeUntilHint = $state('');
+	// --- Timed hint feature (disabled) ---
+	// let showHint = $state(false);
+	// let hintAvailable = $state(false);
+	// let timeUntilHint = $state('');
 
-	const HINT_DELAY_MS = 5 * 60 * 1000; // 5 minutes
+	// const HINT_DELAY_MS = 5 * 60 * 1000; // 5 minutes
 
-	// Check hint availability and update countdown every second
-	$effect(() => {
-		const checkHintAvailability = () => {
-			if (!currentTreasure.start) {
-				hintAvailable = false;
-				return;
-			}
+	// // Check hint availability and update countdown every second
+	// $effect(() => {
+	// 	const checkHintAvailability = () => {
+	// 		if (!currentTreasure.start) {
+	// 			hintAvailable = false;
+	// 			return;
+	// 		}
 
-			const elapsed = Date.now() - currentTreasure.start;
-			const remaining = HINT_DELAY_MS - elapsed;
+	// 		const elapsed = Date.now() - currentTreasure.start;
+	// 		const remaining = HINT_DELAY_MS - elapsed;
 
-			if (remaining <= 0) {
-				hintAvailable = true;
-				timeUntilHint = '';
-			} else {
-				hintAvailable = false;
-				const minutes = Math.floor(remaining / 60000);
-				const seconds = Math.floor((remaining % 60000) / 1000);
-				timeUntilHint = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-			}
-		};
+	// 		if (remaining <= 0) {
+	// 			hintAvailable = true;
+	// 			timeUntilHint = '';
+	// 		} else {
+	// 			hintAvailable = false;
+	// 			const minutes = Math.floor(remaining / 60000);
+	// 			const seconds = Math.floor((remaining % 60000) / 1000);
+	// 			timeUntilHint = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	// 		}
+	// 	};
 
-		checkHintAvailability();
-		const interval = setInterval(checkHintAvailability, 1000);
+	// 	checkHintAvailability();
+	// 	const interval = setInterval(checkHintAvailability, 1000);
 
-		return () => clearInterval(interval);
-	});
+	// 	return () => clearInterval(interval);
+	// });
 
 	function handleOpenCamera() {
 		window.location.href = '/ar-viewer.html';
 	}
 
-	function toggleHint() {
-		showHint = !showHint;
-	}
+	// function toggleHint() {
+	// 	showHint = !showHint;
+	// }
 </script>
 
 {#if currentTreasure.found}
@@ -80,6 +81,7 @@
 					{currentTreasure.clue}
 				</div>
 
+				<!-- Timed hint feature (disabled)
 				{#if showHint}
 					<div class="hint-section">
 						<div class="hint-label">
@@ -89,8 +91,10 @@
 						<div class="hint-text">{currentTreasure.hint}</div>
 					</div>
 				{/if}
+				-->
 			</div>
 
+			<!-- Timed hint button/timer (disabled)
 			{#if hintAvailable}
 				<button class="hint-button" onclick={toggleHint}>
 					<img src="/images/emojis/lightbulb.svg" alt="" class="hint-icon" />
@@ -101,6 +105,7 @@
 					Dica disponível em {timeUntilHint}
 				</div>
 			{/if}
+			-->
 
 			<button class="camera-button" onclick={handleOpenCamera}>
 				<svg width="23" height="21" viewBox="0 0 23 21" fill="none">

@@ -1,78 +1,63 @@
 [
 	{
 		"id": 0,
-		"emoji": "🎶",
-		"name": "Karaokê",
-		"clue": "Depois de uma refeição sagrada, eles levantaram a voz em harmonia.",
-		"hint": "Procure onde as pessoas também soltam a voz e cantam juntas",
-		"imageTarget": "/targets/karaoke.mind",
+		"emoji": "🛝",
+		"name": "Balanço",
+		"clue": "Tenho dois caminhos, mas nenhum destino.",
+		"hint": "",
+		"imageTarget": "/targets/marker-1.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "Lyre_Harmony-Optimized.glb",
+			"file": "",
 			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
-		},
-		"animation": {
-			"type": "rotation",
-			"axis": "y",
-			"speed": 1
 		},
 		"found": false
 	},
 	{
 		"id": 1,
-		"emoji": "🏛️",
-		"name": "Mirante",
-		"clue": "De um lugar, alguém viu todos os reinos da terra.",
-		"hint": "Vá aonde se pode enxergar mais longe, lá você encontrará a marca",
-		"imageTarget": "/targets/mirante.mind",
+		"emoji": "🍖",
+		"name": "Churrasqueira",
+		"clue": "Quando começo a trabalhar, quase sempre aparece gente do nada querendo ficar por perto.",
+		"hint": "",
+		"imageTarget": "/targets/marker-2.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "panthernon-Optimized.glb",
+			"file": "",
 			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
-		},
-		"animation": {
-			"type": "rotation",
-			"axis": "y",
-			"speed": 1
 		},
 		"found": false
 	},
 	{
 		"id": 2,
-		"emoji": "🏺",
-		"name": " Torneira",
-		"clue": "Uma mulher foi buscar água e encontrou algo melhor: água que dá vida eterna.",
-		"hint": "Procure um lugar onde as pessoas possam pegar água facilmente, como em num pequeno poço moderno",
-		"imageTarget": "/targets/vaso.mind",
+		"emoji": "💡",
+		"name": "Poste de luz perto da piscina",
+		"clue": "Estou aqui o tempo todo e ninguém me nota. Meu momento de brilhar é mais tarde.",
+		"hint": "",
+		"imageTarget": "/targets/marker-3.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "vase-Optimized.glb",
-			"scale": "0.6 0.6 0.6",
+			"file": "",
+			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
-		},
-		"animation": {
-			"type": "rotation",
-			"axis": "y",
-			"speed": 1
 		},
 		"found": false
 	},
 	{
 		"id": 3,
-		"emoji": "👁️",
-		"name": "Lava-olho",
-		"clue": "Um homem recebeu barro nos olhos e, depois de lavar, viu o mundo pela primeira vez.",
-		"hint": "Veja onde as pessoas limpam os olhos em situações de emergência. Lá está a marca",
-		"imageTarget": "/targets/lava-olho.mind",
+		"emoji": "🔥",
+		"name": "Fogão a lenha",
+		"clue": "Não preciso de tomadas para fazer o meu serviço. Gosto de fazer as coisas do jeito antigo.",
+		"hint": "",
+		"imageTarget": "/targets/marker-4.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "blind-Optimized.glb",
-			"scale": "0.6 0.6 0.6",
+			"file": "",
+			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
@@ -80,36 +65,63 @@
 	},
 	{
 		"id": 4,
-		"emoji": "💧",
-		"name": "Piscina",
-		"clue": "Um homem vestido com pele de camelo chamou as pessoas para se arrependerem. Aqui ele batizou o maior de todos.",
-		"hint": "Procure onde a água é funda o bastante para batizar uma pessoa, como no rio Jordão",
-		"imageTarget": "/targets/piscina.mind",
+		"emoji": "🏡",
+		"name": "Varanda",
+		"clue": "Sou o lugar favorito de quem não decidiu se quer entrar ou sair.",
+		"hint": "",
+		"imageTarget": "/targets/marker-5.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "dove-Optimized.glb",
+			"file": "",
 			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
-		},
-		"animation": {
-			"type": "rotation",
-			"axis": "y",
-			"speed": 1
 		},
 		"found": false
 	},
 	{
 		"id": 5,
-		"emoji": "📜",
-		"name": "Auditório",
-		"clue": "Ele abriu o rolo e ensinou sobre as boas novas a todos.",
-		"hint": "Veja onde as pessoas se reúnem para ouvir alguém falar em público. Lá está a marca",
-		"imageTarget": "/targets/rolo.mind",
+		"emoji": "🪴",
+		"name": "Vaso azul",
+		"clue": "Guardo raízes que não são minhas.",
+		"hint": "",
+		"imageTarget": "/targets/marker-6.mind",
 		"targetIndex": 0,
 		"model": {
-			"file": "old_torah_scroll-Optimized.glb",
-			"scale": "0.15 0.15 0.15",
+			"file": "",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
+		"found": false
+	},
+	{
+		"id": 6,
+		"emoji": "🍋",
+		"name": "Pé de limão",
+		"clue": "Meus presentes fazem algumas pessoas fazerem careta.",
+		"hint": "",
+		"imageTarget": "/targets/marker-7.mind",
+		"targetIndex": 0,
+		"model": {
+			"file": "",
+			"scale": "0.5 0.5 0.5",
+			"rotation": "0 0 0",
+			"position": "0 0 0"
+		},
+		"found": false
+	},
+	{
+		"id": 7,
+		"emoji": "🧊",
+		"name": "Freezer",
+		"clue": "Sou o guardião do inverno em pleno verão.",
+		"hint": "",
+		"imageTarget": "/targets/marker-8.mind",
+		"targetIndex": 0,
+		"model": {
+			"file": "",
+			"scale": "0.5 0.5 0.5",
 			"rotation": "0 0 0",
 			"position": "0 0 0"
 		},
