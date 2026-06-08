@@ -58,8 +58,9 @@ export class GameState {
 		this.startTime = $state(props?.startTime || 0);
 		this.endTime = $state(props?.endTime);
 
-		// Set reverse: use saved value if available, otherwise randomly choose
-		this.reverse = props?.reverse !== undefined ? props.reverse : Math.random() < 0.5;
+		// Treasure order is always sequential so clue N maps to marker N.
+		// Randomized reverse order disabled (was: Math.random() < 0.5).
+		this.reverse = props?.reverse !== undefined ? props.reverse : false;
 
 		let elapsedTime = 0;
 		if ((props?.isFinished, props?.endTime)) {
