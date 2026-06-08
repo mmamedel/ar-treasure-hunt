@@ -2,6 +2,9 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
 
+// Live leaderboard: render per request, never prerender at build time.
+export const prerender = false;
+
 export interface LeaderboardEntry {
 	rank: number;
 	playerName: string;
