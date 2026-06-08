@@ -31,10 +31,11 @@
 		toggleMenu();
 	}
 
-	function handleCollection() {
-		goto('/collection');
-		toggleMenu();
-	}
+	// Coleção screen removed
+	// function handleCollection() {
+	// 	goto('/collection');
+	// 	toggleMenu();
+	// }
 
 	function handleClickOutside(event: MouseEvent) {
 		const target = event.target as HTMLElement;
@@ -57,9 +58,11 @@
 <!-- Dropdown menu -->
 {#if isOpen}
 	<div class="menu">
+		<!-- Coleção screen removed
 		{#if hasGameSession}
 			<button onclick={handleCollection}> 📦 Coleção </button>
 		{/if}
+		-->
 
 		<button onclick={handleLeaderboard}> 🏆 Ranking </button>
 	</div>
